@@ -37,8 +37,18 @@ slapp.message('help', ['mention', 'direct_message'], (msg) => {
 })
 
 slapp.event('team_join', (msg) => {
-  var res = slack.im.open(token,msg.body.event.user)
-  slack.chat.postMessage(token,res.body.channel.id,"Please visite www.neurotechedu.com");
+
+  slapp.client.im.open({ token: msg.meta.bot_token, user: msg.meta.user_id }, (err, data) => {
+    if (err) {
+      return console.error(err)
+    }
+    let channel = data.channel.id
+
+    msg.say({ channel: channel, text: 'Please visite www.neurotechedu.com' })
+    msg.say({ channel: channel, text: help })
+    })
+  })
+
 })
 // "Conversation" flow that tracks state - kicks off when user says hi, hello or hey
 slapp
