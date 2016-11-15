@@ -47,7 +47,6 @@ slapp.event('team_join', (msg) => {
     msg.say({ channel: channel, text: 'Please visite www.neurotechedu.com' })
     msg.say({ channel: channel, text: help })
     })
-  })
 
 })
 // "Conversation" flow that tracks state - kicks off when user says hi, hello or hey
