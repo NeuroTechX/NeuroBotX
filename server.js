@@ -4,6 +4,7 @@ const express = require('express')
 const Slapp = require('slapp')
 const ConvoStore = require('slapp-convo-beepboop')
 const Context = require('slapp-context-beepboop')
+const slack = require('slack')
 
 // use `PORT` env var on Beep Boop - default to 3000 locally
 var port = process.env.PORT || 3000
@@ -35,8 +36,8 @@ slapp.message('help', ['mention', 'direct_message'], (msg) => {
 })
 
 slapp.event('team_join', (msg) => {
-  var res = im.open(verify_token,msg.body.event.user)
-  chat.postMessage(verify_token,res.body.channel.id,"Please visite www.neurotechedu.com");
+  var res = slack.im.open(verify_token,msg.body.event.user)
+  slack.chat.postMessage(verify_token,res.body.channel.id,"Please visite www.neurotechedu.com");
 })
 // "Conversation" flow that tracks state - kicks off when user says hi, hello or hey
 slapp
