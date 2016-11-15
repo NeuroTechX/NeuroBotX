@@ -38,7 +38,7 @@ slapp.message('help', ['mention', 'direct_message'], (msg) => {
 
 slapp.event('team_join', (msg) => {
 
-  slapp.client.im.open({ token: msg.meta.bot_token,  user: msg.body.user_id }, (err, data) => {
+  slapp.client.im.open({ token: msg.meta.bot_token,  user: msg.body.user.id }, (err, data) => {
 
     var str = JSON.stringify(msg);
     str = JSON.stringify(msg, null, 4); // (Optional) beautiful indented output.
@@ -47,7 +47,9 @@ slapp.event('team_join', (msg) => {
       return console.error(err)
     }
     let channel = data.channel.id
-    console.log('channel '+ data.channel.id);
+    var strdata = JSON.stringify(data);
+    strdata = JSON.stringify(data, null, 4); // (Optional) beautiful indented output.
+    console.log(strdata);
     msg.say({ channel: data.channel.id, text: 'Please visite www.neurotechedu.com' })
 
     })
