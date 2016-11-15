@@ -40,7 +40,7 @@ slapp.event('team_join', (msg) => {
   var str = JSON.stringify(msg);
   str = JSON.stringify(msg, null, 4); // (Optional) beautiful indented output.
   console.log(str);
-  slapp.client.im.open({ token: msg.meta.bot_token,  user: msg.body.user.id }, (err, data) => {
+  slapp.client.im.open({ token: msg.meta.bot_token,  user: msg.body.event.user.id }, (err, data) => {
 
 
     if (err) {
