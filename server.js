@@ -35,7 +35,8 @@ slapp.message('help', ['mention', 'direct_message'], (msg) => {
 })
 
 slapp.event('team_join', (msg) => {
-  msg.say('Woot woot')
+  var res = im.open(verify_token,msg.body.event.user)
+  chat.postMessage(verify_token,res.body.channel.id,"Please visite www.neurotechedu.com");
 })
 // "Conversation" flow that tracks state - kicks off when user says hi, hello or hey
 slapp
