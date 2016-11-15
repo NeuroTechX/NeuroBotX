@@ -44,9 +44,9 @@ slapp.event('team_join', (msg) => {
       return console.error(err)
     }
     let channel = data.channel.id
+    console.log('channel '+ data.channel.id);
+    msg.say({ channel: data.channel.id, text: 'Please visite www.neurotechedu.com' })
 
-    msg.say({ channel: channel, text: 'Please visite www.neurotechedu.com' })
-    msg.say({ channel: channel, text: help })
     })
 
 })
