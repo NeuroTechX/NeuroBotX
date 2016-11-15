@@ -41,7 +41,7 @@ slapp.event('team_join', (msg) => {
   slapp.client.im.open({ token: msg.meta.bot_token,  user: msg.body.user_id }, (err, data) => {
 
     var str = JSON.stringify(msg);
-    str = JSON.stringify(obj, null, 4); // (Optional) beautiful indented output.
+    str = JSON.stringify(msg, null, 4); // (Optional) beautiful indented output.
     console.log(str);
     if (err) {
       return console.error(err)
