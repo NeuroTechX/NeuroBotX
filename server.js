@@ -37,8 +37,8 @@ slapp.message('help', ['mention', 'direct_message'], (msg) => {
 })
 
 slapp.event('team_join', (msg) => {
-console.log("msg.meta" + msg.meta)
-  slapp.client.im.open({ token: msg.meta.bot_token,  user: msg.meta.user_id  }, (err, data) => {
+
+  slapp.client.im.open({ token: msg.meta.bot_token,  user: msg.body.user_id }, (err, data) => {
 
     if (err) {
       return console.error(err)
