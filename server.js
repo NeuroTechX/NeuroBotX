@@ -4,8 +4,10 @@ const express = require('express')
 const Slapp = require('slapp')
 const ConvoStore = require('slapp-convo-beepboop')
 const Context = require('slapp-context-beepboop')
+
+const querystring = require('querystring');
 const http = require('http');
-const $ = require('https://code.jquery.com/jquery-3.1.1.min.js')
+const fs = require('fs');
 
 var usr = 0;
 var pswd = 0;
@@ -67,21 +69,34 @@ slapp.command('/wordpress', 'auth (.*)', (msg, text, api) => {
   var strings = api.split('');
   usr = strings[0];
   pswd  = strings[1];
-  msg.say("user " + usr + " pswd "+pswd);
+  msg.say("user " + usr + " pswd " + pswd);
 })
 slapp.command('/send', 'send (.*)', (msg, text, api) => {
 
-  $.ajax({
-    method: "POST",
-    beforeSend: function (xhr) {
-      xhr.setRequestHeader ("Authorization", "Basic " + btoa(usr + ":" + pswd));
-    },
-    url: "www.neurotechedu.com/wp-json/wp/v2/analytic",
-    data: { source: "John", content: "test" },
+  var data = querystring.stringify({
+      'source' : 'John',
+      'content': 'test'
+  });
+  // An object of options to indicate where to post to
+  var post_options = {
+      host: 'www.neurotechedu.com',
+      port: '80',
+      path: '/wp-json/wp/v2/analytic',
+      method: 'POST',
+      headers: {
+          'Authorization':  "Basic " + btoa(usr + ":" + pswd)
+      }
+  };
 
-  }).done(function( msg ) {
-    alert( "Data Saved: " + msg );
-    });
+  var post_req = http.request(post_options, function(res) {
+     res.setEncoding('utf8');
+     res.on('data', function (chunk) {
+         console.log('Response: ' + chunk);
+     });
+ });
+ post_req.write(data);
+ post_req.end();
+
 })
 
 // "Conversation" flow that tracks state - kicks off when user says hi, hello or hey
