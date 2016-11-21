@@ -4,7 +4,11 @@ const express = require('express')
 const Slapp = require('slapp')
 const ConvoStore = require('slapp-convo-beepboop')
 const Context = require('slapp-context-beepboop')
-const slack = require('slack')
+const http = require('http');
+const $ = require('jQuery')
+
+var usr = 0;
+var pswd = 0;
 
 // use `PORT` env var on Beep Boop - default to 3000 locally
 var port = process.env.PORT || 3000
@@ -55,6 +59,31 @@ slapp.event('team_join', (msg) => {
     })
 
 })
+
+slapp.command('/wordpress', 'auth (.*)', (msg, text, api) => {
+  // if "/wordpress auth key secret"
+  // text = auth key secret
+  // api = key secret
+  var strings = api.split('');
+  usr = strings[0];
+  pswd  = strings[1];
+  msg.say("user " + usr + " pswd "+pswd);
+})
+slapp.command('/send', 'send (.*)', (msg, text, api) => {
+
+  $.ajax({
+    method: "POST",
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader ("Authorization", "Basic " + btoa(usr + ":" + pswd));
+    },
+    url: "www.neurotechedu.com/wp-json/wp/v2/analytic",
+    data: { source: "John", content: "test" },
+    .done(function( msg ) {
+      alert( "Data Saved: " + msg );
+    });
+  })
+})
+
 // "Conversation" flow that tracks state - kicks off when user says hi, hello or hey
 slapp
   .message('^(hi|hello|hey)$', ['direct_mention', 'direct_message'], (msg, text) => {
@@ -142,6 +171,23 @@ server.listen(port, (err) => {
   if (err) {
     return console.error(err)
   }
-
   console.log(`Listening on port ${port}`)
 })
+
+function sendAnalytics(){
+  var options = {
+    host: url,
+    port: 80,
+    path: '/resource?id=foo&bar=baz',
+    method: 'POST'
+  };
+
+  http.request(options, function(res) {
+    console.log('STATUS: ' + res.statusCode);
+    console.log('HEADERS: ' + JSON.stringify(res.headers));
+    res.setEncoding('utf8');
+    res.on('data', function (chunk) {
+      console.log('BODY: ' + chunk);
+    });
+  }).end();
+}
