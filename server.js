@@ -5,7 +5,7 @@ const Slapp = require('slapp')
 const ConvoStore = require('slapp-convo-beepboop')
 const Context = require('slapp-context-beepboop')
 const http = require('http');
-const $ = require('jQuery')
+const $ = require('https://code.jquery.com/jquery-3.1.1.min.js')
 
 var usr = 0;
 var pswd = 0;
@@ -81,7 +81,7 @@ slapp.command('/send', 'send (.*)', (msg, text, api) => {
 
   }).done(function( msg ) {
     alert( "Data Saved: " + msg );
-  });
+    });
 })
 
 // "Conversation" flow that tracks state - kicks off when user says hi, hello or hey
