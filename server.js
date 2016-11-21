@@ -78,10 +78,10 @@ slapp.command('/send', 'send (.*)', (msg, text, api) => {
     },
     url: "www.neurotechedu.com/wp-json/wp/v2/analytic",
     data: { source: "John", content: "test" },
-    .done(function( msg ) {
-      alert( "Data Saved: " + msg );
-    });
-  })
+
+  }).done(function( msg ) {
+    alert( "Data Saved: " + msg );
+  });
 })
 
 // "Conversation" flow that tracks state - kicks off when user says hi, hello or hey
