@@ -69,7 +69,7 @@ slapp.command('/wordpress', 'auth (.*)', (msg, text, api) => {
   var strings = api.split('');
   usr = strings[0];
   pswd  = strings[1];
-  msg.say("user " + usr + " pswd " + pswd);
+  console.log("user " + usr + " pswd " + pswd);
 })
 slapp.command('/send', 'send (.*)', (msg, text, api) => {
 
@@ -77,6 +77,8 @@ slapp.command('/send', 'send (.*)', (msg, text, api) => {
       'source' : 'John',
       'content': 'test'
   });
+  console.log("msg " + msg);
+  console.log("data "+ data);
   // An object of options to indicate where to post to
   var post_options = {
       host: 'www.neurotechedu.com',
