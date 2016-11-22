@@ -86,7 +86,8 @@ slapp.command('/send', 'send (.*)', (msg, text, api) => {
       path: '/wp-json/wp/v2/analytic',
       method: 'POST',
       headers: {
-          'Authorization':  "Basic " + btoa(usr + ":" + pswd)
+          'Authorization':  "Basic " +
+          + (new Buffer(usr + ":" + pswd).toString('base64'))
       }
   };
 
