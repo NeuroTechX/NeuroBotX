@@ -66,7 +66,7 @@ slapp.command('/wordpress', 'auth (.*)', (msg, text, api) => {
   // if "/wordpress auth key secret"
   // text = auth key secret
   // api = key secret
-  var strings = api.split('');
+  var strings = api.split(' ');
   usr = strings[0];
   pswd  = strings[1];
   console.log("user " + usr + " pswd " + pswd);
