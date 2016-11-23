@@ -189,7 +189,7 @@ var dictionary = [
   'Noise'
 ]
 
-for(i=0;i<dictionary.length;i++){
+for(var i=0;i<dictionary.length;i++){
   stringMap.set(dictionary[i],0)
 }
 // Debug print on console
@@ -237,7 +237,7 @@ slapp.event('team_join', (msg) => {
 })
 slapp.event('message.channels',(msg) => {
   var strings = api.split(' ');
-  for(i=0;i<strings.length;i++){
+  for(var i=0;i<strings.length;i++){
     if(stringMap.contains(strings[i])){
       stringMap.set(strings[i],stringMap.get(strings[i])+1);
     }
@@ -246,7 +246,7 @@ slapp.event('message.channels',(msg) => {
 slapp.command('/stats','(.*)', (msg, text, api)  => {
   var str = '';
   stringMap.forEach(function(value, key) {
-    str = text + key + ' : ' + value + '\n';
+    str = str + key + ' : ' + value + '\n';
   });
   msg.respond(str)
 })
