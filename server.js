@@ -237,6 +237,7 @@ slapp.event('team_join', (msg) => {
 })
 slapp.event('message.channels',(msg) => {
   _('new message ');
+  console.log('new message');
   _(msg);
   var strings = api.split(' ');
   for(var i=0;i<strings.length;i++){
