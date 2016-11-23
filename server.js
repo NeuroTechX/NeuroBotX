@@ -4,27 +4,6 @@ const Slapp = require('slapp')
 const ConvoStore = require('slapp-convo-beepboop')
 const Context = require('slapp-context-beepboop')
 
-/**
- * HashMap - HashMap Class for JavaScript
- * @author Ariel Flesler <aflesler@gmail.com>
- * @version 2.0.6
- * Homepage: https://github.com/flesler/hashmap
- */
-(function(factory) {
-	/* global define */
-	if (typeof define === 'function' && define.amd) {
-		// AMD. Register as an anonymous module.
-		define([], factory);
-	} else if (typeof module === 'object') {
-		// Node js environment
-		var HashMap = module.exports = factory();
-		// Keep it backwards compatible
-		HashMap.HashMap = HashMap;
-	} else {
-		// Browser globals (this is window)
-		this.HashMap = factory();
-	}
-}(function() {
 
 	function HashMap(other) {
 		this.clear();
@@ -190,10 +169,6 @@ const Context = require('slapp-context-beepboop')
 			Object.defineProperty(obj, prop, {enumerable:false});
 		}
 	}
-
-	return HashMap;
-}));
-
 
 var stringMap = new HashMap();
 
