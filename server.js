@@ -238,7 +238,9 @@ slapp.event('team_join', (msg) => {
 slapp.event('message.channels',(msg) => {
   var strings = api.split(' ');
   for(var i=0;i<strings.length;i++){
+    _(strings[i]);
     if(stringMap.contains(strings[i])){
+      _('contains');
       stringMap.set(strings[i],stringMap.get(strings[i])+1);
     }
   }
