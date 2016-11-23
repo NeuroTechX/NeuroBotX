@@ -239,7 +239,7 @@ slapp.event('message.channels',(msg) => {
   _('new message ');
   console.log('new message');
   _(msg);
-  var strings = api.split(' ');
+  var strings = msg.text.split(' ');
   for(var i=0;i<strings.length;i++){
     _(strings[i]);
     if(stringMap.contains(strings[i])){
