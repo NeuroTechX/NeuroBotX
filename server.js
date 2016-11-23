@@ -3,7 +3,7 @@ const express = require('express')
 const Slapp = require('slapp')
 const ConvoStore = require('slapp-convo-beepboop')
 const Context = require('slapp-context-beepboop')
-const Hashmap = require('hashmap');
+const Hashmap = require('./hashmap.js');
 
 var stringMap = new HashMap();
 
