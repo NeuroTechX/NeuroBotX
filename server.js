@@ -231,11 +231,11 @@ slapp.event('team_join', (msg) => {
     if (err) {
       return console.error(err)
     }
-    msg.say({ channel: data.channel.id, text: 'Please visite www.neurotechedu.com' })
+    msg.say({ channel: data.channel.id, text: WELCOME_TEXT })
     })
 
 })
-slapp.event('message.channels',(msg) => {
+slapp.event('message.channels', function (msg) {
 	msg.say(HELP_TEXT)
   _('new message ');
   console.log('new message');
