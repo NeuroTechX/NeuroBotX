@@ -258,7 +258,27 @@ slapp.command('/stats','(.*)', (msg, text, api)  => {
   });
   msg.respond(str)
 })
-
+slapp.command('/stats_add_keywords','(.*)', (msg, text, params)  => {
+	var strings = text.split(' ');
+	for(var i=0; i<strings.length;i++){
+		var hash = stringMap.hash(strings[i]);
+		if ( ! (hash in stringMap._data) ) {
+			stringMap.set(strings[i],0);
+		}
+	}
+})
+slapp.command('/stats_delete_keywords','(.*)', (msg, text, params)  => {
+	var strings = text.split(' ');
+	for(var i=0; i<strings.length;i++){
+		var hash = stringMap.hash(strings[i]);
+		if ( (hash in stringMap._data) ) {
+			stringMap.remove(strings[i]);
+		}
+	}
+})
+slapp.command('/stats_refresh','(.*)', (msg, text, params)  => {
+	stringMap.clear();
+})
 // slapp.command('/wordpress', 'auth (.*)', (msg, text, api) => {
 //   // if "/wordpress auth key secret"
 //   // text = auth key secret
