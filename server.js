@@ -235,15 +235,20 @@ slapp.event('team_join', (msg) => {
     })
 
 })
+// slapp.message('(.*)', 'ambient', (msg) => {
+//   var strings = msg.body.event.text.split(' ');
+//   for(var i=0;i<strings.length;i++){
+// 		var hash = stringMap.hash(strings[i]);
+// 		if ( hash in stringMap._data ) {
+//       stringMap.set(strings[i],stringMap.get(strings[i])+1);
+//     }
+//   }
+// })
 slapp.message('(.*)', 'ambient', (msg) => {
-	_(msg);
-  var strings = msg.body.event.text.split(' ');
-  for(var i=0;i<strings.length;i++){
-		var hash = stringMap.hash(strings[i]);
-		if ( hash in stringMap._data ) {
-      stringMap.set(strings[i],stringMap.get(strings[i])+1);
-    }
-  }
+	stringMap.forEach(function(value, key) {
+		var occ = msg.body.event.text.split(value).length - 1;
+		stringMap.set(value,stringMap.get(value)+occ)
+	}
 })
 slapp.command('/stats','(.*)', (msg, text, api)  => {
   var str = '';
