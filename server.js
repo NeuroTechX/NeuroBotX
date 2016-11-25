@@ -253,12 +253,14 @@ slapp.message('(.*)', 'ambient', (msg) => {
 })
 slapp.command('/stats','(.*)', (msg, text, api)  => {
   var str = '';
+	_(msg);
   stringMap.forEach(function(value, key) {
     str = str + key + ' : ' + value + '\n';
   });
   msg.respond(str)
 })
 slapp.command('/stats_add_keywords','(.*)', (msg, text, params)  => {
+
 	var strings = text.split(' ');
 	for(var i=0; i<strings.length;i++){
 		var hash = stringMap.hash(strings[i]);
