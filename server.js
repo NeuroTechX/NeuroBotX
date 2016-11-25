@@ -3,6 +3,7 @@ const express = require('express')
 const Slapp = require('slapp')
 const ConvoStore = require('slapp-convo-beepboop')
 const Context = require('slapp-context-beepboop')
+const Slack = require('Slack')
 
 
 	function HashMap(other) {
@@ -252,15 +253,20 @@ slapp.message('(.*)', 'ambient', (msg) => {
 	})
 })
 slapp.command('/stats','(.*)', (msg, text, api)  => {
-  var str = '';
-	_(msg);
-  stringMap.forEach(function(value, key) {
-    str = str + key + ' : ' + value + '\n';
-  });
-  msg.respond(str)
+	if(isAdmin(msg.body.user_id)){
+	  var str = '';
+		_(msg);
+	  stringMap.forEach(function(value, key) {
+	    str = str + key + ' : ' + value + '\n';
+	  });
+	  msg.respond(str)
+	}
+	else {
+		msg.say("Sorry you're not admin enough to do that");
+	}
 })
 slapp.command('/stats_add_keywords','(.*)', (msg, text, params)  => {
-
+if(isAdmin(msg.body.user_id)){
 	var strings = text.split(' ');
 	for(var i=0; i<strings.length;i++){
 		var hash = stringMap.hash(strings[i]);
@@ -268,8 +274,13 @@ slapp.command('/stats_add_keywords','(.*)', (msg, text, params)  => {
 			stringMap.set(strings[i],0);
 		}
 	}
+}
+else {
+	msg.say("Sorry you're not admin enough to do that");
+}
 })
 slapp.command('/stats_delete_keywords','(.*)', (msg, text, params)  => {
+if(isAdmin(msg.body.user_id)){
 	var strings = text.split(' ');
 	for(var i=0; i<strings.length;i++){
 		var hash = stringMap.hash(strings[i]);
@@ -277,10 +288,30 @@ slapp.command('/stats_delete_keywords','(.*)', (msg, text, params)  => {
 			stringMap.remove(strings[i]);
 		}
 	}
+	else {
+		msg.say("Sorry you're not admin enough to do that");
+	}
 })
 slapp.command('/stats_refresh','(.*)', (msg, text, params)  => {
-	stringMap.clear();
+	if(isAdmin(msg.body.user_id)){
+		stringMap.clear();
+	}
+	else {
+		msg.say("Sorry you're not admin enough to do that");
+	}
 })
+
+
+function isAdmin(userid){
+	slack.users.info({token:process.env.SLACK_VERIFY_TOKEN,user:userid}, (err, data)=>{
+		if(data.ok){
+			if(data.user.is_admin)
+				return true;
+		}
+		return false;
+	});
+
+}
 // slapp.command('/wordpress', 'auth (.*)', (msg, text, api) => {
 //   // if "/wordpress auth key secret"
 //   // text = auth key secret
