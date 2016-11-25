@@ -225,10 +225,6 @@ slapp.message('help', ['mention', 'direct_message'], (msg) => {
   msg.say(HELP_TEXT)
 })
 
-slapp.message('(.*)', 'ambient', (msg) => {
-  msg.say('Im watching');
-})
-
 slapp.event('team_join', (msg) => {
 
   slapp.client.im.open({ token: msg.meta.bot_token,  user: msg.body.event.user.id }, (err, data) => {
@@ -239,16 +235,10 @@ slapp.event('team_join', (msg) => {
     })
 
 })
-slapp.event('message.channels', function (msg) {
-	msg.say(HELP_TEXT)
-  _('new message ');
-  console.log('new message');
-  _(msg);
+slapp.message('(.*)', 'ambient', (msg) => {
   var strings = msg.text.split(' ');
   for(var i=0;i<strings.length;i++){
-    _(strings[i]);
     if(stringMap.contains(strings[i])){
-      _('contains');
       stringMap.set(strings[i],stringMap.get(strings[i])+1);
     }
   }
