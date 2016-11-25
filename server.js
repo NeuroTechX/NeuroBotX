@@ -237,7 +237,7 @@ slapp.event('team_join', (msg) => {
 })
 slapp.message('(.*)', 'ambient', (msg) => {
 	_(msg);
-  var strings = msg.text.split(' ');
+  var strings = msg.body.event.text.split(' ');
   for(var i=0;i<strings.length;i++){
     if(stringMap.contains(strings[i])){
       stringMap.set(strings[i],stringMap.get(strings[i])+1);
