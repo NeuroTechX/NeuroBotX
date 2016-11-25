@@ -225,6 +225,10 @@ slapp.message('help', ['mention', 'direct_message'], (msg) => {
   msg.say(HELP_TEXT)
 })
 
+slapp.message('(.*)', 'ambient', (msg) => {
+  msg.say('Im watching');
+})
+
 slapp.event('team_join', (msg) => {
 
   slapp.client.im.open({ token: msg.meta.bot_token,  user: msg.body.event.user.id }, (err, data) => {
