@@ -247,8 +247,8 @@ slapp.event('team_join', (msg) => {
 slapp.message('(.*)', 'ambient', (msg) => {
 	stringMap.forEach(function(value, key) {
 		var occ = msg.body.event.text.split(value).length - 1;
-		stringMap.set(value,stringMap.get(value)+occ)
-	}
+		stringMap.set(value,stringMap.get(value)+occ);
+	})
 })
 slapp.command('/stats','(.*)', (msg, text, api)  => {
   var str = '';
