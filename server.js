@@ -288,6 +288,7 @@ if(isAdmin(msg.body.user_id)){
 			stringMap.remove(strings[i]);
 		}
 	}
+	}
 	else {
 		msg.say("Sorry you're not admin enough to do that");
 	}
