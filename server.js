@@ -239,7 +239,8 @@ slapp.message('(.*)', 'ambient', (msg) => {
 	_(msg);
   var strings = msg.body.event.text.split(' ');
   for(var i=0;i<strings.length;i++){
-    if(stringMap.contains(strings[i])){
+		var hash = stringMap.hash(strings[i]);
+		if ( hash in stringMap._data ) {
       stringMap.set(strings[i],stringMap.get(strings[i])+1);
     }
   }
