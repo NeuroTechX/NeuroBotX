@@ -186,7 +186,8 @@ var dictionary = [
   'Matlab',
   'Python',
   'C++',
-  'Noise'
+  'Noise',
+	'Empirical Mode Decomposition'
 ]
 
 for(var i=0;i<dictionary.length;i++){
