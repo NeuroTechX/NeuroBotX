@@ -5,7 +5,6 @@ const ConvoStore = require('slapp-convo-beepboop')
 const Context = require('slapp-context-beepboop')
 const Slack = require('Slack')
 
-
 	function HashMap(other) {
 		this.clear();
 		switch (arguments.length) {
@@ -304,7 +303,7 @@ slapp.command('/stats_refresh','(.*)', (msg, text, params)  => {
 
 
 function isAdmin(userid){
-	slack.users.info({token:process.env.SLACK_VERIFY_TOKEN,user:userid}, (err, data)=>{
+	slapp.client.users.info({process.env.SLACK_VERIFY_TOKEN,userid}, (err, data)=>{
 		if(data.ok){
 			if(data.user.is_admin)
 				return true;
