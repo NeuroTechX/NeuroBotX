@@ -306,10 +306,10 @@ slapp.command('/stats_refresh','(.*)', (msg, text, params)  => {
 
 
 function isAdmin(token,userid){
-	slapp.client.list({token,userid}, (err, data) => {
+	slapp.client.list({}, (err, data) => {
 		_("list");
 		_(data);
-	}
+	});
 	slapp.client.users.info({token,userid}, (err, data) => {
 		_(token)
 		_(userid)
