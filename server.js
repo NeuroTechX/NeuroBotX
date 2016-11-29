@@ -252,7 +252,8 @@ slapp.message('(.*)', 'ambient', (msg) => {
 	})
 })
 slapp.command('/stats','(.*)', (msg, text, api)  => {
-	if(isAdmin(msg.body.user_id)){
+	let token = msg.meta.bot_token;
+	if(isAdmin(token,msg.body.user_id)){
 	  var str = '';
 		_(msg);
 	  stringMap.forEach(function(value, key) {
@@ -265,7 +266,8 @@ slapp.command('/stats','(.*)', (msg, text, api)  => {
 	}
 })
 slapp.command('/stats_add_keywords','(.*)', (msg, text, params)  => {
-if(isAdmin(msg.body.user_id)){
+	let token = msg.meta.bot_token;
+	if(isAdmin(token,msg.body.user_id)){
 	var strings = text.split(' ');
 	for(var i=0; i<strings.length;i++){
 		var hash = stringMap.hash(strings[i]);
@@ -279,7 +281,8 @@ else {
 }
 })
 slapp.command('/stats_delete_keywords','(.*)', (msg, text, params)  => {
-if(isAdmin(msg.body.user_id)){
+	let token = msg.meta.bot_token;
+	if(isAdmin(token,msg.body.user_id)){
 	var strings = text.split(' ');
 	for(var i=0; i<strings.length;i++){
 		var hash = stringMap.hash(strings[i]);
@@ -293,7 +296,8 @@ if(isAdmin(msg.body.user_id)){
 	}
 })
 slapp.command('/stats_refresh','(.*)', (msg, text, params)  => {
-	if(isAdmin(msg.body.user_id)){
+	let token = msg.meta.bot_token;
+	if(isAdmin(token,msg.body.user_id)){
 		stringMap.clear();
 	}
 	else {
@@ -302,8 +306,8 @@ slapp.command('/stats_refresh','(.*)', (msg, text, params)  => {
 })
 
 
-function isAdmin(userid){
-	slapp.client.users.info({process.env.SLACK_VERIFY_TOKEN,userid}, (err, data)=>{
+function isAdmin(token,userid){
+	slapp.client.users.info({token,userid}, (err, data) => {
 		if(data.ok){
 			if(data.user.is_admin)
 				return true;
