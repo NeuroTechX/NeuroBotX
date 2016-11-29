@@ -307,6 +307,8 @@ slapp.command('/stats_refresh','(.*)', (msg, text, params)  => {
 
 function isAdmin(token,userid){
 	slapp.client.users.info({token,userid}, (err, data) => {
+		_(token)
+		_(userid)
 		_(err);
 		_(data);
 		if(data.ok){
