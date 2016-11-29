@@ -306,7 +306,7 @@ slapp.command('/stats_refresh','(.*)', (msg, text, params)  => {
 
 
 function isAdmin(token,userid){
-	slapp.client.list({}, (err, data) => {
+	slapp.client.users.list({}, (err, data) => {
 		_("list");
 		_(data);
 	});
