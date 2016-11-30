@@ -253,69 +253,63 @@ slapp.message('(.*)', 'ambient', (msg) => {
 })
 
 slapp.command('/stats','(.*)', (msg, text, api)  => {
-	let token = msg.meta.bot_token;
-	let isUserAdmin =isAdmin(token,msg.body.user_id);
-	_(isUserAdmin)
-	if( isUserAdmin){
-	  var str = '';
-		_(msg);
-	  stringMap.forEach(function(value, key) {
-	    str = str + key + ' : ' + value + '\n';
-	  });
-	  msg.respond(str)
-	}
-	else {
-		msg.say("Sorry you're not admin enough to do that");
-	}
+	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
+		if( data.user.is_admin){
+		  var str = '';
+		  stringMap.forEach(function(value, key) {
+		    str = str + key + ' : ' + value + '\n';
+		  });
+		  msg.respond(str)
+		}
+		else {
+			msg.say("Sorry, you're not an admin");
+		}
+	});
 })
 slapp.command('/stats_add_keywords','(.*)', (msg, text, params)  => {
-	let token = msg.meta.bot_token;
-	if(isAdmin(token,msg.body.user_id)){
-	var strings = text.split(' ');
-	for(var i=0; i<strings.length;i++){
-		var hash = stringMap.hash(strings[i]);
-		if ( ! (hash in stringMap._data) ) {
-			stringMap.set(strings[i],0);
+	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
+		if( data.user.is_admin){
+		var strings = text.split(' ');
+		for(var i=0; i<strings.length;i++){
+			var hash = stringMap.hash(strings[i]);
+			if ( ! (hash in stringMap._data) ) {
+				stringMap.set(strings[i],0);
+			}
 		}
-	}
-}
-else {
-	msg.say("Sorry you're not admin enough to do that");
-}
+		}
+		else {
+			msg.say("Sorry you're not admin enough to do that");
+		}
+	})
 })
 slapp.command('/stats_delete_keywords','(.*)', (msg, text, params)  => {
-	let token = msg.meta.bot_token;
-	if(isAdmin(token,msg.body.user_id)){
-	var strings = text.split(' ');
-	for(var i=0; i<strings.length;i++){
-		var hash = stringMap.hash(strings[i]);
-		if ( (hash in stringMap._data) ) {
-			stringMap.remove(strings[i]);
+	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
+		if( data.user.is_admin){
+			var strings = text.split(' ');
+			for(var i=0; i<strings.length;i++){
+				var hash = stringMap.hash(strings[i]);
+				if ( (hash in stringMap._data) ) {
+					stringMap.remove(strings[i]);
+				}
+			}
 		}
-	}
-	}
-	else {
-		msg.say("Sorry you're not admin enough to do that");
-	}
+		else {
+			msg.say("Sorry you're not admin enough to do that");
+		}
+	})
 })
 slapp.command('/stats_refresh','(.*)', (msg, text, params)  => {
-	let token = msg.meta.bot_token;
-	if(isAdmin(token,msg.body.user_id)){
-		stringMap.clear();
-	}
-	else {
-		msg.say("Sorry you're not admin enough to do that");
-	}
+	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
+		if( data.user.is_admin){
+			stringMap.clear();
+		}
+		else {
+			msg.say("Sorry you're not admin enough to do that");
+		}
+	})
 })
 
 
-function isAdmin(tkn,uid){
-
-	slapp.client.users.info({token:tkn,user:uid}, (err, data) => {
-		return data.user.is_admin;
-	});
-
-}
 // slapp.command('/wordpress', 'auth (.*)', (msg, text, api) => {
 //   // if "/wordpress auth key secret"
 //   // text = auth key secret
