@@ -252,6 +252,12 @@ slapp.message('(.*)', 'ambient', (msg) => {
 })
 slapp.command('/stats','(.*)', (msg, text, api)  => {
 	let token = msg.meta.bot_token;
+	_("slapp");
+	_(slapp);
+	_("slapp.clients");
+	_(slapp.clients)
+	_("slapp.clients.users");
+	_(slapp.clients.users)
 	slapp.client.users.list({}, (err, data) => {
 		_("list in stats");
 		_(data);
