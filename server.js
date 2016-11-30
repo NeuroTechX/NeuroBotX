@@ -254,27 +254,17 @@ slapp.message('(.*)', 'ambient', (msg) => {
 
 slapp.command('/stats','(.*)', (msg, text, api)  => {
 	let token = msg.meta.bot_token;
-	_("slapp in stats");
-	_(slapp);
-	// _("slapp.clients");
-	// _(slapp.client)
-	// _("slapp.clients.users");
-	// _(slapp.client.users)
-	slapp.client.users.list({token: msg.meta.bot_token}, (err, data) => {
-		_("list in stats");
-		_(data);
-	});
-	// if(isAdmin(token,msg.body.user_id)){
-	//   var str = '';
-	// 	_(msg);
-	//   stringMap.forEach(function(value, key) {
-	//     str = str + key + ' : ' + value + '\n';
-	//   });
-	//   msg.respond(str)
-	// }
-	// else {
-	// 	msg.say("Sorry you're not admin enough to do that");
-	// }
+	if(isAdmin(token,msg.body.user_id)){
+	  var str = '';
+		_(msg);
+	  stringMap.forEach(function(value, key) {
+	    str = str + key + ' : ' + value + '\n';
+	  });
+	  msg.respond(str)
+	}
+	else {
+		msg.say("Sorry you're not admin enough to do that");
+	}
 })
 slapp.command('/stats_add_keywords','(.*)', (msg, text, params)  => {
 	let token = msg.meta.bot_token;
@@ -317,16 +307,8 @@ slapp.command('/stats_refresh','(.*)', (msg, text, params)  => {
 })
 
 
-function isAdmin(token,userid){
-	slapp.client.users.list({}, (err, data) => {
-		_("list");
-		_(data);
-	});
-	slapp.client.users.info({token,userid}, (err, data) => {
-		_(token)
-		_(userid)
-		_(err);
-		_(data);
+function isAdmin(tkn,uid){
+	slapp.client.users.info({token:tkn,userid:uid}, (err, data) => {
 		if(data.ok){
 			if(data.user.is_admin)
 				return true;
