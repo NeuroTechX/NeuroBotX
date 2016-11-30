@@ -251,16 +251,7 @@ slapp.message('(.*)', 'ambient', (msg) => {
 		stringMap.set(key,stringMap.get(key)+occ);
 	})
 })
-slapp.event('reaction_added', (msg) => {
-  let token = msg.meta.bot_token
-  let id = msg.body.event.item.ts
-  let channel = msg.body.event.item.channel
-	_("slapp in reaction");
-	_(slapp);
-  slapp.client.reactions.add({token, 'smile', id, channel}, (err) => {
-    if (err) console.log('Error adding reaction', err)
-  })
-})
+
 slapp.command('/stats','(.*)', (msg, text, api)  => {
 	let token = msg.meta.bot_token;
 	_("slapp in stats");
@@ -269,10 +260,10 @@ slapp.command('/stats','(.*)', (msg, text, api)  => {
 	// _(slapp.client)
 	// _("slapp.clients.users");
 	// _(slapp.client.users)
-	// slapp.client.users.list({}, (err, data) => {
-	// 	_("list in stats");
-	// 	_(data);
-	// });
+	slapp.client.users.list({token: msg.meta.bot_token}, (err, data) => {
+		_("list in stats");
+		_(data);
+	});
 	// if(isAdmin(token,msg.body.user_id)){
 	//   var str = '';
 	// 	_(msg);
