@@ -226,7 +226,8 @@ slapp.message('help', ['mention', 'direct_message'], (msg) => {
 })
 
 slapp.event('team_join', (msg) => {
-
+	_("slapp in team_join");
+	_(slapp);
   slapp.client.im.open({ token: msg.meta.bot_token,  user: msg.body.event.user.id }, (err, data) => {
     if (err) {
       return console.error(err)
@@ -250,29 +251,39 @@ slapp.message('(.*)', 'ambient', (msg) => {
 		stringMap.set(key,stringMap.get(key)+occ);
 	})
 })
+slapp.event('reaction_added', (msg) => {
+  let token = msg.meta.bot_token
+  let id = msg.body.event.item.ts
+  let channel = msg.body.event.item.channel
+	_("slapp in reaction");
+	_(slapp);
+  slapp.client.reactions.add({token, 'smile', id, channel}, (err) => {
+    if (err) console.log('Error adding reaction', err)
+  })
+})
 slapp.command('/stats','(.*)', (msg, text, api)  => {
 	let token = msg.meta.bot_token;
-	_("slapp");
+	_("slapp in stats");
 	_(slapp);
-	_("slapp.clients");
-	_(slapp.clients)
-	_("slapp.clients.users");
-	_(slapp.clients.users)
-	slapp.client.users.list({}, (err, data) => {
-		_("list in stats");
-		_(data);
-	});
-	if(isAdmin(token,msg.body.user_id)){
-	  var str = '';
-		_(msg);
-	  stringMap.forEach(function(value, key) {
-	    str = str + key + ' : ' + value + '\n';
-	  });
-	  msg.respond(str)
-	}
-	else {
-		msg.say("Sorry you're not admin enough to do that");
-	}
+	// _("slapp.clients");
+	// _(slapp.client)
+	// _("slapp.clients.users");
+	// _(slapp.client.users)
+	// slapp.client.users.list({}, (err, data) => {
+	// 	_("list in stats");
+	// 	_(data);
+	// });
+	// if(isAdmin(token,msg.body.user_id)){
+	//   var str = '';
+	// 	_(msg);
+	//   stringMap.forEach(function(value, key) {
+	//     str = str + key + ' : ' + value + '\n';
+	//   });
+	//   msg.respond(str)
+	// }
+	// else {
+	// 	msg.say("Sorry you're not admin enough to do that");
+	// }
 })
 slapp.command('/stats_add_keywords','(.*)', (msg, text, params)  => {
 	let token = msg.meta.bot_token;
