@@ -252,6 +252,10 @@ slapp.message('(.*)', 'ambient', (msg) => {
 })
 slapp.command('/stats','(.*)', (msg, text, api)  => {
 	let token = msg.meta.bot_token;
+	slapp.client.users.list({}, (err, data) => {
+		_("list in stats");
+		_(data);
+	});
 	if(isAdmin(token,msg.body.user_id)){
 	  var str = '';
 		_(msg);
