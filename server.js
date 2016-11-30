@@ -254,7 +254,9 @@ slapp.message('(.*)', 'ambient', (msg) => {
 
 slapp.command('/stats','(.*)', (msg, text, api)  => {
 	let token = msg.meta.bot_token;
-	if(isAdmin(token,msg.body.user_id)){
+	let isUserAdmin =isAdmin(token,msg.body.user_id);
+	_(isUserAdmin)
+	if( isUserAdmin){
 	  var str = '';
 		_(msg);
 	  stringMap.forEach(function(value, key) {
@@ -310,20 +312,7 @@ slapp.command('/stats_refresh','(.*)', (msg, text, params)  => {
 function isAdmin(tkn,uid){
 
 	slapp.client.users.info({token:tkn,user:uid}, (err, data) => {
-		_("err")
-		_(err)
-				_("data")
-		_(data)
-				_("data.user")
-		_(data.user)
-				_("data.user.isadmin")
-		_(data.user.is_admin)
-				_("if data.u.i")
-		_(data.user.is_admin==true)
-		if(data.user.is_admin){
-			return true;
-		}
-		return false;
+		return data.user.is_admin;
 	});
 
 }
