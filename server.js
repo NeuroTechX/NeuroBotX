@@ -222,7 +222,7 @@ var slapp = Slapp({
   context: Context()
 })
 
-var weeklyTask = cron.schedule('1 * * * *', function(){
+var weeklyTask = cron.schedule('* * * * *', function(){
 _("task started")
 _("number of subscribers: " + subscribedUsers.length);
 
