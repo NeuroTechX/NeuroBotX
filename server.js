@@ -225,7 +225,8 @@ var slapp = Slapp({
 var weeklyTask = cron.schedule('* * * * *', function(){
 _("task started")
 _("number of subscribers: " + subscribedUsers.length);
-
+_("Context");
+_(Context);
 	for(var i=0;i<subscribedUsers.length;i++){
 		_("iteration i= "+i)
 		var str = 'Weekly Statsletter:\n';
