@@ -227,8 +227,8 @@ _("task started")
 _("number of subscribers: " + subscribedUsers.length);
 _("slapp");
 _(slapp);
-_("context");
-_(Context());
+_("BEEPBOOP_TOKEN ");
+_(BEEPBOOP_TOKEN);
 	for(var i=0;i<subscribedUsers.length;i++){
 		_("iteration i= "+i)
 		var str = 'Weekly Statsletter:\n';
