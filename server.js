@@ -225,22 +225,22 @@ var slapp = Slapp({
 var isTracking = false;
 var botToken;
 var weeklyTask = cron.schedule('* * * * *', function(){
-
-	for(var i=0;i<subscribedUsers.length;i++){
-		_("iteration i= "+i)
-		var str = 'Weekly Statsletter:\n';
-		stringMap.forEach(function(value, key) {
-			str = str + key + ' : ' + value + '\n';
-		});
-		// _("token "+process.env.SLACK_VERIFY_TOKEN);
-			console.log("token weekly " + botToken);
-		slapp.client.im.open({token:botToken,user:subscribedUsers[i]}, (err, data) => {
-			if (err) {
-				return console.error(err)
-			}
-			msg.say({ channel: data.channel.id, text: str})
-			})
-
+	if(isTracking){
+		for(var i=0;i<subscribedUsers.length;i++){
+			_("iteration i= "+i)
+			var str = 'Weekly Statsletter:\n';
+			stringMap.forEach(function(value, key) {
+				str = str + key + ' : ' + value + '\n';
+			});
+			// _("token "+process.env.SLACK_VERIFY_TOKEN);
+				console.log("token weekly " + botToken);
+			slapp.client.im.open({token:botToken,user:subscribedUsers[i]}, (err, data) => {
+				if (err) {
+					return console.error(err)
+				}
+				msg.say({ channel: data.channel.id, text: str})
+				})
+		}
 	}
 });
 
