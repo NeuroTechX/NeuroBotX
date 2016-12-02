@@ -234,7 +234,7 @@ var weeklyTask = cron.schedule('* * * * *', function(){
 		});
 		// _("token "+process.env.SLACK_VERIFY_TOKEN);
 			console.log("token weekly " + botToken);
-		slapp.client.im.open({token:process.env.BEEPBOOP_TOKEN,user:subscribedUsers[i]}, (err, data) => {
+		slapp.client.im.open({token:botToken,user:subscribedUsers[i]}, (err, data) => {
 			if (err) {
 				return console.error(err)
 			}
