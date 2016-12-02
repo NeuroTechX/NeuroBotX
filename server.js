@@ -223,12 +223,7 @@ var slapp = Slapp({
 })
 
 var weeklyTask = cron.schedule('* * * * *', function(){
-_("task started")
-_("number of subscribers: " + subscribedUsers.length);
-_("slapp");
-_(slapp);
-_("BEEPBOOP_TOKEN ");
-_(process.env.BEEPBOOP_TOKEN);
+
 	for(var i=0;i<subscribedUsers.length;i++){
 		_("iteration i= "+i)
 		var str = 'Weekly Statsletter:\n';
@@ -236,8 +231,7 @@ _(process.env.BEEPBOOP_TOKEN);
 			str = str + key + ' : ' + value + '\n';
 		});
 		// _("token "+process.env.SLACK_VERIFY_TOKEN);
-		var tkn = process.env.SLACK_VERIFY_TOKEN;
-		slapp.client.im.open({token:tkn,user:subscribedUsers[i]}, (err, data) => {
+		slapp.client.im.open({token:process.env.BEEPBOOP_TOKEN,user:subscribedUsers[i]}, (err, data) => {
 			if (err) {
 				return console.error(err)
 			}
