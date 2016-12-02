@@ -238,8 +238,11 @@ var weeklyTask = cron.schedule('* * * * *', function(){
 				if (err) {
 					return console.error(err)
 				}
-				msg.say({ channel: data.channel.id, text: str})
+				slapp.client.chat.postMessage(({token:botToken, channel: data.channel.id, text: str}, (err, data)=>{
+					if (err)
+						return console.error(err)
 				})
+			})
 		}
 	}
 });
