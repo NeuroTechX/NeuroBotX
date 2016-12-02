@@ -227,8 +227,8 @@ _("task started")
 _("number of subscribers: " + subscribedUsers.length);
 _("slapp");
 _(slapp);
-_("slapp context");
-_(slapp.context);
+_("context");
+_(Context());
 	for(var i=0;i<subscribedUsers.length;i++){
 		_("iteration i= "+i)
 		var str = 'Weekly Statsletter:\n';
