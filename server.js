@@ -232,9 +232,9 @@ _("number of subscribers: " + subscribedUsers.length);
 		stringMap.forEach(function(value, key) {
 			str = str + key + ' : ' + value + '\n';
 		});
-		_("token "+process.env.SLACK_VERIFY_TOKEN);
-		var tkn = process.env.SLACK_VERIFY_TOKEN;
-		slapp.client.im.open({ token:tkn,  user: user:subscribedUsers[i] }, (err, data) => {
+		// _("token "+process.env.SLACK_VERIFY_TOKEN);
+		// var tkn = process.env.SLACK_VERIFY_TOKEN;
+		slapp.client.im.open({ token:"tkn",  user: user:subscribedUsers[i] }, (err, data) => {
 			if (err) {
 				return console.error(err)
 			}
