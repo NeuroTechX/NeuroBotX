@@ -231,6 +231,7 @@ var weeklyTask = cron.schedule('* * * * *', function(){
 			str = str + key + ' : ' + value + '\n';
 		});
 		// _("token "+process.env.SLACK_VERIFY_TOKEN);
+			console.log("token bot beepboop " + process.env.BEEPBOOP_TOKEN);
 		slapp.client.im.open({token:process.env.BEEPBOOP_TOKEN,user:subscribedUsers[i]}, (err, data) => {
 			if (err) {
 				return console.error(err)
@@ -280,6 +281,7 @@ slapp.message('(.*)', 'ambient', (msg) => {
 })
 
 slapp.command('/stats','(.*)', (msg, text, api)  => {
+	console.log("token bot stats " + msg.meta.bot_token);
 	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
 		if( data.user.is_admin){
 		  var str = '';
