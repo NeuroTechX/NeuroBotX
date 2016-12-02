@@ -233,7 +233,7 @@ var weeklyTask = cron.schedule('* * * * *', function(){
 			str = str + key + ' : ' + value + '\n';
 		});
 		// _("token "+process.env.SLACK_VERIFY_TOKEN);
-			console.log("token bot beepboop " + botToken);
+			console.log("token weekly " + botToken);
 		slapp.client.im.open({token:process.env.BEEPBOOP_TOKEN,user:subscribedUsers[i]}, (err, data) => {
 			if (err) {
 				return console.error(err)
@@ -275,6 +275,7 @@ slapp.event('team_join', (msg) => {
 // })
 
 slapp.message('(.*)', 'ambient', (msg) => {
+			_("botToken ambient " + msg.meta.bot_token)
 	if(isTracking){
 		stringMap.forEach(function(value, key) {
 			var occ = msg.body.event.text.split(key).length - 1;
@@ -284,6 +285,7 @@ slapp.message('(.*)', 'ambient', (msg) => {
 })
 
 slapp.command('/stats','(.*)', (msg, text, api)  => {
+		_("botToken stats " + msg.meta.bot_token)
 	if(isTracking){
 		slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
 			if( data.user.is_admin){
@@ -398,6 +400,7 @@ slapp.command('/stats_refresh','(.*)', (msg, text, params)  => {
 })
 slapp.command('/stats_start','(.*)', (msg, text, params)  => {
 	botToken=msg.meta.bot_token;
+	_("botToken stats start " + msg.meta.bot_token)
 	if(isTracking){
 		msg.say("Tracking already in progress");
 	}
@@ -408,6 +411,7 @@ slapp.command('/stats_start','(.*)', (msg, text, params)  => {
 	}
 })
 slapp.command('/stats_stop','(.*)', (msg, text, params)  => {
+		_("botToken stats stop " + msg.meta.bot_token)
 	if(isTracking){
 		isTracking=false;
 		weeklyTask.stop();
