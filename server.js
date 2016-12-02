@@ -222,6 +222,8 @@ var slapp = Slapp({
   context: Context()
 })
 
+var isTracking = false;
+var botToken;
 var weeklyTask = cron.schedule('* * * * *', function(){
 
 	for(var i=0;i<subscribedUsers.length;i++){
@@ -231,7 +233,7 @@ var weeklyTask = cron.schedule('* * * * *', function(){
 			str = str + key + ' : ' + value + '\n';
 		});
 		// _("token "+process.env.SLACK_VERIFY_TOKEN);
-			console.log("token bot beepboop " + process.env.BEEPBOOP_TOKEN);
+			console.log("token bot beepboop " + botToken);
 		slapp.client.im.open({token:process.env.BEEPBOOP_TOKEN,user:subscribedUsers[i]}, (err, data) => {
 			if (err) {
 				return console.error(err)
@@ -241,7 +243,6 @@ var weeklyTask = cron.schedule('* * * * *', function(){
 
 	}
 });
-weeklyTask.start();
 
 //*********************************************
 // Setup different handlers for messages
@@ -274,26 +275,32 @@ slapp.event('team_join', (msg) => {
 // })
 
 slapp.message('(.*)', 'ambient', (msg) => {
-	stringMap.forEach(function(value, key) {
-		var occ = msg.body.event.text.split(key).length - 1;
-		stringMap.set(key,stringMap.get(key)+occ);
-	})
+	if(isTracking){
+		stringMap.forEach(function(value, key) {
+			var occ = msg.body.event.text.split(key).length - 1;
+			stringMap.set(key,stringMap.get(key)+occ);
+		})
+	}
 })
 
 slapp.command('/stats','(.*)', (msg, text, api)  => {
-	console.log("token bot stats " + msg.meta.bot_token);
-	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
-		if( data.user.is_admin){
-		  var str = '';
-		  stringMap.forEach(function(value, key) {
-		    str = str + key + ' : ' + value + '\n';
-		  });
-		  msg.respond(str)
-		}
-		else {
-			msg.say("Sorry, you're not an admin");
-		}
-	});
+	if(isTracking){
+		slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
+			if( data.user.is_admin){
+			  var str = '';
+			  stringMap.forEach(function(value, key) {
+			    str = str + key + ' : ' + value + '\n';
+			  });
+			  msg.respond(str)
+			}
+			else {
+				msg.say("Sorry, you're not an admin");
+			}
+		});
+	}
+	else {
+		msg.say("No tracking in progress");
+	}
 })
 slapp.command('/stats_subscribe','(.*)', (msg, text, api)  => {
 	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
@@ -389,8 +396,27 @@ slapp.command('/stats_refresh','(.*)', (msg, text, params)  => {
 		}
 	})
 })
-
-
+slapp.command('/stats_start','(.*)', (msg, text, params)  => {
+	botToken=msg.meta.bot_token;
+	if(isTracking){
+		msg.say("Tracking already in progress");
+	}
+	else {
+		isTracking = true;
+		weeklyTask.start();
+		msg.say("Tracking started");
+	}
+})
+slapp.command('/stats_stop','(.*)', (msg, text, params)  => {
+	if(isTracking){
+		isTracking=false;
+		weeklyTask.stop();
+		msg.say("Tracking stopped");
+	}
+	else {
+		msg.say("Tracking is already stoped");
+	}
+})
 // slapp.command('/wordpress', 'auth (.*)', (msg, text, api) => {
 //   // if "/wordpress auth key secret"
 //   // text = auth key secret
@@ -444,8 +470,7 @@ slapp.command('/stats_refresh','(.*)', (msg, text, params)  => {
 //
 //     // user may not have typed text as their next action, ask again and re-route
 //     if (!text) {
-//       return msg
-//         .say("Whoops, I'm still waiting to hear how you're doing.")
+//       return msg/         .say("Whoops, I'm still waiting to hear how you're doing.")
 //         .say('How are you?')
 //         .route('how-are-you', state)
 //     }
