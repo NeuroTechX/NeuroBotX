@@ -223,17 +223,22 @@ var slapp = Slapp({
 })
 
 var weeklyTask = cron.schedule('1 * * * *', function(){
+_("task started")
+_("number of subscribers: " + subscribedUsers.length);
 
 	for(var i=0;i<subscribedUsers.length;i++){
-		var str = '';
+		_("iteration i= "+i)
+		var str = 'Weekly Statsletter:\n';
 		stringMap.forEach(function(value, key) {
 			str = str + key + ' : ' + value + '\n';
 		});
-		slapp.client.chat.postMessage({token:msg.meta.bot_token,user:subscribedUsers[i],text:str}, (err, data) => {
-	    if (err) {
-	      return console.error(err)
-	    }
-	  })
+		_("token "+process.env.SLACK_VERIFY_TOKEN);
+		slapp.client.im.open({ token: process.env.SLACK_VERIFY_TOKEN,  user: user:subscribedUsers[i] }, (err, data) => {
+			if (err) {
+				return console.error(err)
+			}
+			msg.say({ channel: data.channel.id, text: str})
+			})
 
 	}
 });
