@@ -228,7 +228,7 @@ _("number of subscribers: " + subscribedUsers.length);
 _("slapp");
 _(slapp);
 _("BEEPBOOP_TOKEN ");
-_(BEEPBOOP_TOKEN);
+_(process.env.BEEPBOOP_TOKEN);
 	for(var i=0;i<subscribedUsers.length;i++){
 		_("iteration i= "+i)
 		var str = 'Weekly Statsletter:\n';
