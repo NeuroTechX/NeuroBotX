@@ -238,7 +238,7 @@ var weeklyTask = cron.schedule('* * * * *', function(){
 				if (err) {
 					return console.error(err)
 				}
-				slapp.client.chat.postMessage(({token:botToken, channel: data.channel.id, text: str}, (err, data)=>{
+				slapp.client.chat.postMessage({token:botToken, channel: data.channel.id, text: str}, (err, data)=>{
 					if (err)
 						return console.error(err)
 				})
