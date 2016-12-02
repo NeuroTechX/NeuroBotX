@@ -5,6 +5,18 @@ const ConvoStore = require('slapp-convo-beepboop')
 const Context = require('slapp-context-beepboop')
 const cron = require('node-cron');
 
+var HELP_TEXT = `
+I will respond to the following messages:
+\`help\` - to see this message.
+\`stats\` - I will show you what people are talking about the most.
+`
+var WELCOME_TEXT = `
+Welcome to NeuroTechX slack, I'm the EduBotX, I'm here to help you get started.
+If you want to learn about neurotechnologies, please visit www.neurotechedu.com
+If you want to now about the activities of NeuroTechX, please visit www.neurotechx.com
+Please introduce yourself on the #introductions channel.
+`
+
 	function HashMap(other) {
 		this.clear();
 		switch (arguments.length) {
@@ -193,6 +205,9 @@ var dictionary = [
 for(var i=0;i<dictionary.length;i++){
   stringMap.set(dictionary[i],0)
 }
+
+var subscribedUsers = [];
+
 // Debug print on console
 function _(s){
   var str = JSON.stringify(s, null, 4);
@@ -206,17 +221,24 @@ var slapp = Slapp({
   convo_store: ConvoStore(),
   context: Context()
 })
-var HELP_TEXT = `
-I will respond to the following messages:
-\`help\` - to see this message.
-\`stats\` - I will show you what people are talking about the most.
-`
-var WELCOME_TEXT = `
-Welcome to NeuroTechX slack, I'm the EduBotX, I'm here to help you get started.
-If you want to learn about neurotechnologies, please visit www.neurotechedu.com
-If you want to now about the activities of NeuroTechX, please visit www.neurotechx.com
-Please introduce yourself on the #introductions channel.
-`
+
+var weeklyTask = cron.schedule('* 5 * * *', function(){
+
+	for(var i=0;i<subscribedUsers.length;i++){
+		var str = '';
+		stringMap.forEach(function(value, key) {
+			str = str + key + ' : ' + value + '\n';
+		});
+		slapp.client.chat.postMessage({token:msg.meta.bot_token,user:subscribedUsers[i],text:str}, (err, data) => {
+	    if (err) {
+	      return console.error(err)
+	    }
+	  })
+
+	}
+});
+weeklyTask.start();
+
 //*********************************************
 // Setup different handlers for messages
 //*********************************************
@@ -246,6 +268,7 @@ slapp.event('team_join', (msg) => {
 //     }
 //   }
 // })
+
 slapp.message('(.*)', 'ambient', (msg) => {
 	stringMap.forEach(function(value, key) {
 		var occ = msg.body.event.text.split(key).length - 1;
@@ -261,6 +284,58 @@ slapp.command('/stats','(.*)', (msg, text, api)  => {
 		    str = str + key + ' : ' + value + '\n';
 		  });
 		  msg.respond(str)
+		}
+		else {
+			msg.say("Sorry, you're not an admin");
+		}
+	});
+})
+slapp.command('/stats_subscribe','(.*)', (msg, text, api)  => {
+	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
+		if( data.user.is_admin ){
+			weeklyTask.stop();
+			var isSub = false;
+			for(var i=0;i<subscribedUsers.length;i++){
+				if(subscribedUsers[i]==msg.body.user_id){
+					isSub =true;
+					break;
+				}
+			}
+			if(!isSub){
+				subscribedUsers[subscribedUsers.length]=msg.body.user_id;
+				msg.say("you successfully subscribed to the statsletter");
+			}
+			else {
+				msg.say("you're already subscribed to the statsletter");
+			}
+			weeklyTask.start();
+		}
+		else {
+			msg.say("Sorry, you're not an admin");
+		}
+
+	});
+})
+
+slapp.command('/stats_unsubscribe','(.*)', (msg, text, api)  => {
+	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
+		if( data.user.is_admin ){
+			weeklyTask.stop();
+			var wasSub = false;
+			for(var i=0;i<subscribedUsers.length;i++){
+				if(subscribedUsers[i]==msg.body.user_id){
+					wasSub =true;
+					subscribedUsers = subscribedUsers.splice(i, 1);
+					break;
+				}
+			}
+			if(!wasSub){
+				msg.say("you're not subscribed to the statsletter");
+			}
+			else {
+				msg.say("you successfully unsubscribed to the statsletter");
+			}
+			weeklyTask.start();
 		}
 		else {
 			msg.say("Sorry, you're not an admin");
