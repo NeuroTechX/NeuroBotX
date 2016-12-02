@@ -233,7 +233,8 @@ _("number of subscribers: " + subscribedUsers.length);
 			str = str + key + ' : ' + value + '\n';
 		});
 		_("token "+process.env.SLACK_VERIFY_TOKEN);
-		slapp.client.im.open({ token:process.env.SLACK_VERIFY_TOKEN,  user: user:subscribedUsers[i] }, (err, data) => {
+		var tkn = process.env.SLACK_VERIFY_TOKEN;
+		slapp.client.im.open({ token:tkn,  user: user:subscribedUsers[i] }, (err, data) => {
 			if (err) {
 				return console.error(err)
 			}
