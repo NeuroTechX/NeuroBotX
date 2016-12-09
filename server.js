@@ -457,38 +457,40 @@ slapp.command('/stats_refresh','(.*)', (msg, text, params)  => {
 })
 slapp.command('/stats_start','(.*)', (msg, text, params)  => {
 	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
-	if( data.user.is_admin){
-		botToken=msg.meta.bot_token;
-		_("botToken stats start " + msg.meta.bot_token)
-		if(isTrackingStats){
-			msg.say("Tracking already in progress");
+		if( data.user.is_admin){
+			botToken=msg.meta.bot_token;
+			_("botToken stats start " + msg.meta.bot_token)
+			if(isTrackingStats){
+				msg.say("Tracking already in progress");
+			}
+			else {
+				isTrackingStats = true;
+				weeklyTask.start();
+				msg.say("Tracking started");
+			}
 		}
-		else {
-			isTrackingStats = true;
-			weeklyTask.start();
-			msg.say("Tracking started");
+		else{
+			msg.say("Sorry, you're not an admin");
 		}
-	}
-	else{
-		msg.say("Sorry, you're not an admin");
-	}
+	});
 })
 slapp.command('/stats_stop','(.*)', (msg, text, params)  => {
 	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
-	if( data.user.is_admin){
-			_("botToken stats stop " + msg.meta.bot_token)
-		if(isTrackingStats){
-			isTrackingStats=false;
-			weeklyTask.stop();
-			msg.say("Tracking stopped");
+		if( data.user.is_admin){
+				_("botToken stats stop " + msg.meta.bot_token)
+			if(isTrackingStats){
+				isTrackingStats=false;
+				weeklyTask.stop();
+				msg.say("Tracking stopped");
+			}
+			else {
+				msg.say("Tracking is already stopped");
+			}
 		}
-		else {
-			msg.say("Tracking is already stopped");
+		else{
+			msg.say("Sorry, you're not an admin");
 		}
-	}
-	else{
-		msg.say("Sorry, you're not an admin");
-	}
+	});
 })
 
 // Can use a regex as well
