@@ -254,12 +254,17 @@ slapp.command('/links','(.*)', (msg, text, api)  => {
 	if(isTrackingLinks){
 		slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
 			if( data.user.is_admin){
-			  var str = '';
-			  for(var i=0;i<links.length;i++) {
-					str = str + '###########' + '\n'
-			    str = str + links[i] + '\n';
-			  }
-			  msg.respond(str)
+				if(links.length==0){
+					msg.respond("No links posted");
+				}
+				else{
+				  var str = '';
+				  for(var i=0;i<links.length;i++) {
+						str = str + '###########' + '\n'
+				    str = str + links[i] + '\n';
+				  }
+				  msg.respond(str)
+				}
 			}
 			else {
 				msg.say("Sorry, you're not an admin");
@@ -273,8 +278,10 @@ slapp.command('/links','(.*)', (msg, text, api)  => {
 slapp.command('/links_start','(.*)', (msg, text, api)  => {
 		slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
 			if( data.user.is_admin){
-				if(!isTrackingLinks)
+				if(!isTrackingLinks){
 					isTrackingLinks=true;
+				msg.say("Links tracking started");
+				}
 				else {
 					msg.say("Links tracking already in progress");
 				}
@@ -287,8 +294,10 @@ slapp.command('/links_start','(.*)', (msg, text, api)  => {
 slapp.command('/links_stop','(.*)', (msg, text, api)  => {
 		slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
 			if( data.user.is_admin){
-				if(isTrackingLinks)
+				if(isTrackingLinks){
 					isTrackingLinks=false;
+					msg.say("Links tracking stopped");
+				}
 				else {
 					msg.say("Links tracking already stopped");
 				}
@@ -302,6 +311,7 @@ slapp.command('/links_refresh','(.*)', (msg, text, api)  => {
 		slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
 			if( data.user.is_admin){
 				links = [];
+				msg.say("Stored links deleted");
 			}
 			else {
 				msg.say("Sorry, you're not an admin");
@@ -466,7 +476,7 @@ slapp.command('/stats_start','(.*)', (msg, text, params)  => {
 			else {
 				isTrackingStats = true;
 				weeklyTask.start();
-				msg.say("Tracking started");
+				msg.say("Stats tracking started");
 			}
 		}
 		else{
