@@ -16,6 +16,7 @@ If you want to learn about neurotechnologies, please visit www.neurotechedu.com
 If you want to now about the activities of NeuroTechX, please visit www.neurotechx.com
 Please introduce yourself on the #introductions channel.
 `
+var LINKS_REGEX = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
 
 	function HashMap(other) {
 		this.clear();
@@ -222,10 +223,10 @@ var slapp = Slapp({
   context: Context()
 })
 
-var isTracking = false;
+var isTrackingStats = false;
 var botToken;
 var weeklyTask = cron.schedule('* * * * *', function(){
-	if(isTracking){
+	if(isTrackingStats){
 		for(var i=0;i<subscribedUsers.length;i++){
 			_("iteration i= "+i)
 			var str = 'Weekly Statsletter:\n';
@@ -246,7 +247,67 @@ var weeklyTask = cron.schedule('* * * * *', function(){
 		}
 	}
 });
-
+var isTrackingLinks = false;
+var links = [];
+var linksDetector = new RegExp(LINKS_REGEX);
+slapp.command('/links','(.*)', (msg, text, api)  => {
+	if(isTrackingLinks){
+		slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
+			if( data.user.is_admin){
+			  var str = '';
+			  for(var i=0;i<links.length;i++) {
+					str = str + '###########' + '\n'
+			    str = str + links[i] + '\n';
+			  }
+			  msg.respond(str)
+			}
+			else {
+				msg.say("Sorry, you're not an admin");
+			}
+		});
+	}
+	else {
+		msg.say("Links tracking not in progress");
+	}
+})
+slapp.command('/links_start','(.*)', (msg, text, api)  => {
+		slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
+			if( data.user.is_admin){
+				if(!isTrackingLinks)
+					isTrackingLinks=true;
+				else {
+					msg.say("Links tracking already in progress");
+				}
+			}
+			else {
+				msg.say("Sorry, you're not an admin");
+			}
+		});
+})
+slapp.command('/links_stop','(.*)', (msg, text, api)  => {
+		slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
+			if( data.user.is_admin){
+				if(isTrackingLinks)
+					isTrackingLinks=false;
+				else {
+					msg.say("Links tracking already stopped");
+				}
+			}
+			else {
+				msg.say("Sorry, you're not an admin");
+			}
+		});
+})
+slapp.command('/links_refresh','(.*)', (msg, text, api)  => {
+		slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
+			if( data.user.is_admin){
+				links = [];
+			}
+			else {
+				msg.say("Sorry, you're not an admin");
+			}
+		});
+})
 //*********************************************
 // Setup different handlers for messages
 //*********************************************
@@ -267,29 +328,22 @@ slapp.event('team_join', (msg) => {
     })
 
 })
-// slapp.message('(.*)', 'ambient', (msg) => {
-//   var strings = msg.body.event.text.split(' ');
-//   for(var i=0;i<strings.length;i++){
-// 		var hash = stringMap.hash(strings[i]);
-// 		if ( hash in stringMap._data ) {
-//       stringMap.set(strings[i],stringMap.get(strings[i])+1);
-//     }
-//   }
-// })
 
 slapp.message('(.*)', 'ambient', (msg) => {
-			_("botToken ambient " + msg.meta.bot_token)
-	if(isTracking){
+	if(isTrackingStats){
 		stringMap.forEach(function(value, key) {
 			var occ = msg.body.event.text.split(key).length - 1;
 			stringMap.set(key,stringMap.get(key)+occ);
 		})
 	}
+	if(isTrackingLinks)
+		if(linksDetector.test(msg.body.event.text))
+			links[links.length]=msg.body.event.text;
 })
 
 slapp.command('/stats','(.*)', (msg, text, api)  => {
 		_("botToken stats " + msg.meta.bot_token)
-	if(isTracking){
+	if(isTrackingStats){
 		slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
 			if( data.user.is_admin){
 			  var str = '';
@@ -371,7 +425,7 @@ slapp.command('/stats_add_keywords','(.*)', (msg, text, params)  => {
 		}
 		}
 		else {
-			msg.say("Sorry you're not admin enough to do that");
+			msg.say("Sorry, you're not an admin");
 		}
 	})
 })
@@ -387,7 +441,7 @@ slapp.command('/stats_delete_keywords','(.*)', (msg, text, params)  => {
 			}
 		}
 		else {
-			msg.say("Sorry you're not admin enough to do that");
+			msg.say("Sorry you're not an admin");
 		}
 	})
 })
@@ -402,111 +456,40 @@ slapp.command('/stats_refresh','(.*)', (msg, text, params)  => {
 	})
 })
 slapp.command('/stats_start','(.*)', (msg, text, params)  => {
-	botToken=msg.meta.bot_token;
-	_("botToken stats start " + msg.meta.bot_token)
-	if(isTracking){
-		msg.say("Tracking already in progress");
+	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
+	if( data.user.is_admin){
+		botToken=msg.meta.bot_token;
+		_("botToken stats start " + msg.meta.bot_token)
+		if(isTrackingStats){
+			msg.say("Tracking already in progress");
+		}
+		else {
+			isTrackingStats = true;
+			weeklyTask.start();
+			msg.say("Tracking started");
+		}
 	}
-	else {
-		isTracking = true;
-		weeklyTask.start();
-		msg.say("Tracking started");
+	else{
+		msg.say("Sorry, you're not an admin");
 	}
 })
 slapp.command('/stats_stop','(.*)', (msg, text, params)  => {
-		_("botToken stats stop " + msg.meta.bot_token)
-	if(isTracking){
-		isTracking=false;
-		weeklyTask.stop();
-		msg.say("Tracking stopped");
+	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
+	if( data.user.is_admin){
+			_("botToken stats stop " + msg.meta.bot_token)
+		if(isTrackingStats){
+			isTrackingStats=false;
+			weeklyTask.stop();
+			msg.say("Tracking stopped");
+		}
+		else {
+			msg.say("Tracking is already stopped");
+		}
 	}
-	else {
-		msg.say("Tracking is already stoped");
+	else{
+		msg.say("Sorry, you're not an admin");
 	}
 })
-// slapp.command('/wordpress', 'auth (.*)', (msg, text, api) => {
-//   // if "/wordpress auth key secret"
-//   // text = auth key secret
-//   // api = key secret
-//   var strings = api.split(' ');
-//   usr = strings[0];
-//   pswd  = strings[1];
-//   console.log("user " + usr + " pswd " + pswd);
-// })
-// slapp.command('/send', 'send (.*)', (msg, text, api) => {
-//
-//   var data = querystring.stringify({
-//       'source' : 'John',
-//       'content': 'test'
-//   });
-//   console.log("msg " + msg);
-//   console.log("data "+ data);
-//   // An object of options to indicate where to post to
-//   var post_options = {
-//       host: 'www.neurotechedu.com',
-//       port: '80',
-//       path: '/wp-json/wp/v2/analytic',
-//       method: 'POST',
-//       headers: {
-//           'Authorization':  "Basic " +
-//           + (new Buffer(usr + ":" + pswd).toString('base64'))
-//       }
-//   };
-//
-//   var post_req = http.request(post_options, function(res) {
-//      res.setEncoding('utf8');
-//      res.on('data', function (chunk) {
-//          console.log('Response: ' + chunk);
-//      });
-//  });
-//  post_req.write(data);
-//  post_req.end();
-//
-// })
-
-// "Conversation" flow that tracks state - kicks off when user says hi, hello or hey
-// slapp
-//   .message('^(hi|hello|hey)$', ['direct_mention', 'direct_message'], (msg, text) => {
-//     msg
-//       .say(`${text}, how are you?`)
-//       // sends next event from user to this route, passing along state
-//       .route('how-are-you', { greeting: text })
-//   })
-//   .route('how-are-you', (msg, state) => {
-//     var text = (msg.body.event && msg.body.event.text) || ''
-//
-//     // user may not have typed text as their next action, ask again and re-route
-//     if (!text) {
-//       return msg/         .say("Whoops, I'm still waiting to hear how you're doing.")
-//         .say('How are you?')
-//         .route('how-are-you', state)
-//     }
-//
-//     // add their response to state
-//     state.status = text
-//
-//     msg
-//       .say(`Ok then. What's your favorite color?`)
-//       .route('color', state)
-//   })
-//   .route('color', (msg, state) => {
-//     var text = (msg.body.event && msg.body.event.text) || ''
-//
-//     // user may not have typed text as their next action, ask again and re-route
-//     if (!text) {
-//       return msg
-//         .say("I'm eagerly awaiting to hear your favorite color.")
-//         .route('color', state)
-//     }
-//
-//     // add their response to state
-//     state.color = text
-//
-//     msg
-//       .say('Thanks for sharing.')
-//       .say(`Here's what you've told me so far: \`\`\`${JSON.stringify(state)}\`\`\``)
-//     // At this point, since we don't route anywhere, the "conversation" is over
-//   })
 
 // Can use a regex as well
 slapp.message(/^(thanks|thank you)/i, ['mention', 'direct_message'], (msg) => {
@@ -518,19 +501,6 @@ slapp.message(/^(thanks|thank you)/i, ['mention', 'direct_message'], (msg) => {
   ])
 })
 
-// // demonstrate returning an attachment...
-// slapp.message('attachment', ['mention', 'direct_message'], (msg) => {
-//   msg.say({
-//     text: 'Check out this amazing attachment! :confetti_ball: ',
-//     attachments: [{
-//       text: 'Slapp is a robust open source library that sits on top of the Slack APIs',
-//       title: 'Slapp Library - Open Source',
-//       image_url: 'https://storage.googleapis.com/beepboophq/_assets/bot-1.22f6fb.png',
-//       title_link: 'https://beepboophq.com/',
-//       color: '#7CD197'
-//     }]
-//   })
-// })
 
 // Catch-all for any other responses not handled above
 slapp.message('.*', ['direct_mention', 'direct_message'], (msg) => {
@@ -547,21 +517,3 @@ server.listen(port, (err) => {
   }
   console.log(`Listening on port ${port}`)
 })
-
-// function sendAnalytics(){
-//   var options = {
-//     host: url,
-//     port: 80,
-//     path: '/resource?id=foo&bar=baz',
-//     method: 'POST'
-//   };
-//
-//   http.request(options, function(res) {
-//     console.log('STATUS: ' + res.statusCode);
-//     console.log('HEADERS: ' + JSON.stringify(res.headers));
-//     res.setEncoding('utf8');
-//     res.on('data', function (chunk) {
-//       console.log('BODY: ' + chunk);
-//     });
-//   }).end();
-// }
