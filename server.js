@@ -16,7 +16,7 @@ If you want to learn about neurotechnologies, please visit www.neurotechedu.com
 If you want to now about the activities of NeuroTechX, please visit www.neurotechx.com
 Please introduce yourself on the #introductions channel.
 `
-var LINKS_REGEX = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+var LINKS_REGEX = /(\b(https?|ftp|file|http):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
 
 	function HashMap(other) {
 		this.clear();
