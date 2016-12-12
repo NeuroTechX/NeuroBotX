@@ -340,6 +340,8 @@ slapp.command('/links_push','(.*)', (msg, text, token)  => {
 			if( data.user.is_admin){
 				var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_resources/master/_pages/slack-links.md";
 				request.get(filePath, function (error, response, fileBody) {
+					_("response");
+					_(response);
 		    	if (!error && response.statusCode == 200) {
 						fileBody+="<ul>";
 						for(var i=0;i<links.length;i++){
@@ -357,7 +359,7 @@ slapp.command('/links_push','(.*)', (msg, text, token)  => {
 							path:filePath,
 							message:"Edubot Push",
 							content:"slack-links.md",
-							sha: response.sha
+							sha: response.headers['sha']
 						});
 						msg.say("links pushed");
     			}
