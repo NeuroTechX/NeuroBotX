@@ -18,9 +18,11 @@
   "homepage": "https://github.com/BeepBoopHQ/starter-slapp-app#readme",
   "dependencies": {
     "express": "^4.14.0",
-    "node-cron": "^1.1.2",
+    "github": "^7.0.1",
     "hashmap": "^2.0.6",
+    "node-cron": "^1.1.2",
     "nodemon": "^1.11.0",
+    "request": "^2.79.0",
     "slapp": "^1.2.0",
     "slapp-context-beepboop": "^1.1.0",
     "slapp-convo-beepboop": "^1.0.0",

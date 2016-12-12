@@ -4,6 +4,22 @@ const Slapp = require('slapp')
 const ConvoStore = require('slapp-convo-beepboop')
 const Context = require('slapp-context-beepboop')
 const cron = require('node-cron');
+const GitHubApi = require("github");
+const request = require('request');
+
+var github = new GitHubApi({
+    // optional
+    debug: true,
+    protocol: "https",
+    host: "api.github.com", // should be api.github.com for GitHub
+    pathPrefix: "", // for some GHEs; none for GitHub
+    headers: {
+        "user-agent": "Edubot-GitHub-App" // GitHub is happy with a unique user agent
+    },
+    Promise: require('bluebird'),
+    followRedirects: false, // default: true; there's currently an issue with non-get redirects, so allow ability to disable follow-redirects
+    timeout: 5000
+});
 
 var HELP_TEXT = `
 I will respond to the following messages:
@@ -312,6 +328,40 @@ slapp.command('/links_refresh','(.*)', (msg, text, api)  => {
 			if( data.user.is_admin){
 				links = [];
 				msg.say("Stored links deleted");
+			}
+			else {
+				msg.say("Sorry, you're not an admin");
+			}
+		});
+})
+slapp.command('/links_push','(.*)', (msg, text, token)  => {
+		slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
+			if( data.user.is_admin){
+				var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_resources/master/_pages/slack-links.md";
+				request.get(filePath, function (error, response, fileBody) {
+		    	if (!error && response.statusCode == 200) {
+						fileBody+="<ul>";
+						for(var i=0;i<links.length;i++){
+							fileBody+="<li>" + links[i] + "</li>";
+						}
+						fileBody+="</ul>";
+						fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){});
+						github.authenticate({
+							type: "oauth",
+							token: token
+						});
+						github.repos.updateFile({
+							owner:"NeuroTechX",
+							repo:"ntx_slack_resources",
+							path:filePath,
+							message:"Edubot Push",
+							content:"slack-links.md",
+							sha: response.sha
+						});
+						msg.say("links pushed");
+    			}
+				});
+
 			}
 			else {
 				msg.say("Sorry, you're not an admin");
