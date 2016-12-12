@@ -339,10 +339,10 @@ slapp.command('/links_push','(.*)', (msg, text, token)  => {
 		slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
 			if( data.user.is_admin){
 				var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_resources/master/_pages/slack-links.md";
-				request.get(filePath, function (error, response, fileBody) {
-					_("response");
+				request.get(filePath, function (fileerror, fileresponse, fileBody) {
+					_("response for file");
 					_(response);
-		    	if (!error && response.statusCode == 200) {
+		    	if (!fileerror && fileresponse.statusCode == 200) {
 						fileBody+="<ul>";
 						for(var i=0;i<links.length;i++){
 							fileBody+="<li>" + links[i] + "</li>";
@@ -353,16 +353,22 @@ slapp.command('/links_push','(.*)', (msg, text, token)  => {
 							type: "token",
 							token: token
 						});
-						github.repos.updateFile({
-							owner:"NeuroTechX",
-							repo:"ntx_slack_resources",
-							path:filePath,
-							message:"Edubot Push",
-							content:"slack-links.md",
-							sha: response.headers['sha']
-						});
-						msg.say("links pushed");
-    			}
+						var blobPath = "https://github.com/NeuroTechX/ntx_slack_resources/blob/master/_pages/slack-links.md";
+						request.get(blobPath, function (bloberror, blobresponse, blobBody) {
+							_("response for blob");
+							_(blobresponse);
+				    	if (!bloberror && blobresponse.statusCode == 200) {
+								github.repos.updateFile({
+									owner:"NeuroTechX",
+									repo:"ntx_slack_resources",
+									path:filePath,
+									message:"Edubot Push",
+									content:"slack-links.md",
+									sha: blobresponse.headers['sha']
+								});
+								msg.say("links pushed");
+							}
+		    	}
 				});
 
 			}
