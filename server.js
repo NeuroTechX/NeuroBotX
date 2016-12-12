@@ -368,6 +368,7 @@ slapp.command('/links_push','(.*)', (msg, text, token)  => {
 								});
 								msg.say("links pushed");
 							}
+						)};
 		    	}
 				});
 
