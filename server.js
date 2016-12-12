@@ -369,7 +369,7 @@ slapp.command('/links_push','(.*)', (msg, text, token)  => {
 								github.repos.updateFile({
 									owner:"NeuroTechX",
 									repo:"ntx_slack_resources",
-									path:filePath,
+									path:"_pages/slack-links.md",
 									message:"Edubot Push",
 									content:"slack-links.md",
 									sha: shaStr
