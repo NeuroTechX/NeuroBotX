@@ -354,7 +354,13 @@ slapp.command('/links_push','(.*)', (msg, text, token)  => {
 							token: token
 						});
 						var blobPath = "https://api.github.com/repos/NeuroTechX/ntx_slack_resources/contents/_pages/slack-links.md";
-						request.get(blobPath, function (bloberror, blobresponse, blobBody) {
+            var options = {
+              url: blobPath,
+              headers: {
+                'User-Agent': 'Edubot-GitHub-App'
+              }
+            };
+						request.get(options, function (bloberror, blobresponse, blobBody) {
 							_("response for blob");
 							_(blobresponse);
 				    	if (!bloberror && blobresponse.statusCode == 200) {
