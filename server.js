@@ -353,7 +353,7 @@ slapp.command('/links_push','(.*)', (msg, text, token)  => {
 							type: "token",
 							token: token
 						});
-						var blobPath = "https://github.com/NeuroTechX/ntx_slack_resources/blob/master/_pages/slack-links.md";
+						var blobPath = "https://api.github.com/repos/NeuroTechX/ntx_slack_resources/contents/_pages/slack-links.md";
 						request.get(blobPath, function (bloberror, blobresponse, blobBody) {
 							_("response for blob");
 							_(blobresponse);
@@ -364,7 +364,7 @@ slapp.command('/links_push','(.*)', (msg, text, token)  => {
 									path:filePath,
 									message:"Edubot Push",
 									content:"slack-links.md",
-									sha: blobresponse.headers['sha']
+									sha: blobresponse.body['sha']
 								});
 								msg.say("links pushed");
 							}
