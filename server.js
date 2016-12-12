@@ -348,7 +348,7 @@ slapp.command('/links_push','(.*)', (msg, text, token)  => {
 						fileBody+="</ul>";
 						fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){});
 						github.authenticate({
-							type: "oauth",
+							type: "token",
 							token: token
 						});
 						github.repos.updateFile({
