@@ -6,6 +6,7 @@ const Context = require('slapp-context-beepboop')
 const cron = require('node-cron');
 const GitHubApi = require("github");
 const request = require('request');
+const fs = require('fs')
 
 var github = new GitHubApi({
     // optional
