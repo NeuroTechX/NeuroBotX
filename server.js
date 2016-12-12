@@ -341,7 +341,7 @@ slapp.command('/links_push','(.*)', (msg, text, token)  => {
 				var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_resources/master/_pages/slack-links.md";
 				request.get(filePath, function (fileerror, fileresponse, fileBody) {
 					_("response for file");
-					_(response);
+					_(fileresponse);
 		    	if (!fileerror && fileresponse.statusCode == 200) {
 						fileBody+="<ul>";
 						for(var i=0;i<links.length;i++){
