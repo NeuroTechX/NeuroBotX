@@ -348,7 +348,9 @@ slapp.command('/links_push','(.*)', (msg, text, token)  => {
 							fileBody+="<li>" + links[i] + "</li>";
 						}
 						fileBody+="</ul>";
-						fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){});
+						//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
+            var content = Buffer.from(fileBody, 'ascii');
+            var b64content = content.toString('base64'));
 						github.authenticate({
 							type: "token",
 							token: token
@@ -372,7 +374,7 @@ slapp.command('/links_push','(.*)', (msg, text, token)  => {
 									repo:"ntx_slack_resources",
 									path:"_pages/slack-links.md",
 									message:"Edubot Push",
-									content:"slack-links.md",
+									content:b64content,
 									sha: shaStr
 								});
 								msg.say("links pushed");
