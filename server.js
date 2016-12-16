@@ -364,22 +364,22 @@ slapp.command('/links_push','(.*)', (msg, text, token)  => {
 							_("response for blob");
 							_(blobresponse);
 				    	if (!bloberror && blobresponse.statusCode == 200) {
-                // var shaStr = JSON.parse(blobBody).sha;
-                // _(shaStr);
-								// github.repos.updateFile({
-								// 	owner:"NeuroTechX",
-								// 	repo:"ntx_slack_resources",
-								// 	path:"_pages/slack-links.md",
-								// 	message:"Edubot Push",
-								// 	content:"slack-links.md",
-								// 	sha: shaStr
-								// });
-								// msg.say("links pushed");
+                var shaStr = JSON.parse(blobBody).sha;
+                ("Sha str")
+                _(shaStr);
+								github.repos.updateFile({
+									owner:"NeuroTechX",
+									repo:"ntx_slack_resources",
+									path:"_pages/slack-links.md",
+									message:"Edubot Push",
+									content:"slack-links.md",
+									sha: shaStr
+								});
+								msg.say("links pushed");
 							}
 						});
 		    	}
 				});
-
 			}
 			else {
 				msg.say("Sorry, you're not an admin");
