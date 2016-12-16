@@ -350,7 +350,7 @@ slapp.command('/links_push','(.*)', (msg, text, token)  => {
 						fileBody+="</ul>";
 						//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
             var content = Buffer.from(fileBody, 'ascii');
-            var b64content = content.toString('base64'));
+            var b64content = content.toString('base64');
 						github.authenticate({
 							type: "token",
 							token: token
