@@ -421,81 +421,82 @@ slapp.message('(.*)', 'ambient', (msg) => {
 			links[links.length]=msg.body.event.text;
 })
 
-slapp.command('/stats','(.*)', (msg, text, api)  => {
-		_("botToken stats " + msg.meta.bot_token)
-	if(isTrackingStats){
-		slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
-			if( data.user.is_admin){
-			  var str = '';
-			  stringMap.forEach(function(value, key) {
-			    str = str + key + ' : ' + value + '\n';
-			  });
-			  msg.respond(str)
-			}
-			else {
-				msg.say("Sorry, you're not an admin");
-			}
-		});
+slapp.command('/stats','(.*)', (msg, text, value)  => {
+slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
+  if( data.user.is_admin){
+    if(text == 'print')
+      stats_print(msg);
+    if(text == 'add')
+      stats_add(msg);
+    if(text == 'delete')
+      stats_delete(msg);
+    if(text == 'refresh')
+      stats_refresh(msg);
+    if(text == 'start')
+      stats_start(msg);
+    if(text == 'stop')
+      stats_stop(msg);
+    if(text == 'subscribe')
+      stats_subscribe(msg);
+    if(text == 'unsubscribe')
+    stats_unsubscribe(msg)
+  }
+  else {
+    msg.say("Sorry, you're not an admin");
+  }
+
+})
+function stats_print(msg){
+  if(isTrackingStats){
+    var str = '';
+    stringMap.forEach(function(value, key) {
+      str = str + key + ' : ' + value + '\n';
+    });
+    msg.respond(str)
+  }
+  else {
+    msg.say("No tracking in progress");
+  }
+}
+function stats_subscribe()msg{
+
+	var isSub = false;
+	for(var i=0;i<subscribedUsers.length;i++){
+		if(subscribedUsers[i]==msg.body.user_id){
+			isSub =true;
+			break;
+		}
+	}
+	if(!isSub){
+		subscribedUsers[subscribedUsers.length]=msg.body.user_id;
+		msg.say("you successfully subscribed to the statsletter");
 	}
 	else {
-		msg.say("No tracking in progress");
+		msg.say("you're already subscribed to the statsletter");
 	}
-})
-slapp.command('/stats_subscribe','(.*)', (msg, text, api)  => {
-	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
-		if( data.user.is_admin ){
-			weeklyTask.stop();
-			var isSub = false;
-			for(var i=0;i<subscribedUsers.length;i++){
-				if(subscribedUsers[i]==msg.body.user_id){
-					isSub =true;
-					break;
-				}
-			}
-			if(!isSub){
-				subscribedUsers[subscribedUsers.length]=msg.body.user_id;
-				msg.say("you successfully subscribed to the statsletter");
-			}
-			else {
-				msg.say("you're already subscribed to the statsletter");
-			}
-			weeklyTask.start();
-		}
-		else {
-			msg.say("Sorry, you're not an admin");
-		}
 
-	});
-})
+}
 
-slapp.command('/stats_unsubscribe','(.*)', (msg, text, api)  => {
-	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
-		if( data.user.is_admin ){
-			weeklyTask.stop();
-			var wasSub = false;
-			for(var i=0;i<subscribedUsers.length;i++){
-				if(subscribedUsers[i]==msg.body.user_id){
-					wasSub =true;
-					subscribedUsers = subscribedUsers.splice(i, 1);
-					break;
-				}
-			}
-			if(!wasSub){
-				msg.say("you're not subscribed to the statsletter");
-			}
-			else {
-				msg.say("you successfully unsubscribed to the statsletter");
-			}
-			weeklyTask.start();
+function stats_unsubscribe(msg){
+
+	var wasSub = false;
+	for(var i=0;i<subscribedUsers.length;i++){
+		if(subscribedUsers[i]==msg.body.user_id){
+			wasSub =true;
+			subscribedUsers = subscribedUsers.splice(i, 1);
+			break;
 		}
-		else {
-			msg.say("Sorry, you're not an admin");
-		}
-	});
-})
-slapp.command('/stats_add_keywords','(.*)', (msg, text, params)  => {
-	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
-		if( data.user.is_admin){
+	}
+	if(!wasSub){
+		msg.say("you're not subscribed to the statsletter");
+	}
+	else {
+		msg.say("you successfully unsubscribed to the statsletter");
+	}
+
+
+}
+function stats_add(msg) {
 		var strings = text.split(' ');
 		for(var i=0; i<strings.length;i++){
 			var hash = stringMap.hash(strings[i]);
@@ -503,75 +504,42 @@ slapp.command('/stats_add_keywords','(.*)', (msg, text, params)  => {
 				stringMap.set(strings[i],0);
 			}
 		}
+}
+function stats_delete(msg) {
+	var strings = text.split(' ');
+	for(var i=0; i<strings.length;i++){
+		var hash = stringMap.hash(strings[i]);
+		if ( (hash in stringMap._data) ) {
+			stringMap.remove(strings[i]);
 		}
-		else {
-			msg.say("Sorry, you're not an admin");
-		}
-	})
-})
-slapp.command('/stats_delete_keywords','(.*)', (msg, text, params)  => {
-	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
-		if( data.user.is_admin){
-			var strings = text.split(' ');
-			for(var i=0; i<strings.length;i++){
-				var hash = stringMap.hash(strings[i]);
-				if ( (hash in stringMap._data) ) {
-					stringMap.remove(strings[i]);
-				}
-			}
-		}
-		else {
-			msg.say("Sorry you're not an admin");
-		}
-	})
-})
-slapp.command('/stats_refresh','(.*)', (msg, text, params)  => {
-	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
-		if( data.user.is_admin){
-			stringMap.clear();
-		}
-		else {
-			msg.say("Sorry you're not admin enough to do that");
-		}
-	})
-})
-slapp.command('/stats_start','(.*)', (msg, text, params)  => {
-	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
-		if( data.user.is_admin){
-			botToken=msg.meta.bot_token;
-			_("botToken stats start " + msg.meta.bot_token)
-			if(isTrackingStats){
-				msg.say("Tracking already in progress");
-			}
-			else {
-				isTrackingStats = true;
-				weeklyTask.start();
-				msg.say("Stats tracking started");
-			}
-		}
-		else{
-			msg.say("Sorry, you're not an admin");
-		}
-	});
-})
-slapp.command('/stats_stop','(.*)', (msg, text, params)  => {
-	slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
-		if( data.user.is_admin){
-				_("botToken stats stop " + msg.meta.bot_token)
-			if(isTrackingStats){
-				isTrackingStats=false;
-				weeklyTask.stop();
-				msg.say("Tracking stopped");
-			}
-			else {
-				msg.say("Tracking is already stopped");
-			}
-		}
-		else{
-			msg.say("Sorry, you're not an admin");
-		}
-	});
-})
+	}
+}
+function stats_refresh(msg) {
+	stringMap.clear();
+}
+function stats_start(msg) {
+	botToken=msg.meta.bot_token;
+	if(isTrackingStats){
+		msg.say("Tracking already in progress");
+	}
+	else {
+		isTrackingStats = true;
+		weeklyTask.start();
+		msg.say("Stats tracking started");
+	}
+}
+function stats_stop(msg) {
+
+	if(isTrackingStats){
+		isTrackingStats=false;
+		weeklyTask.stop();
+		msg.say("Tracking stopped");
+	}
+	else {
+		msg.say("Tracking is already stopped");
+	}
+
+}
 
 // Can use a regex as well
 slapp.message(/^(thanks|thank you)/i, ['mention', 'direct_message'], (msg) => {
