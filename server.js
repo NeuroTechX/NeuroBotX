@@ -458,7 +458,7 @@ function stats_print(msg){
     msg.say("No tracking in progress");
   }
 }
-function stats_subscribe()msg{
+function stats_subscribe(msg){
 
 	var isSub = false;
 	for(var i=0;i<subscribedUsers.length;i++){
