@@ -267,127 +267,92 @@ var weeklyTask = cron.schedule('* * * * *', function(){
 var isTrackingLinks = false;
 var links = [];
 var linksDetector = new RegExp(LINKS_REGEX);
-slapp.command('/links','(.*)', (msg, text, api)  => {
+function links_print(msg){
 	if(isTrackingLinks){
-		slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
-			if( data.user.is_admin){
-				if(links.length==0){
-					msg.respond("No links posted");
-				}
-				else{
-				  var str = '';
-				  for(var i=0;i<links.length;i++) {
-						str = str + '###########' + '\n'
-				    str = str + links[i] + '\n';
-				  }
-				  msg.respond(str)
-				}
-			}
-			else {
-				msg.say("Sorry, you're not an admin");
-			}
-		});
+		if(links.length==0){
+			msg.respond("No links posted");
+		}
+		else{
+		  var str = '';
+		  for(var i=0;i<links.length;i++) {
+				str = str + '###########' + '\n'
+		    str = str + links[i] + '\n';
+		  }
+		  msg.respond(str)
+		}
 	}
 	else {
 		msg.say("Links tracking not in progress");
 	}
-})
-slapp.command('/links_start','(.*)', (msg, text, api)  => {
-		slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
-			if( data.user.is_admin){
-				if(!isTrackingLinks){
-					isTrackingLinks=true;
-				msg.say("Links tracking started");
+}
+function links_start(msg){
+	if(!isTrackingLinks){
+		isTrackingLinks=true;
+	msg.say("Links tracking started");
+	}
+	else {
+		msg.say("Links tracking already in progress");
+	}
+}
+function links_stop(msg){
+	if(isTrackingLinks){
+		isTrackingLinks=false;
+		msg.say("Links tracking stopped");
+	}
+	else {
+		msg.say("Links tracking already stopped");
+	}
+}
+function links_refresh(msg){
+	links = [];
+	msg.say("Stored links deleted");
+}
+function links_push(msg,token){
+	var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_resources/master/_pages/slack-links.md";
+	request.get(filePath, function (fileerror, fileresponse, fileBody) {
+		_("response for file");
+		_(fileresponse);
+  	if (!fileerror && fileresponse.statusCode == 200) {
+			fileBody+="<ul>";
+			for(var i=0;i<links.length;i++){
+				fileBody+="<li>" + links[i] + "</li>";
+			}
+			fileBody+="</ul>";
+			//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
+      var content = Buffer.from(fileBody, 'ascii');
+      var b64content = content.toString('base64');
+			github.authenticate({
+				type: "token",
+				token: token
+			});
+			var blobPath = "https://api.github.com/repos/NeuroTechX/ntx_slack_resources/contents/_pages/slack-links.md";
+      var options = {
+        url: blobPath,
+        headers: {
+          'User-Agent': 'Edubot-GitHub-App'
+        }
+      };
+			request.get(options, function (bloberror, blobresponse, blobBody) {
+				_("response for blob");
+				_(blobresponse);
+	    	if (!bloberror && blobresponse.statusCode == 200) {
+          var shaStr = JSON.parse(blobBody).sha;
+          ("Sha str")
+          _(shaStr);
+					github.repos.updateFile({
+						owner:"NeuroTechX",
+						repo:"ntx_slack_resources",
+						path:"_pages/slack-links.md",
+						message:"Edubot Push",
+						content:b64content,
+						sha: shaStr
+					});
+					msg.say("links pushed");
 				}
-				else {
-					msg.say("Links tracking already in progress");
-				}
-			}
-			else {
-				msg.say("Sorry, you're not an admin");
-			}
-		});
-})
-slapp.command('/links_stop','(.*)', (msg, text, api)  => {
-		slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
-			if( data.user.is_admin){
-				if(isTrackingLinks){
-					isTrackingLinks=false;
-					msg.say("Links tracking stopped");
-				}
-				else {
-					msg.say("Links tracking already stopped");
-				}
-			}
-			else {
-				msg.say("Sorry, you're not an admin");
-			}
-		});
-})
-slapp.command('/links_refresh','(.*)', (msg, text, api)  => {
-		slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
-			if( data.user.is_admin){
-				links = [];
-				msg.say("Stored links deleted");
-			}
-			else {
-				msg.say("Sorry, you're not an admin");
-			}
-		});
-})
-slapp.command('/links_push','(.*)', (msg, text, token)  => {
-		slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
-			if( data.user.is_admin){
-				var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_resources/master/_pages/slack-links.md";
-				request.get(filePath, function (fileerror, fileresponse, fileBody) {
-					_("response for file");
-					_(fileresponse);
-		    	if (!fileerror && fileresponse.statusCode == 200) {
-						fileBody+="<ul>";
-						for(var i=0;i<links.length;i++){
-							fileBody+="<li>" + links[i] + "</li>";
-						}
-						fileBody+="</ul>";
-						//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
-            var content = Buffer.from(fileBody, 'ascii');
-            var b64content = content.toString('base64');
-						github.authenticate({
-							type: "token",
-							token: token
-						});
-						var blobPath = "https://api.github.com/repos/NeuroTechX/ntx_slack_resources/contents/_pages/slack-links.md";
-            var options = {
-              url: blobPath,
-              headers: {
-                'User-Agent': 'Edubot-GitHub-App'
-              }
-            };
-						request.get(options, function (bloberror, blobresponse, blobBody) {
-							_("response for blob");
-							_(blobresponse);
-				    	if (!bloberror && blobresponse.statusCode == 200) {
-                var shaStr = JSON.parse(blobBody).sha;
-                ("Sha str")
-                _(shaStr);
-								github.repos.updateFile({
-									owner:"NeuroTechX",
-									repo:"ntx_slack_resources",
-									path:"_pages/slack-links.md",
-									message:"Edubot Push",
-									content:b64content,
-									sha: shaStr
-								});
-								msg.say("links pushed");
-							}
-						});
-		    	}
-				});
-			}
-			else {
-				msg.say("Sorry, you're not an admin");
-			}
-		});
-})
+			});
+  	}
+	});
+}
 //*********************************************
 // Setup different handlers for messages
 //*********************************************
@@ -446,6 +411,26 @@ slapp.command('/stats','(.*)', (msg, text, value)  => {
     }
   })
 })
+slapp.command('/links','(.*)', (msg, text, value)  => {
+  slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
+    if( data.user.is_admin){
+      if(text == 'print')
+        links_print(msg);
+      if(text == 'push')
+        links_push(msg,value);
+      if(text == 'start')
+        links_start(msg);
+      if(text == 'refresh')
+        links_refresh(msg);
+      if(text == 'stop')
+        links_stop(msg);
+    }
+    else {
+      msg.say("Sorry, you're not an admin");
+    }
+  })
+})
+
 function stats_print(msg){
   if(isTrackingStats){
     var str = '';
