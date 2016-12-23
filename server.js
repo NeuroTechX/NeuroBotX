@@ -422,29 +422,29 @@ slapp.message('(.*)', 'ambient', (msg) => {
 })
 
 slapp.command('/stats','(.*)', (msg, text, value)  => {
-slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
-  if( data.user.is_admin){
-    if(text == 'print')
-      stats_print(msg);
-    if(text == 'add')
-      stats_add(msg);
-    if(text == 'delete')
-      stats_delete(msg);
-    if(text == 'refresh')
-      stats_refresh(msg);
-    if(text == 'start')
-      stats_start(msg);
-    if(text == 'stop')
-      stats_stop(msg);
-    if(text == 'subscribe')
-      stats_subscribe(msg);
-    if(text == 'unsubscribe')
-    stats_unsubscribe(msg)
-  }
-  else {
-    msg.say("Sorry, you're not an admin");
-  }
-
+  slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
+    if( data.user.is_admin){
+      if(text == 'print')
+        stats_print(msg);
+      if(text == 'add')
+        stats_add(msg);
+      if(text == 'delete')
+        stats_delete(msg);
+      if(text == 'refresh')
+        stats_refresh(msg);
+      if(text == 'start')
+        stats_start(msg);
+      if(text == 'stop')
+        stats_stop(msg);
+      if(text == 'subscribe')
+        stats_subscribe(msg);
+      if(text == 'unsubscribe')
+      stats_unsubscribe(msg)
+    }
+    else {
+      msg.say("Sorry, you're not an admin");
+    }
+  })
 })
 function stats_print(msg){
   if(isTrackingStats){
