@@ -400,8 +400,6 @@ slapp.message('(.*)', 'ambient', (msg) => {
     }
 
   if(isArchiving){
-    _('ambient msg');
-    _(msg);
     slapp.client.channels.info({token:msg.meta.bot_token,user:msg.body.event.channel}, (err, resultChannel) => {
       if(!err){
         slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.event.user}, (uerr, resultUser) => {
@@ -422,9 +420,10 @@ slapp.message('(.*)', 'ambient', (msg) => {
             for(var i=0;i<keys.length;i++){
               total+= msgMap.get(keys[i]).length;
             }
+            _('total');
+            _(total);
             if(total == ARCHIVE_BUFFER_MAX_LENGTH){
                 archive_push();
-                msgMap.clear();
             }
           }
         });
@@ -533,6 +532,7 @@ function archive_push(){
       createPage(channelPageName,msgMap.get(keys[i]));
     }
   }
+  msgMap.clear();
 // Find channel name
 // List pages in github
 // If channel found Edit page
