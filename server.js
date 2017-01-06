@@ -408,18 +408,30 @@ slapp.message('(.*)', 'ambient', (msg) => {
           if(!uerr){
             if(!msgMap.contains(resultChannel.channel.name)){
               var obj = {user:resultUser,text:msg.body.event.text};
+              _("obj")
+              _(obj)
               var array = [obj];
+              _("array")
+              _(array)
               msgMap.set(data.channel.name,array)
             }
             else{
               var array = msgMap.get(resultChannel.channel.name);
+              _("array")
+              _(array)
               var obj = {user:resultUser,text:msg.body.event.text};
+              _("obj")
+              _(obj)
               array.push(obj)
               msgMap.set(data.channel.name,array)
             }
             var keys = msgMap.keys();
+            _("keys")
+            _(keys)
             var total = 0;
             for(var i=0;i<keys.length;i++){
+              _("length")
+              _(msgMap.get(keys[i]).length)
               total+= msgMap.get(keys[i]).length;
             }
             _('total');
