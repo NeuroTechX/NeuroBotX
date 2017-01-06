@@ -555,7 +555,6 @@ function editPage(pageName){
 	});
 }
 
-}
 function createPage(pageName){
       var fileBody = "";
       for(var i=0;i<archiveBuffer.length;i++){
