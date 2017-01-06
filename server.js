@@ -457,6 +457,7 @@ slapp.command('/github','(.*)', (msg, text, value)  => {
         type: "token",
         token: github_token
       });
+      msg.say("Github Token initialized");
     }
     else {
       msg.say("Sorry, you're not an admin");
@@ -486,7 +487,7 @@ function archive_stop(msg){
 	}
 }
 function archive_push(msg){
-  var channelName = msg.body.channel;
+  var channelName = msg.body.channel_name;
   var channelPageName = channelName + '.md';
   _('Page name from slack : ');
   _(channelPageName);
@@ -527,7 +528,9 @@ function editPage(pageName){
   	if (!fileerror && fileresponse.statusCode == 200) {
 			//fileBody+="<ul>";
 			for(var i=0;i<archiveBuffer.length;i++){
-				fileBody+= archiveBuffer[i];
+        _("buffer "+ i);
+        _(archiveBuffer[i]);
+				fileBody+= archiveBuffer[i].body.user_name + " : " + archiveBuffer[i].body.text;
 			}
 			//fileBody+="</ul>";
 			//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
@@ -565,7 +568,9 @@ function editPage(pageName){
 function createPage(pageName){
       var fileBody = "";
       for(var i=0;i<archiveBuffer.length;i++){
-        fileBody+=archiveBuffer[i];
+        _("buffer "+ i);
+        _(archiveBuffer[i]);
+        fileBody+= archiveBuffer[i].body.user_name + " : " + archiveBuffer[i].body.text;
       }
       //fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
       var content = Buffer.from(fileBody, 'ascii');
