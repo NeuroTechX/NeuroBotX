@@ -565,7 +565,7 @@ function editPage(pageName,values){
 			for(var i=0;i<values.length;i++){
         _("buffer "+ i);
         _(values[i]);
-				fileBody+= "["+values[i].ts+"]("+values[i].user+")" + " : " + values[i].text + " \n";
+				fileBody+= ""+values[i].ts+" - "+ values[i].user +"" + " : " + values[i].text + " \n";
 			}
 			//fileBody+="</ul>";
 			//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
@@ -607,7 +607,7 @@ function createPage(pageName,values){
       for(var i=0;i<values.length;i++){
         _("buffer "+ i);
         _(values[i]);
-				fileBody+= "["+values[i].ts+"]("+values[i].user+")" + " : " + values[i].text + " \n";
+				fileBody+= ""+values[i].ts+" - "+ values[i].user +"" + " : " + values[i].text + " \n";
 			}
       //fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
       var content = Buffer.from(fileBody, 'ascii');
