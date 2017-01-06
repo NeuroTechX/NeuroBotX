@@ -400,13 +400,15 @@ slapp.message('(.*)', 'ambient', (msg) => {
     }
 
   if(isArchiving){
-    archiveBuffer[archiveBuffer.length] = msg;
-    if(archiveBuffer.length == ARCHIVE_BUFFER_MAX_LENGTH){
-      _('Archive buffer full, pushing');
-      archive_push(msg);
-      archiveBuffer = [];
-      _('Archive buffer clean');
-    }
+    slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.event.user}, (err, data) => {
+      archiveBuffer[archiveBuffer.length] = {user:data.user.name,text:msg.body.event.text};
+      if(archiveBuffer.length == ARCHIVE_BUFFER_MAX_LENGTH){
+        _('Archive buffer full, pushing');
+          archive_push(msg);
+          archiveBuffer = [];
+        _('Archive buffer clean');
+      }
+    });
   }
 
 })
@@ -487,27 +489,29 @@ function archive_stop(msg){
 	}
 }
 function archive_push(msg){
-  var channelName = msg.body.channel_name;
-  var channelPageName = channelName + '.md';
-  _('Page name from slack : ');
-  _(channelPageName);
+  slapp.client.channels.info({token:msg.meta.bot_token,user:msg.body.event.channel}, (err, data) => {
+    var channelName = data.channel.name;
+    var channelPageName = channelName + '.md';
+    _('Page name from slack : ');
+    _(channelPageName);
 
-  var listPages = listPageGithubArchive();
-  _("Pages :");
-  _(listPages);
-  var found = false;
-  for (var i = 0; i < listPages.length && !found; i++) {
-    if (listPages[i] === channelPageName) {
-      found = true;
+    var listPages = listPageGithubArchive();
+    _("Pages :");
+    _(listPages);
+    var found = false;
+    for (var i = 0; i < listPages.length && !found; i++) {
+      if (listPages[i] === channelPageName) {
+        found = true;
+      }
     }
-  }
-  _('Page is found on github');
-  _(found);
-  if(found)
-    editPage(channelPageName);
-  else {
-    createPage(channelPageName);
-  }
+    _('Page is found on github');
+    _(found);
+    if(found)
+      editPage(channelPageName);
+    else {
+      createPage(channelPageName);
+    }
+  });
 // Find channel name
 // List pages in github
 // If channel found Edit page
@@ -530,7 +534,7 @@ function editPage(pageName){
 			for(var i=0;i<archiveBuffer.length;i++){
         _("buffer "+ i);
         _(archiveBuffer[i]);
-				fileBody+= archiveBuffer[i].body.user_name + " : " + archiveBuffer[i].body.text;
+				fileBody+= archiveBuffer[i].user + " : " + archiveBuffer[i].text;
 			}
 			//fileBody+="</ul>";
 			//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
@@ -558,19 +562,21 @@ function editPage(pageName){
 						content:b64content,
 						sha: shaStr
 					});
-					msg.say("archive pushed");
+          _("Archive Pushed");
 				}
 			});
   	}
 	});
 }
+function findChanelName(id){
 
+}
 function createPage(pageName){
       var fileBody = "";
       for(var i=0;i<archiveBuffer.length;i++){
         _("buffer "+ i);
         _(archiveBuffer[i]);
-        fileBody+= archiveBuffer[i].body.user_name + " : " + archiveBuffer[i].body.text;
+				fileBody+= archiveBuffer[i].user + " : " + archiveBuffer[i].text;
       }
       //fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
       var content = Buffer.from(fileBody, 'ascii');
@@ -583,7 +589,7 @@ function createPage(pageName){
         message:"Edubot Push",
         content:b64content
       });
-      msg.say("archive pushed");
+      _("Archive Pushed");
 }
 slapp.command('/links','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
