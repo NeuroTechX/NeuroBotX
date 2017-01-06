@@ -404,7 +404,7 @@ slapp.message('(.*)', 'ambient', (msg) => {
       slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.event.user}, (uerr, resultUser) => {
         var hash = msgMap.hash(resultChannel.channel.name);
   			if ( ! (hash in msgMap._data) ) {
-          var obj = {user:resultUser,text:msg.body.event.text};
+          var obj = {user:resultUser.user.name,text:msg.body.event.text};
           _("obj")
           _(obj)
           var array = [obj];
