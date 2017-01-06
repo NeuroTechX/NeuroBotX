@@ -523,7 +523,6 @@ function archive_push(){
       else {
         createPage(channelPageName,msgMap.get(keys[i]));
       }
-    }
     msgMap.clear();
   });
 // Find channel name
