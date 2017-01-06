@@ -402,7 +402,7 @@ slapp.message('(.*)', 'ambient', (msg) => {
   if(isArchiving){
     _("msg");
     _(msg);
-    slapp.client.channels.info({token:msg.meta.bot_token,user:msg.body.event.channel}, (err, resultChannel) => {
+    slapp.client.channels.info({token:msg.meta.bot_token,channel:msg.body.event.channel}, (err, resultChannel) => {
       slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.event.user}, (uerr, resultUser) => {
         if(!msgMap.contains(resultChannel.channel.name)){
           var obj = {user:resultUser,text:msg.body.event.text};
