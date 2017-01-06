@@ -497,14 +497,18 @@ function archive_stop(msg){
 	}
 }
 function archive_push(){
-  var keys = msgMap.keys();
+
+  var processHash = new HashMap();
+  processHash.copy(msgMap);
+  msgMap.clear();
+  var keys = processHash.keys();
   _("Number of pages ");
   _(keys.length);
   for(var i=0;i<keys.length;i++){
     var channelName = keys[i];
     var channelPageName = channelName + '.md';
 
-    return github.repos.getContent({
+    github.repos.getContent({
      owner:'NeuroTechX',
      repo:'ntx_slack_archive',
      path:'/'},function(err,result){
@@ -519,12 +523,12 @@ function archive_push(){
         }
       }
       if(found)
-        editPage(channelPageName,msgMap.get(keys[i]));
+        editPage(channelPageName,processHash.get(keys[i]));
       else {
-        createPage(channelPageName,msgMap.get(keys[i]));
+        createPage(channelPageName,processHash.get(keys[i]));
       }
-    msgMap.clear();
-  });
+    });
+  }
 // Find channel name
 // List pages in github
 // If channel found Edit page
