@@ -416,7 +416,7 @@ slapp.message('(.*)', 'ambient', (msg) => {
           var array = msgMap.get(resultChannel.channel.name);
           _("array")
           _(array)
-          var obj = {user:resultUser,text:msg.body.event.text};
+          var obj = {user:resultUser.user.name,text:msg.body.event.text};
           _("obj")
           _(obj)
           array.push(obj)
