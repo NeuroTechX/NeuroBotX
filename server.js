@@ -231,7 +231,7 @@ var archiveBuffer = [];
 const ARCHIVE_BUFFER_MAX_LENGTH = 10;
 const LINKS_BUFFER_MAX_LENGTH = 10;
 // Debug print on console
-function _(s){
+function _(s){ 
   var str = JSON.stringify(s, null, 4);
   console.log(str);
 }
@@ -249,12 +249,10 @@ var botToken;
 var weeklyTask = cron.schedule('* * * * *', function(){
 	if(isTrackingStats){
 		for(var i=0;i<subscribedUsers.length;i++){
-			_("iteration i= "+i)
 			var str = 'Weekly Statsletter:\n';
 			stringMap.forEach(function(value, key) {
 				str = str + key + ' : ' + value + '\n';
 			});
-			// _("token "+process.env.SLACK_VERIFY_TOKEN);
 				console.log("token weekly " + botToken);
 			slapp.client.im.open({token:botToken,user:subscribedUsers[i]}, (err, data) => {
 				if (err) {
@@ -320,8 +318,6 @@ function links_refresh(msg){
 function links_push(msg){
 	var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_resources/master/_pages/slack-links.md";
 	request.get(filePath, function (fileerror, fileresponse, fileBody) {
-		_("response for file");
-		_(fileresponse);
   	if (!fileerror && fileresponse.statusCode == 200) {
 			fileBody+="<ul>";
 			for(var i=0;i<links.length;i++){
@@ -343,12 +339,9 @@ function links_push(msg){
         }
       };
 			request.get(options, function (bloberror, blobresponse, blobBody) {
-				_("response for blob");
-				_(blobresponse);
 	    	if (!bloberror && blobresponse.statusCode == 200) {
           var shaStr = JSON.parse(blobBody).sha;
           ("Sha str")
-          _(shaStr);
 					github.repos.updateFile({
 						owner:"NeuroTechX",
 						repo:"ntx_slack_resources",
@@ -373,8 +366,6 @@ slapp.message('help', ['mention', 'direct_message'], (msg) => {
 })
 
 slapp.event('team_join', (msg) => {
-	_("slapp in team_join");
-	_(slapp);
   slapp.client.im.open({ token: msg.meta.bot_token,  user: msg.body.event.user.id }, (err, data) => {
     if (err) {
       return console.error(err)
@@ -406,35 +397,21 @@ slapp.message('(.*)', 'ambient', (msg) => {
   			if ( ! (hash in msgMap._data) ) {
           var timeStamp = new Date(msg.body.event.ts * 1000)
           var obj = {user:resultUser.user.name,ts:timeStamp,text:msg.body.event.text};
-          _("obj")
-          _(obj)
           var array = [obj];
-          _("array")
-          _(array)
           msgMap.set(resultChannel.channel.name,array)
         }
         else{
           var array = msgMap.get(resultChannel.channel.name);
-          _("array")
-          _(array)
           var timeStamp = new Date(msg.body.event.ts * 1000)
           var obj = {user:resultUser.user.name,ts:timeStamp,text:msg.body.event.text};
-          _("obj")
-          _(obj)
           array.push(obj)
           msgMap.set(resultChannel.channel.name,array)
         }
         var keys = msgMap.keys();
-        _("keys")
-        _(keys)
         var total = 0;
         for(var i=0;i<keys.length;i++){
-          _("length")
-          _(msgMap.get(keys[i]).length)
           total+= msgMap.get(keys[i]).length;
         }
-        _('total');
-        _(total);
         if(total == ARCHIVE_BUFFER_MAX_LENGTH){
             archive_push();
         }
@@ -523,20 +500,14 @@ function archive_push(){
   for(var i=0;i<keys.length;i++){
     var channelName = keys[i];
     var channelPageName = channelName + '.md';
-    _('Page name from slack : ');
-    _(channelPageName);
 
     var listPages = listPageGithubArchive();
-    _("Pages :");
-    _(listPages);
     var found = false;
     for (var i = 0; i < listPages.length && !found; i++) {
       if (listPages[i] === channelPageName) {
         found = true;
       }
     }
-    _('Page is found on github');
-    _(found);
     if(found)
       editPage(channelPageName,msgMap.get(keys[i]));
     else {
@@ -559,13 +530,9 @@ function listPageGithubArchive(){
 function editPage(pageName,values){
   var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_archive/master/_pages/"+pageName;
 	request.get(filePath, function (fileerror, fileresponse, fileBody) {
-		_("response for file");
-		_(fileresponse);
   	if (!fileerror && fileresponse.statusCode == 200) {
 			//fileBody+="<ul>";
 			for(var i=0;i<values.length;i++){
-        _("buffer "+ i);
-        _(values[i]);
 				fileBody+= ""+values[i].ts+" "+ values[i].user +"" + " : " + values[i].text + "\n\n";
 			}
 			//fileBody+="</ul>";
@@ -580,12 +547,9 @@ function editPage(pageName,values){
         }
       };
 			request.get(options, function (bloberror, blobresponse, blobBody) {
-				_("response for blob");
-				_(blobresponse);
 	    	if (!bloberror && blobresponse.statusCode == 200) {
           var shaStr = JSON.parse(blobBody).sha;
           ("Sha str")
-          _(shaStr);
 					github.repos.updateFile({
 						owner:"NeuroTechX",
 						repo:"ntx_slack_archive",
@@ -594,7 +558,6 @@ function editPage(pageName,values){
 						content:b64content,
 						sha: shaStr
 					});
-          _("Archive Pushed");
 				}
 			});
   	}
@@ -605,11 +568,9 @@ function findChanelName(id){
 }
 function createPage(pageName,values){
       var pn = pageName;
-      var strtkns = pageName.split(".");
+      var strtkns = pn.split(".");
       var fileBody = "######"+strtkns[0]+"\n\n";
       for(var i=0;i<values.length;i++){
-        _("buffer "+ i);
-        _(values[i]);
 				fileBody+= ""+values[i].ts+" "+ values[i].user +"" + " : " + values[i].text + "\n\n";
 			}
       //fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
@@ -623,7 +584,6 @@ function createPage(pageName,values){
         message:"Edubot Push",
         content:b64content
       });
-      _("Archive Pushed");
 }
 slapp.command('/links','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
