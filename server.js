@@ -504,33 +504,35 @@ function archive_push(){
     var channelName = keys[i];
     var channelPageName = channelName + '.md';
 
-    var listPages = listPageGithubArchive();
-    _("listPages")
-    _(listPages)
-    var found = false;
-    for (var i = 0; i < listPages.length && !found; i++) {
-      if (listPages[i] === channelPageName) {
-        found = true;
+    return github.repos.getContent({
+     owner:'NeuroTechX',
+     repo:'ntx_slack_archive',
+     path:'/'},function(err,result){
+      _("listPages")
+      _(result)
+      _("path Type")
+      _(result[0].type)
+      var found = false;
+      for (var i = 0; i < result.length && !found; i++) {
+        if (listPages[i].name === channelPageName) {
+          found = true;
+        }
+      }
+      if(found)
+        editPage(channelPageName,msgMap.get(keys[i]));
+      else {
+        createPage(channelPageName,msgMap.get(keys[i]));
       }
     }
-    if(found)
-      editPage(channelPageName,msgMap.get(keys[i]));
-    else {
-      createPage(channelPageName,msgMap.get(keys[i]));
-    }
-  }
-  msgMap.clear();
+    msgMap.clear();
+  });
 // Find channel name
 // List pages in github
 // If channel found Edit page
 // if channel not found create page
 }
 function listPageGithubArchive(){
-   return github.repos.getContent({
-    owner:'NeuroTechX',
-    repo:'ntx_slack_archive',
-    path:'/'
-  });
+
 }
 function editPage(pageName,values){
   _("Editing page with values ");
