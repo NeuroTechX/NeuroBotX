@@ -434,7 +434,7 @@ slapp.command('/stats','(.*)', (msg, text, value)  => {
     }
   })
 })
-slapp.command('/archivegit','(.*)', (msg, text, value)  => {
+slapp.command('/archivetogit','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
     if( data.user.is_admin){
       if(text == 'start')
