@@ -402,8 +402,10 @@ slapp.message('(.*)', 'ambient', (msg) => {
   if(isArchiving){
     archiveBuffer[archiveBuffer.length] = msg;
     if(archiveBuffer.length == ARCHIVE_BUFFER_MAX_LENGTH){
+      _('Archive buffer full, pushing');
       archive_push(msg);
       archiveBuffer = [];
+      _('Archive buffer clean');
     }
   }
 
@@ -486,6 +488,9 @@ function archive_stop(msg){
 function archive_push(msg){
   var channelName = msg.body.channel;
   var channelPageName = channelName + '.md';
+  _('Page name from slack : ');
+  _(channelPageName);
+
   var listPages = listPageGithubArchive();
   _("Pages :");
   _(listPages);
@@ -495,6 +500,8 @@ function archive_push(msg){
       found = true;
     }
   }
+  _('Page is found on github');
+  _(found);
   if(found)
     editPage(channelPageName);
   else {
