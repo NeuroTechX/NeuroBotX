@@ -417,7 +417,12 @@ slapp.message('(.*)', 'ambient', (msg) => {
               array.push(obj)
               msgMap.set(data.channel.name,array)
             }
-            if(msgMap.keys().length == ARCHIVE_BUFFER_MAX_LENGTH){
+            var keys = msgMap.keys();
+            var total = 0;
+            for(var i=0;i<keys.length;i++){
+              total+= msgMap.get(keys[i]).length;
+            }
+            if(total == ARCHIVE_BUFFER_MAX_LENGTH){
                 archive_push();
                 msgMap.clear();
             }
