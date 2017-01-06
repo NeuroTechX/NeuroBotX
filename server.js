@@ -417,7 +417,8 @@ slapp.message('(.*)', 'ambient', (msg) => {
           var array = msgMap.get(resultChannel.channel.name);
           _("array")
           _(array)
-          var obj = {user:resultUser.user.name,text:msg.body.event.text};
+          var timeStamp = new Date(msg.body.event.ts * 1000)
+          var obj = {user:resultUser.user.name,ts:timeStamp,text:msg.body.event.text};
           _("obj")
           _(obj)
           array.push(obj)
@@ -565,7 +566,7 @@ function editPage(pageName,values){
 			for(var i=0;i<values.length;i++){
         _("buffer "+ i);
         _(values[i]);
-				fileBody+= ""+values[i].ts+" - "+ values[i].user +"" + " : " + values[i].text + " \n";
+				fileBody+= ""+values[i].ts+" - "+ values[i].user +"" + " : " + values[i].text + "  ";
 			}
 			//fileBody+="</ul>";
 			//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
@@ -603,11 +604,13 @@ function findChanelName(id){
 
 }
 function createPage(pageName,values){
-      var fileBody = "";
+      var pn = pageName;
+      var strtkns = pageName.split(".");
+      var fileBody = "######"+strtkns[0];
       for(var i=0;i<values.length;i++){
         _("buffer "+ i);
         _(values[i]);
-				fileBody+= ""+values[i].ts+" - "+ values[i].user +"" + " : " + values[i].text + " \n";
+				fileBody+= ""+values[i].ts+" - "+ values[i].user +"" + " : " + values[i].text + "  ";
 			}
       //fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
       var content = Buffer.from(fileBody, 'ascii');
