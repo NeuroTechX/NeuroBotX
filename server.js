@@ -202,7 +202,7 @@ var LINKS_REGEX = /(\b(https?|ftp|file|http):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-
 
 var github_token='';
 var stringMap = new HashMap();
-
+var msgMap = new HashMap();
 var dictionary = [
   'OpenBCI',
   'BCI',
@@ -394,19 +394,35 @@ slapp.message('(.*)', 'ambient', (msg) => {
 		if(linksDetector.test(msg.body.event.text)){
 			links[links.length]=msg.body.event.text;
       if(links.length == LINKS_BUFFER_MAX_LENGTH){
-        link_push(msg);
+        link_push();
         links = [];
       }
     }
 
   if(isArchiving){
-    slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.event.user}, (err, data) => {
-      archiveBuffer[archiveBuffer.length] = {user:data.user.name,text:msg.body.event.text};
-      if(archiveBuffer.length == ARCHIVE_BUFFER_MAX_LENGTH){
-        _('Archive buffer full, pushing');
-          archive_push(msg);
-          archiveBuffer = [];
-        _('Archive buffer clean');
+    _('ambient msg');
+    _(msg);
+    slapp.client.channels.info({token:msg.meta.bot_token,user:msg.body.event.channel}, (err, resultChannel) => {
+      if(!err){
+        slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.event.user}, (uerr, resultUser) => {
+          if(!uerr)
+            if(!msgMap.contains(resultChannel.channel.name)){
+              var obj = {user:resultUser,text:msg.body.event.text};
+              var array = [obj];
+              msgMap.set(data.channel.name,array)
+            }
+            else{
+              var array = msgMap.get(resultChannel.channel.name);
+              var obj = {user:resultUser,text:msg.body.event.text};
+              array.push(obj)
+              msgMap.set(data.channel.name,array)
+            }
+            if(msgMap.keys().length == ARCHIVE_BUFFER_MAX_LENGTH){
+                archive_push();
+                msgMap.clear();
+            }
+          }
+        });
       }
     });
   }
@@ -488,9 +504,10 @@ function archive_stop(msg){
 		msg.say("Archiving stopped");
 	}
 }
-function archive_push(msg){
-  slapp.client.channels.info({token:msg.meta.bot_token,user:msg.body.event.channel}, (err, data) => {
-    var channelName = data.channel.name;
+function archive_push(){
+  var keys = msgMap.key();
+  for(var i=0;i<keys.length;i++){
+    var channelName = keys[i];
     var channelPageName = channelName + '.md';
     _('Page name from slack : ');
     _(channelPageName);
@@ -507,11 +524,11 @@ function archive_push(msg){
     _('Page is found on github');
     _(found);
     if(found)
-      editPage(channelPageName);
+      editPage(channelPageName,msgMap.get(keys[i]));
     else {
-      createPage(channelPageName);
+      createPage(channelPageName,msgMap.get(keys[i]));
     }
-  });
+  }
 // Find channel name
 // List pages in github
 // If channel found Edit page
@@ -524,17 +541,17 @@ function listPageGithubArchive(){
     path:'/'
   });
 }
-function editPage(pageName){
+function editPage(pageName,values){
   var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_archive/master/_pages/"+pageName;
 	request.get(filePath, function (fileerror, fileresponse, fileBody) {
 		_("response for file");
 		_(fileresponse);
   	if (!fileerror && fileresponse.statusCode == 200) {
 			//fileBody+="<ul>";
-			for(var i=0;i<archiveBuffer.length;i++){
+			for(var i=0;i<values.length;i++){
         _("buffer "+ i);
-        _(archiveBuffer[i]);
-				fileBody+= archiveBuffer[i].user + " : " + archiveBuffer[i].text;
+        _(values[i]);
+				fileBody+= values[i].user + " : " + values[i].text;
 			}
 			//fileBody+="</ul>";
 			//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
@@ -571,13 +588,13 @@ function editPage(pageName){
 function findChanelName(id){
 
 }
-function createPage(pageName){
+function createPage(pageName,values){
       var fileBody = "";
-      for(var i=0;i<archiveBuffer.length;i++){
+      for(var i=0;i<values.length;i++){
         _("buffer "+ i);
-        _(archiveBuffer[i]);
-				fileBody+= archiveBuffer[i].user + " : " + archiveBuffer[i].text;
-      }
+        _(values[i]);
+				fileBody+= values[i].user + " : " + values[i].text;
+			}
       //fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
       var content = Buffer.from(fileBody, 'ascii');
       var b64content = content.toString('base64');
