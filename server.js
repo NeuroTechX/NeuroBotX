@@ -404,7 +404,8 @@ slapp.message('(.*)', 'ambient', (msg) => {
     _(msg);
     slapp.client.channels.info({token:msg.meta.bot_token,channel:msg.body.event.channel}, (err, resultChannel) => {
       slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.event.user}, (uerr, resultUser) => {
-        if(!msgMap.contains(resultChannel.channel.name)){
+        var hash = msgMap.hash(resultChannel.channel.name);
+  			if ( ! (hash in msgMap._data) ) {
           var obj = {user:resultUser,text:msg.body.event.text};
           _("obj")
           _(obj)
@@ -460,7 +461,7 @@ slapp.command('/stats','(.*)', (msg, text, value)  => {
       if(text == 'subscribe')
         stats_subscribe(msg);
       if(text == 'unsubscribe')
-      stats_unsubscribe(msg)
+        stats_unsubscribe(msg)
     }
     else {
       msg.say("Sorry, you're not an admin");
