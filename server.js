@@ -412,7 +412,7 @@ slapp.message('(.*)', 'ambient', (msg) => {
           var array = [obj];
           _("array")
           _(array)
-          msgMap.set(data.channel.name,array)
+          msgMap.set(resultChannel.channel.name,array)
         }
         else{
           var array = msgMap.get(resultChannel.channel.name);
@@ -422,7 +422,7 @@ slapp.message('(.*)', 'ambient', (msg) => {
           _("obj")
           _(obj)
           array.push(obj)
-          msgMap.set(data.channel.name,array)
+          msgMap.set(resultChannel.channel.name,array)
         }
         var keys = msgMap.keys();
         _("keys")
