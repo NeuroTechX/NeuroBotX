@@ -400,8 +400,6 @@ slapp.message('(.*)', 'ambient', (msg) => {
     }
 
   if(isArchiving){
-    _("msg");
-    _(msg);
     slapp.client.channels.info({token:msg.meta.bot_token,channel:msg.body.event.channel}, (err, resultChannel) => {
       slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.event.user}, (uerr, resultUser) => {
         var hash = msgMap.hash(resultChannel.channel.name);
@@ -519,7 +517,7 @@ function archive_stop(msg){
 	}
 }
 function archive_push(){
-  var keys = msgMap.key();
+  var keys = msgMap.keys();
   for(var i=0;i<keys.length;i++){
     var channelName = keys[i];
     var channelPageName = channelName + '.md';
