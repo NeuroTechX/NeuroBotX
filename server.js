@@ -203,6 +203,7 @@ var LINKS_REGEX = /(\b(https?|ftp|file|http):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-
 var github_token='';
 var stringMap = new HashMap();
 var msgMap = new HashMap();
+var msgMapLength = 0;
 var dictionary = [
   'OpenBCI',
   'BCI',
@@ -231,7 +232,7 @@ var archiveBuffer = [];
 const ARCHIVE_BUFFER_MAX_LENGTH = 10;
 const LINKS_BUFFER_MAX_LENGTH = 10;
 // Debug print on console
-function _(s){ 
+function _(s){
   var str = JSON.stringify(s, null, 4);
   console.log(str);
 }
@@ -399,6 +400,7 @@ slapp.message('(.*)', 'ambient', (msg) => {
           var obj = {user:resultUser.user.name,ts:timeStamp,text:msg.body.event.text};
           var array = [obj];
           msgMap.set(resultChannel.channel.name,array)
+          msgMapLength++;
         }
         else{
           var array = msgMap.get(resultChannel.channel.name);
@@ -406,14 +408,13 @@ slapp.message('(.*)', 'ambient', (msg) => {
           var obj = {user:resultUser.user.name,ts:timeStamp,text:msg.body.event.text};
           array.push(obj)
           msgMap.set(resultChannel.channel.name,array)
+          msgMapLength++;
         }
-        var keys = msgMap.keys();
-        var total = 0;
-        for(var i=0;i<keys.length;i++){
-          total+= msgMap.get(keys[i]).length;
-        }
-        if(total == ARCHIVE_BUFFER_MAX_LENGTH){
+        _("number of values in map");
+        _(msgMapLength);
+        if(msgMapLength == ARCHIVE_BUFFER_MAX_LENGTH){
             archive_push();
+            _("Puching archive");
         }
       });
     });
@@ -497,11 +498,15 @@ function archive_stop(msg){
 }
 function archive_push(){
   var keys = msgMap.keys();
+  _("Number of pages ");
+  _(keys.length);
   for(var i=0;i<keys.length;i++){
     var channelName = keys[i];
     var channelPageName = channelName + '.md';
 
     var listPages = listPageGithubArchive();
+    _("listPages")
+    _(listPages)
     var found = false;
     for (var i = 0; i < listPages.length && !found; i++) {
       if (listPages[i] === channelPageName) {
@@ -528,6 +533,8 @@ function listPageGithubArchive(){
   });
 }
 function editPage(pageName,values){
+  _("Editing page with values ");
+  _(values);
   var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_archive/master/_pages/"+pageName;
 	request.get(filePath, function (fileerror, fileresponse, fileBody) {
   	if (!fileerror && fileresponse.statusCode == 200) {
@@ -567,6 +574,7 @@ function findChanelName(id){
 
 }
 function createPage(pageName,values){
+    _("creating page with values ");
       var pn = pageName;
       var strtkns = pn.split(".");
       var fileBody = "######"+strtkns[0]+"\n\n";
