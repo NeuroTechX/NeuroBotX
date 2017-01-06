@@ -405,7 +405,7 @@ slapp.message('(.*)', 'ambient', (msg) => {
     slapp.client.channels.info({token:msg.meta.bot_token,user:msg.body.event.channel}, (err, resultChannel) => {
       if(!err){
         slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.event.user}, (uerr, resultUser) => {
-          if(!uerr)
+          if(!uerr){
             if(!msgMap.contains(resultChannel.channel.name)){
               var obj = {user:resultUser,text:msg.body.event.text};
               var array = [obj];
@@ -426,7 +426,6 @@ slapp.message('(.*)', 'ambient', (msg) => {
       }
     });
   }
-
 })
 
 slapp.command('/stats','(.*)', (msg, text, value)  => {
