@@ -401,8 +401,10 @@ slapp.message('(.*)', 'ambient', (msg) => {
 
   if(isArchiving){
     slapp.client.channels.info({token:msg.meta.bot_token,user:msg.body.event.channel}, (err, resultChannel) => {
+      _(err);
       if(!err){
         slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.event.user}, (uerr, resultUser) => {
+          _(uerr);
           if(!uerr){
             if(!msgMap.contains(resultChannel.channel.name)){
               var obj = {user:resultUser,text:msg.body.event.text};
