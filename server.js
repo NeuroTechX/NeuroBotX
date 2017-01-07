@@ -409,13 +409,15 @@ slapp.message('(.*)', 'ambient', (msg) => {
           array.push(obj)
           msgMap.set(resultChannel.channel.name,array)
           msgMapLength++;
+          if(array.length == ARCHIVE_BUFFER_MAX_LENGTH)
+            archive_push(hash);
         }
         _("number of values in map");
         _(msgMapLength);
-        if(msgMapLength == ARCHIVE_BUFFER_MAX_LENGTH){
-            archive_push();
-            _("Puching archive");
-        }
+        // if(msgMapLength == ARCHIVE_BUFFER_MAX_LENGTH){
+        //     archive_push();
+        //     _("Puching archive");
+        // }
       });
     });
   }
@@ -496,16 +498,20 @@ function archive_stop(msg){
 		msg.say("Archiving stopped");
 	}
 }
-function archive_push(){
+function archive_push(channel){
 
-  var keys = msgMap.keys().slice();
-  var values = msgMap.values().slice()[0];
-  msgMap.clear();
-  msgMapLength=0;
+  // var keys = msgMap.keys().slice();
+  //var values = msgMap.values().slice()[0];
+  var values = msgMap.get(channel).slice();
+  var newArr = [];
+  msgMap.set(channel,newArr);
+  // msgMap.clear();
+  // #### CLEAR ARRAY
+  // msgMapLength=0;
   _("Number of pages ");
-  _(keys.length);
-  for(var i=0;i<keys.length;i++){
-    var channelName = keys[i];
+  // _(keys.length);
+  //for(var i=0;i<keys.length;i++){
+    var channelName = channel;
     var channelPageName = channelName + '.md';
 
     github.repos.getContent({
@@ -528,7 +534,7 @@ function archive_push(){
         createPage(channelPageName,values);
       }
     });
-  }
+  //}
 // Find channel name
 // List pages in github
 // If channel found Edit page
