@@ -511,9 +511,12 @@ function archive_push(){
     github.repos.getContent({
      owner:'NeuroTechX',
      repo:'ntx_slack_archive',
-     path:'/'},function(err,result){
+     path:''},function(err,result){
       _("listPages")
       _(result)
+      if(result.meta.status='302 Found'||
+         result.meta.status='307 Found');
+
       _("path Type")
       _(result[0].type)
       var found = false;
