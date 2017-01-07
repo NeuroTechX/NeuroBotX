@@ -540,7 +540,7 @@ function listPageGithubArchive(){
 function editPage(pageName,values){
   _("Editing page with values ");
   _(values);
-  var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_archive/master/_pages/"+pageName;
+  var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_archive/master/"+pageName;
 	request.get(filePath, function (fileerror, fileresponse, fileBody) {
   	if (!fileerror && fileresponse.statusCode == 200) {
 			//fileBody+="<ul>";
@@ -551,7 +551,7 @@ function editPage(pageName,values){
 			//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
       var content = Buffer.from(fileBody, 'ascii');
       var b64content = content.toString('base64');
-			var blobPath = "https://api.github.com/repos/NeuroTechX/ntx_slack_archive/contents/_pages/"+pageName;
+			var blobPath = "https://api.github.com/repos/NeuroTechX/ntx_slack_archive/contents/"+pageName;
       var options = {
         url: blobPath,
         headers: {
@@ -580,6 +580,7 @@ function findChanelName(id){
 }
 function createPage(pageName,values){
     _("creating page with values ");
+    _(values);
       var pn = pageName;
       var strtkns = pn.split(".");
       var fileBody = "######"+strtkns[0]+"\n\n";
