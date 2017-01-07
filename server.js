@@ -410,7 +410,7 @@ slapp.message('(.*)', 'ambient', (msg) => {
           msgMap.set(resultChannel.channel.name,array)
           msgMapLength++;
           if(array.length == ARCHIVE_BUFFER_MAX_LENGTH)
-            archive_push(hash);
+            archive_push(resultChannel.channel.name);
         }
         _("number of values in map");
         _(msgMapLength);
