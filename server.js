@@ -498,10 +498,10 @@ function archive_stop(msg){
 }
 function archive_push(){
 
-  var processHash = new HashMap();
-  processHash.copy(msgMap);
+  var keys = msgMap.keys().slice();
+  var values = msgMap.values().slice();
   msgMap.clear();
-  var keys = processHash.keys();
+  msgMapLength=0;
   _("Number of pages ");
   _(keys.length);
   for(var i=0;i<keys.length;i++){
@@ -523,9 +523,9 @@ function archive_push(){
         }
       }
       if(found)
-        editPage(channelPageName,processHash.get(keys[i]));
+        editPage(channelPageName,values);
       else {
-        createPage(channelPageName,processHash.get(keys[i]));
+        createPage(channelPageName,values);
       }
     });
   }
