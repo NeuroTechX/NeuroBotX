@@ -499,7 +499,7 @@ function archive_stop(msg){
 function archive_push(){
 
   var keys = msgMap.keys().slice();
-  var values = msgMap.values().slice();
+  var values = msgMap.values().slice()[0];
   msgMap.clear();
   msgMapLength=0;
   _("Number of pages ");
