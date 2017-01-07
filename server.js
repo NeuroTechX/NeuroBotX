@@ -514,8 +514,8 @@ function archive_push(){
      path:''},function(err,result){
       _("listPages")
       _(result)
-      if(result.meta.status='302 Found'||
-         result.meta.status='307 Found');
+      // if(result.meta.status='302 Found'||
+      //    result.meta.status='307 Found');
 
       _("path Type")
       _(result[0].type)
