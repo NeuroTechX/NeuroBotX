@@ -514,14 +514,11 @@ function archive_push(){
      path:''},function(err,result){
       _("listPages")
       _(result)
-      // if(result.meta.status='302 Found'||
-      //    result.meta.status='307 Found');
-
       _("path Type")
       _(result[0].type)
       var found = false;
       for (var i = 0; i < result.length && !found; i++) {
-        if (listPages[i].name === channelPageName) {
+        if (result[i].name === channelPageName) {
           found = true;
         }
       }
