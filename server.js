@@ -429,7 +429,7 @@ slapp.command('/stats','(.*)', (msg, text, value)  => {
       var strtokens = text.split(" ");
       var cmd = strtokens[0];
       var val = '';
-      if(cmd.length=2);
+      if(cmd.length==2);
         val = strtokens[1];
       if(!text)
         msg.say("Options for /stats: \n" +
