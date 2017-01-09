@@ -350,8 +350,10 @@ function links_push(){
 						message:"Edubot Push",
 						content:b64content,
 						sha: shaStr
-					});
-          links = [];
+					}), function(err, res) {
+                links = [];
+              });
+
 				}
 			});
   	}
