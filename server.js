@@ -428,6 +428,9 @@ slapp.command('/stats','(.*)', (msg, text, value)  => {
     if( data.user.is_admin){
       var strtokens = text.split(" ");
       var cmd = strtokens[0];
+      var val = '';
+      if(cmd.length=2);
+        val = strtokens[1];
       if(!text)
         msg.say("Options for /stats: \n" +
                 "\`print\` prints the current statistics.\n" +
@@ -441,9 +444,9 @@ slapp.command('/stats','(.*)', (msg, text, value)  => {
       else if(cmd == 'print')
         stats_print(msg);
       else if(cmd == 'add')
-        stats_add(msg,value);
+        stats_add(msg,val);
       else if(cmd == 'delete')
-        stats_delete(msg,value);
+        stats_delete(msg,val);
       else if(cmd == 'refresh')
         stats_refresh(msg);
       else if(cmd == 'start')
