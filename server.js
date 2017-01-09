@@ -247,10 +247,10 @@ var slapp = Slapp({
 
 var isTrackingStats = false;
 var botToken;
-var weeklyTask = cron.schedule('* * * * *', function(){
+var weeklyTask = cron.schedule('30 8 * * Friday', function(){
 	if(isTrackingStats){
 		for(var i=0;i<subscribedUsers.length;i++){
-			var str = 'Weekly Statsletter:\n';
+			var str = 'Weekly Stats :\n';
 			stringMap.forEach(function(value, key) {
 				str = str + key + ' : ' + value + '\n';
 			});
@@ -274,12 +274,12 @@ var linksDetector = new RegExp(LINKS_REGEX);
 function links_print(msg){
 	if(isTrackingLinks){
 		if(links.length==0){
-			msg.respond("No links posted");
+			msg.respond("No links posted yet.");
 		}
 		else{
 		  var str = '';
 		  for(var i=0;i<links.length;i++) {
-				str = str + '###########' + '\n'
+				str = str + '########### Links waiting to be sent to Wordpress #######' + '\n'
 		    str = str + links[i] + '\n';
 		  }
 		  msg.respond(str)
@@ -316,7 +316,7 @@ function links_refresh(msg){
 	links = [];
 	msg.say("Stored links deleted");
 }
-function links_push(msg){
+function links_push(){
 	var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_resources/master/_pages/slack-links.md";
 	request.get(filePath, function (fileerror, fileresponse, fileBody) {
   	if (!fileerror && fileresponse.statusCode == 200) {
@@ -351,7 +351,6 @@ function links_push(msg){
 						content:b64content,
 						sha: shaStr
 					});
-					msg.say("links pushed");
 				}
 			});
   	}
@@ -610,8 +609,6 @@ slapp.command('/links','(.*)', (msg, text, value)  => {
     if( data.user.is_admin){
       if(text == 'print')
         links_print(msg);
-      if(text == 'push')
-        links_push(msg,value);
       if(text == 'start')
         links_start(msg);
       if(text == 'refresh')
@@ -676,7 +673,8 @@ function stats_unsubscribe(msg){
 
 }
 function stats_add(msg) {
-		var strings = text.split(' ');
+    var str = msg.body.event.text;
+		var strings = str.split(' ');
 		for(var i=0; i<strings.length;i++){
 			var hash = stringMap.hash(strings[i]);
 			if ( ! (hash in stringMap._data) ) {
@@ -685,7 +683,8 @@ function stats_add(msg) {
 		}
 }
 function stats_delete(msg) {
-	var strings = text.split(' ');
+  var str = msg.body.event.text;
+  var strings = str.split(' ');
 	for(var i=0; i<strings.length;i++){
 		var hash = stringMap.hash(strings[i]);
 		if ( (hash in stringMap._data) ) {
@@ -703,7 +702,7 @@ function stats_start(msg) {
 	}
 	else {
 		isTrackingStats = true;
-		weeklyTask.start();
+		//weeklyTask.start();
 		msg.say("Stats tracking started");
 	}
 }
@@ -711,7 +710,7 @@ function stats_stop(msg) {
 
 	if(isTrackingStats){
 		isTrackingStats=false;
-		weeklyTask.stop();
+		//weeklyTask.stop();
 		msg.say("Tracking stopped");
 	}
 	else {
