@@ -462,8 +462,7 @@ slapp.message('(.*)', 'ambient', (msg) => {
     });
   }
 })
-stats add a b
-        0 1 2
+
 slapp.command('/stats','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
     if( data.user.is_admin){
