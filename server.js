@@ -441,9 +441,9 @@ slapp.command('/stats','(.*)', (msg, text, value)  => {
       else if(cmd == 'print')
         stats_print(msg);
       else if(cmd == 'add')
-        stats_add(value);
+        stats_add(msg,value);
       else if(cmd == 'delete')
-        stats_delete(value);
+        stats_delete(msg,value);
       else if(cmd == 'refresh')
         stats_refresh(msg);
       else if(cmd == 'start')
@@ -704,14 +704,14 @@ function stats_unsubscribe(msg){
 
 
 }
-function stats_add(value) {
+function stats_add(msg,value) {
 		var hash = stringMap.hash(value);
 		if ( ! (hash in stringMap._data) ) {
 			stringMap.set(value,0);
 		}
     msg.say("Keyword added to the tracking list.");
 }
-function stats_delete(value) {
+function stats_delete(msg,value) {
 
 	var hash = stringMap.hash(value);
 	if ( (hash in stringMap._data) ) {
