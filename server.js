@@ -277,9 +277,9 @@ function links_print(msg){
 			msg.respond("No links posted yet.");
 		}
 		else{
-		  var str = '';
+		  var str = '\`Links waiting to be sent to Wordpress\` \n';
 		  for(var i=0;i<links.length;i++) {
-				str = str + '########### Links waiting to be sent to Wordpress #######' + '\n'
+				str = str + '\n'
 		    str = str + links[i] + '\n';
 		  }
 		  msg.respond(str)
@@ -385,7 +385,7 @@ slapp.message('(.*)', 'ambient', (msg) => {
 		if(linksDetector.test(msg.body.event.text)){
 			links[links.length]=msg.body.event.text;
       if(links.length == LINKS_BUFFER_MAX_LENGTH){
-        link_push();
+        links_push();
         links = [];
       }
     }
