@@ -351,6 +351,7 @@ function links_push(){
 						content:b64content,
 						sha: shaStr
 					});
+          links = [];
 				}
 			});
   	}
@@ -376,8 +377,9 @@ slapp.event('team_join', (msg) => {
 
 slapp.message('(.*)', 'ambient', (msg) => {
 	if(isTrackingStats){
+    var lowerCaseText =  msg.body.event.text.toLowerCase();
 		stringMap.forEach(function(value, key) {
-			var occ = msg.body.event.text.split(key).length - 1;
+			var occ = lowerCaseText.split(key.toLowerCase()).length - 1;
 			stringMap.set(key,stringMap.get(key)+occ);
 		})
 	}
@@ -386,7 +388,6 @@ slapp.message('(.*)', 'ambient', (msg) => {
 			links[links.length]=msg.body.event.text;
       if(links.length == LINKS_BUFFER_MAX_LENGTH){
         links_push();
-        links = [];
       }
     }
 
