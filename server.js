@@ -286,35 +286,35 @@ function links_print(msg){
 		}
 	}
 	else {
-		msg.say("Links tracking not in progress");
+		msg.say("Links tracking is not in progress.");
 	}
 }
 function links_start(msg){
   if(github_token !=''){
   	if(!isTrackingLinks){
   		isTrackingLinks=true;
-  	msg.say("Links tracking started");
+  	msg.say("Links tracking started.");
   	}
   	else {
-  		msg.say("Links tracking already in progress");
+  		msg.say("Links tracking is already in progress.");
   	}
   }else{
-    msg.say("Please set the github token first");
+    msg.say("Please set the github token first.");
   }
 
 }
 function links_stop(msg){
 	if(isTrackingLinks){
 		isTrackingLinks=false;
-		msg.say("Links tracking stopped");
+		msg.say("Links tracking stopped.");
 	}
 	else {
-		msg.say("Links tracking already stopped");
+		msg.say("Links tracking already stopped.");
 	}
 }
 function links_refresh(msg){
 	links = [];
-	msg.say("Stored links deleted");
+	msg.say("Stored links deleted.");
 }
 function links_push(){
 	var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_resources/master/_pages/slack-links.md";
@@ -411,8 +411,6 @@ slapp.message('(.*)', 'ambient', (msg) => {
           if(array.length == ARCHIVE_BUFFER_MAX_LENGTH)
             archive_push(resultChannel.channel.name);
         }
-        _("number of values in map");
-        _(msgMapLength);
         // if(msgMapLength == ARCHIVE_BUFFER_MAX_LENGTH){
         //     archive_push();
         //     _("Puching archive");
@@ -425,38 +423,58 @@ slapp.message('(.*)', 'ambient', (msg) => {
 slapp.command('/stats','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
     if( data.user.is_admin){
-      if(text == 'print')
+      if(!text)
+        msg.say("Options : \n" +
+                "print : prints the current statistics.\n" +
+                "add [Keyword]: adds the keyword to the tracked keywords list.\n" +
+                "delete [Keyword]: deletes the keyword to the tracked keywords list.\n" +
+                "start : starts statistics tracking.(Github token must be initialized first using /github)\n" +
+                "stop : stops statistics tracking.\n" +
+                "subscribe: subscribe to the weekly statistics message.\n" +
+                "unsubscribe: unsubscribe from the weekly statistics message.\n"
+              );
+      else if(text == 'print')
         stats_print(msg);
-      if(text == 'add')
+      else if(text == 'add')
         stats_add(msg);
-      if(text == 'delete')
+      else if(text == 'delete')
         stats_delete(msg);
-      if(text == 'refresh')
+      else if(text == 'refresh')
         stats_refresh(msg);
-      if(text == 'start')
+      else if(text == 'start')
         stats_start(msg);
-      if(text == 'stop')
+      else if(text == 'stop')
         stats_stop(msg);
-      if(text == 'subscribe')
+      else if(text == 'subscribe')
         stats_subscribe(msg);
-      if(text == 'unsubscribe')
+      else if(text == 'unsubscribe')
         stats_unsubscribe(msg)
+      else
+        msg.say("Please use /stats to print the available options.");
     }
     else {
-      msg.say("Sorry, you're not an admin");
+      msg.say("Sorry, you're not an admin.");
     }
   })
 })
 slapp.command('/archivetogit','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
     if( data.user.is_admin){
-      if(text == 'start')
+      if(!text)
+        msg.say("Options : \n" +
+                "start : starts the archiving to git. (Github token must be initialized first using /github)\n" +
+                "stop : stops the archiving to git.\n"
+              );
+      else if(text == 'start')
         archive_start(msg);
-      if(text == 'stop')
+      else if(text == 'stop')
         archive_stop(msg);
+      else {
+        msg.say("Please use /archivetogit to print the available options.");
+      }
     }
     else {
-      msg.say("Sorry, you're not an admin");
+      msg.say("Sorry, you're not an admin.");
     }
   })
 })
@@ -468,10 +486,10 @@ slapp.command('/github','(.*)', (msg, text, value)  => {
         type: "token",
         token: github_token
       });
-      msg.say("Github Token initialized");
+      msg.say("Github Token initialized.");
     }
     else {
-      msg.say("Sorry, you're not an admin");
+      msg.say("Sorry, you're not an admin.");
     }
   })
 })
@@ -479,22 +497,22 @@ function archive_start(msg){
   if(github_token!=''){
     if(!isArchiving){
   		isArchiving=true;
-  	msg.say("Archiving started");
+  	msg.say("Archiving started.");
   	}
   	else {
-  		msg.say("Archiving already in progress");
+  		msg.say("Archiving is already in progress.");
   	}
   }else{
-    msg.say("Please set the github token first");
+    msg.say("Please set the github token first.");
   }
 }
 function archive_stop(msg){
   if(isArchiving){
 		isArchiving=false;
-		msg.say("Archiving stopped");
+		msg.say("Archiving stopped.");
 	}
 	else {
-		msg.say("Archiving stopped");
+		msg.say("Archiving is already stoped.");
 	}
 }
 function archive_push(channel){
@@ -607,14 +625,23 @@ function createPage(pageName,values){
 slapp.command('/links','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
     if( data.user.is_admin){
-      if(text == 'print')
+      if(!text)
+        msg.say("Options : \n" +
+                "print : prints the current links buffer waiting to be pushed to Wordpress.\n" +
+                "start : starts links tracking.\n" +
+                "stop : stops links tracking.\n"
+              );
+      else if(text == 'print')
         links_print(msg);
-      if(text == 'start')
+      else if(text == 'start')
         links_start(msg);
-      if(text == 'refresh')
+      else if(text == 'refresh')
         links_refresh(msg);
-      if(text == 'stop')
+      else if(text == 'stop')
         links_stop(msg);
+      else {
+        msg.say("Please use /links to print the available options \n");
+      }
     }
     else {
       msg.say("Sorry, you're not an admin");
@@ -645,10 +672,10 @@ function stats_subscribe(msg){
 	}
 	if(!isSub){
 		subscribedUsers[subscribedUsers.length]=msg.body.user_id;
-		msg.say("you successfully subscribed to the statsletter");
+		msg.say("You successfully subscribed to the weekly statistics.");
 	}
 	else {
-		msg.say("you're already subscribed to the statsletter");
+		msg.say("You're already subscribed to the weekly statistics.");
 	}
 
 }
@@ -664,10 +691,10 @@ function stats_unsubscribe(msg){
 		}
 	}
 	if(!wasSub){
-		msg.say("you're not subscribed to the statsletter");
+		msg.say("You're not subscribed to the weekly statistics.");
 	}
 	else {
-		msg.say("you successfully unsubscribed to the statsletter");
+		msg.say("You successfully unsubscribed from the weekly statistics");
 	}
 
 
@@ -681,6 +708,7 @@ function stats_add(msg) {
 				stringMap.set(strings[i],0);
 			}
 		}
+    msg.say("Keyword added to the tracking list.");
 }
 function stats_delete(msg) {
   var str = msg.body.event.text;
@@ -691,6 +719,7 @@ function stats_delete(msg) {
 			stringMap.remove(strings[i]);
 		}
 	}
+  msg.say("Keyword deleted from the tracking list.");
 }
 function stats_refresh(msg) {
 	stringMap.clear();
@@ -698,12 +727,12 @@ function stats_refresh(msg) {
 function stats_start(msg) {
 	botToken=msg.meta.bot_token;
 	if(isTrackingStats){
-		msg.say("Tracking already in progress");
+		msg.say("Statistics tracking already in progress.");
 	}
 	else {
 		isTrackingStats = true;
 		//weeklyTask.start();
-		msg.say("Stats tracking started");
+		msg.say("Statistics tracking started.");
 	}
 }
 function stats_stop(msg) {
@@ -711,10 +740,10 @@ function stats_stop(msg) {
 	if(isTrackingStats){
 		isTrackingStats=false;
 		//weeklyTask.stop();
-		msg.say("Tracking stopped");
+		msg.say("Statistics tracking stopped.");
 	}
 	else {
-		msg.say("Tracking is already stopped");
+		msg.say("Statistics tracking is already stopped.");
 	}
 
 }
