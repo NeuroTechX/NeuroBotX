@@ -299,7 +299,7 @@ function links_start(msg){
   		msg.say("Links tracking is already in progress.");
   	}
   }else{
-    msg.say("Please set the github token first.");
+    msg.say("Please set the github token first using /github [Token].");
   }
 
 }
@@ -423,31 +423,33 @@ slapp.message('(.*)', 'ambient', (msg) => {
 slapp.command('/stats','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
     if( data.user.is_admin){
+      var strtokens = text.split(" ");
+      var cmd = strtokens[0];
       if(!text)
-        msg.say("Options : \n" +
-                "print : prints the current statistics.\n" +
-                "add [Keyword]: adds the keyword to the tracked keywords list.\n" +
-                "delete [Keyword]: deletes the keyword to the tracked keywords list.\n" +
-                "start : starts statistics tracking.(Github token must be initialized first using /github)\n" +
-                "stop : stops statistics tracking.\n" +
-                "subscribe: subscribe to the weekly statistics message.\n" +
-                "unsubscribe: unsubscribe from the weekly statistics message.\n"
+        msg.say("Options for /stats: \n" +
+                "\`print\` prints the current statistics.\n" +
+                "\`add [Keyword]\` adds the keyword to the tracked keywords list.\n" +
+                "\`delete [Keyword]\` deletes the keyword to the tracked keywords list.\n" +
+                "\`start\` starts statistics tracking.(Github token must be initialized first using /github)\n" +
+                "\`stop\` stops statistics tracking.\n" +
+                "\`subscribe\` subscribe to the weekly statistics message.\n" +
+                "\`unsubscribe\` unsubscribe from the weekly statistics message.\n"
               );
-      else if(text == 'print')
+      else if(cmd == 'print')
         stats_print(msg);
-      else if(text == 'add')
-        stats_add(msg);
-      else if(text == 'delete')
-        stats_delete(msg);
-      else if(text == 'refresh')
+      else if(cmd == 'add')
+        stats_add(value);
+      else if(cmd == 'delete')
+        stats_delete(value);
+      else if(cmd == 'refresh')
         stats_refresh(msg);
-      else if(text == 'start')
+      else if(cmd == 'start')
         stats_start(msg);
-      else if(text == 'stop')
+      else if(cmd == 'stop')
         stats_stop(msg);
-      else if(text == 'subscribe')
+      else if(cmd == 'subscribe')
         stats_subscribe(msg);
-      else if(text == 'unsubscribe')
+      else if(cmd == 'unsubscribe')
         stats_unsubscribe(msg)
       else
         msg.say("Please use /stats to print the available options.");
@@ -461,9 +463,9 @@ slapp.command('/archivetogit','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
     if( data.user.is_admin){
       if(!text)
-        msg.say("Options : \n" +
-                "start : starts the archiving to git. (Github token must be initialized first using /github)\n" +
-                "stop : stops the archiving to git.\n"
+        msg.say("Options for /archivetogit: \n" +
+                "\`start\` starts the archiving to git. (Github token must be initialized first using /github)\n" +
+                "\`stop\` stops the archiving to git.\n"
               );
       else if(text == 'start')
         archive_start(msg);
@@ -626,10 +628,10 @@ slapp.command('/links','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
     if( data.user.is_admin){
       if(!text)
-        msg.say("Options : \n" +
-                "print : prints the current links buffer waiting to be pushed to Wordpress.\n" +
-                "start : starts links tracking.\n" +
-                "stop : stops links tracking.\n"
+        msg.say("Options for /links: \n" +
+                "\`print\` prints the current links buffer waiting to be pushed to Wordpress.\n" +
+                "\`start\` starts links tracking.\n" +
+                "\`stop\` stops links tracking.\n"
               );
       else if(text == 'print')
         links_print(msg);
@@ -699,25 +701,18 @@ function stats_unsubscribe(msg){
 
 
 }
-function stats_add(msg) {
-    var str = msg.body.event.text;
-		var strings = str.split(' ');
-		for(var i=0; i<strings.length;i++){
-			var hash = stringMap.hash(strings[i]);
-			if ( ! (hash in stringMap._data) ) {
-				stringMap.set(strings[i],0);
-			}
+function stats_add(value) {
+		var hash = stringMap.hash(value);
+		if ( ! (hash in stringMap._data) ) {
+			stringMap.set(value,0);
 		}
     msg.say("Keyword added to the tracking list.");
 }
-function stats_delete(msg) {
-  var str = msg.body.event.text;
-  var strings = str.split(' ');
-	for(var i=0; i<strings.length;i++){
-		var hash = stringMap.hash(strings[i]);
-		if ( (hash in stringMap._data) ) {
-			stringMap.remove(strings[i]);
-		}
+function stats_delete(value) {
+
+	var hash = stringMap.hash(value);
+	if ( (hash in stringMap._data) ) {
+		stringMap.remove(value);
 	}
   msg.say("Keyword deleted from the tracking list.");
 }
@@ -725,15 +720,20 @@ function stats_refresh(msg) {
 	stringMap.clear();
 }
 function stats_start(msg) {
-	botToken=msg.meta.bot_token;
-	if(isTrackingStats){
-		msg.say("Statistics tracking already in progress.");
-	}
-	else {
-		isTrackingStats = true;
-		//weeklyTask.start();
-		msg.say("Statistics tracking started.");
-	}
+  if(github_token!=''){
+  	botToken=msg.meta.bot_token;
+  	if(isTrackingStats){
+  		msg.say("Statistics tracking already in progress.");
+  	}
+  	else {
+  		isTrackingStats = true;
+  		//weeklyTask.start();
+  		msg.say("Statistics tracking started.");
+  	}
+  }
+  else {
+    msg.say("Please set the github token first using /github [Token].");
+  }
 }
 function stats_stop(msg) {
 
