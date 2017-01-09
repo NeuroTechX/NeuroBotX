@@ -350,7 +350,7 @@ function links_push(){
 						message:"Edubot Push",
 						content:b64content,
 						sha: shaStr
-					}), function(err, res) {
+					}, function(err, res) {
                 links = [];
               });
 
