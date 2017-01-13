@@ -250,21 +250,21 @@ var stringMap = new HashMap();
 var msgMap = new HashMap();
 var msgMapLength = 0;
 var dictionary = [
-  'OpenBCI',
-  'BCI',
-  'EEG',
-  'EMG',
-  'Decoding',
-  'Meetup',
-  'Frequency',
-  'Freq',
-  'Signal',
-  'EMD',
-  'Matlab',
-  'Python',
-  'C++',
-  'Noise',
-	'Empirical Mode Decomposition'
+  'OpenBCI ',
+  'BCI ',
+  'EEG ',
+  'EMG ',
+  'Decoding ',
+  'Meetup ',
+  'Frequency ',
+  'Freq ',
+  'Signal ',
+  'EMD ',
+  'Matlab ',
+  'Python ',
+  'C++ ',
+  'Noise ',
+	'Empirical Mode Decomposition '
 ]
 
 for(var i=0;i<dictionary.length;i++){
@@ -627,8 +627,7 @@ function editPage(pageName,values){
 			//fileBody+="<ul>";
 			for(var i=0;i<values.length;i++){
         var quotedText = values[i].text.replace(/([\n\r])/g, '\n\n> $1');
-
-				fileBody+= "<"+values[i].ts+">\n\n **"+ values[i].user +"**" + " : > \n\n" + quotedText + "\n\n";
+        fileBody+= ""+formatDate(values[i].ts)+"\n\n **"+ values[i].user +"**" + " :\n\n >" + quotedText + "\n\n";
 			}
 			//fileBody+="</ul>";
 			//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
@@ -669,7 +668,7 @@ function createPage(pageName,values){
       var fileBody = "######"+strtkns[0]+"\n\n";
       for(var i=0;i<values.length;i++){
         var quotedText = values[i].text.replace(/([\n\r])/g, '\n\n> $1');
-				fileBody+= "<"+formatDate(values[i].ts)+">\n\n **"+ values[i].user +"**" + " :\n\n >" + quotedText + "\n\n";
+				fileBody+= ""+formatDate(values[i].ts)+"\n\n **"+ values[i].user +"**" + " :\n\n >" + quotedText + "\n\n";
 			}
       //fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
       var content = Buffer.from(fileBody, 'ascii');
@@ -714,7 +713,7 @@ function stats_print(msg){
   if(isTrackingStats){
     var str = '';
     stringMap.forEach(function(value, key) {
-      str = str + key + ' : ' + value + '\n';
+      str = str + key + ': ' + value + '\n';
     });
     msg.respond(str)
   }
@@ -819,8 +818,16 @@ slapp.message(/^(thanks|thank you)/i, ['mention', 'direct_message'], (msg) => {
 
 
 // Catch-all for any other responses not handled above
-slapp.message('.*', ['direct_mention', 'direct_message'], (msg) => {
+slapp.message('.*','direct_message', (msg) => {
   msg.say(HELP_TEXT);
+})
+slapp.message('.*', 'direct_mention', (msg) => {
+  slapp.client.im.open({ token: msg.meta.bot_token,  user: msg.body.event.user }, (err, data) => {
+    if (err) {
+      return console.error(err)
+    }
+    msg.say({ channel: data.channel.id, text: HELP_TEXT })
+    })
 })
 
 // attach Slapp to express server
