@@ -1,6 +1,6 @@
 # NeuroBotX
 
-This repository is an App for Slack inntended to be hosted on [Beep Boop][bb].  It's written in [node.js](), uses the [Slapp][slapp] library, and takes advantage of the [Slack Events API][slack-events-api].
+This repository is an App for Slack intended to be hosted on [Beep Boop][bb].  It's written in [node.js](), uses the [Slapp][slapp] library, and takes advantage of the [Slack Events API][slack-events-api].
 
 ## Setup Instructions
 
@@ -25,6 +25,28 @@ Once you've finished setting up your Slack App and saved the `Client ID`, `Clien
 Once your project has started, go to the **Teams** tab and add your new Slack App to one of your Slack teams.
 
 ![Add Team](https://cloud.githubusercontent.com/assets/367275/19364343/012e4922-914b-11e6-8f0a-bb020b016fd2.png)
+
+## Usage
+
+Command | Action
+------------ | -------------
+/github [$Token] | Initialize the github authentication token.  
+                   \`token\` The Github Oauth user token
+/stats [$Option] | Keywords usage statistics
+                   \`print\` prints the current statistics.\n
+                   \`add [Keyword]\` adds the keyword to the tracked keywords list.\n
+                   \`delete [Keyword]\` deletes the keyword to the tracked keywords list.\n
+                   \`start\` starts statistics tracking.(Github token must be initialized first using /github)\n
+                   \`stop\` stops statistics tracking.\n
+                   \`subscribe\` subscribe to the weekly statistics message.\n
+                   \`unsubscribe\` unsubscribe from the weekly statistics message.\n
+/links [$Option] | Links tracking.
+                   \`print\` prints the current links buffer waiting to be pushed to Wordpress.\n
+                   \`start\` starts links tracking.\n
+                   \`stop\` stops links tracking.\n
+/archivetogit [$Option] | Archive messages to github.
+                   \`start\` starts the archiving to git. (Github token must be initialized first using /github)\n
+                   \`stop\` stops the archiving to git.\n
 
 [bb]: https://beepboophq.com
 [slapp]: https://github.com/BeepBoopHQ/slapp
