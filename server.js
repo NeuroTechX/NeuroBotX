@@ -7,7 +7,7 @@ const cron = require('node-cron');
 const GitHubApi = require("github");
 const request = require('request');
 const HashMap = require('hashmap');
-const fs = require('fs')[]
+const fs = require('fs');
 const verbose = require('./verbose.js');
 
 var github = new GitHubApi({
@@ -198,7 +198,7 @@ slapp.event('team_join', (msg) => {
     if (err) {
       return console.error(err)
     }
-    msg.say({ channel: data.channel.id, text: WELCOME_TEXT })
+    msg.say({ channel: data.channel.id, text: verbose.WELCOME_TEXT })
     })
 })
 
