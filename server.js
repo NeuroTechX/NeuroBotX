@@ -81,14 +81,14 @@ To find a list of cities where we are located in, please visit http://neurotechx
 `
 var LINKS_REGEX = /(\b(https?|ftp|file|http):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
 
-	function HashMap(other) {
-		this.clear();
-		switch (arguments.length) {
-			case 0: break;
-			case 1: this.copy(other); break;
-			default: multi(this, arguments); break;
-		}
-	}
+	// function HashMap(other) {
+	// 	this.clear();
+	// 	switch (arguments.length) {
+	// 		case 0: break;
+	// 		case 1: this.copy(other); break;
+	// 		default: multi(this, arguments); break;
+	// 	}
+	// }
 
 	// var proto = HashMap.prototype = {
 	// 	constructor:HashMap,
