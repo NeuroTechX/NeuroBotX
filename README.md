@@ -1,6 +1,6 @@
-# starter-slapp-app
+# NeuroBotX
 
-This repository is meant as an example and starting point for building a Slack app on [Beep Boop][bb].  It's written in [node.js](), uses the [Slapp][slapp] library, and takes advantage of the [Slack Events API][slack-events-api].
+This repository is an App for Slack inntended to be hosted on [Beep Boop][bb].  It's written in [node.js](), uses the [Slapp][slapp] library, and takes advantage of the [Slack Events API][slack-events-api].
 
 ## Setup Instructions
 
@@ -10,8 +10,11 @@ Once you've created a new [Beep Boop](bb) project with this repo, go to your pro
 
 Follow the steps laid out in the wizard. You'll want to enable **Event Subscriptions** on your Slack App using the `URL` provided and add subscriptions for the following **Bot Events**:
 
++ `im_open`
++ `im_close`
 + `message.channels`
 + `message.im`
++ `team_join`
 
 ### 🔥 it up
 
@@ -22,16 +25,6 @@ Once you've finished setting up your Slack App and saved the `Client ID`, `Clien
 Once your project has started, go to the **Teams** tab and add your new Slack App to one of your Slack teams.
 
 ![Add Team](https://cloud.githubusercontent.com/assets/367275/19364343/012e4922-914b-11e6-8f0a-bb020b016fd2.png)
-
-Send `@slappbot` a Direct Message of `help` to see what it can do.
-
-![Help](https://cloud.githubusercontent.com/assets/367275/19364707/7a4f8964-914c-11e6-99cd-d4cd65c9061a.png)
-
-### Why is my Bot Offline?
-
-![Bot Offline](https://cloud.githubusercontent.com/assets/367275/19364857/3944ba24-914d-11e6-9939-a37ed07b954e.png)
-
-Your bot will not show as "online", which is a current limitation of the [Slack Events API](slack-events-api) (no way to set presence). If you really want your bot to show online, [check out this work-around](presence-polyfill).
 
 [bb]: https://beepboophq.com
 [slapp]: https://github.com/BeepBoopHQ/slapp
