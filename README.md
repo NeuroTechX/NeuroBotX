@@ -28,25 +28,12 @@ Once your project has started, go to the **Teams** tab and add your new Slack Ap
 
 ## Usage
 
-Command | Action
------------- | -------------
-/github [$Token] | Initialize the github authentication token.  
-                   **token** The Github Oauth user token  
-/stats [$Option] | Keywords usage statistics  
-                   **print** prints the current statistics.  
-                   **add [Keyword]** adds the keyword to the tracked keywords list.  
-                   **delete [Keyword]** deletes the keyword to the tracked keywords list.  
-                   **start** starts statistics tracking.(Github token must be initialized first using /github)  
-                   **stop** stops statistics tracking.  
-                   **subscribe** subscribe to the weekly statistics message.  
-                   **unsubscribe** unsubscribe from the weekly statistics message.  
-/links [$Option] | Links tracking.
-                   **print** prints the current links buffer waiting to be pushed to Wordpress.  
-                   **start** starts links tracking.  
-                   **stop** stops links tracking.  
-/archivetogit [$Option] | Archive messages to github.  
-                   **start** starts the archiving to git. (Github token must be initialized first using /github)  
-                   **stop** stops the archiving to git.  
+| Command       | Arg 0    | Arg 1 | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+|---------------|----------|-------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| /github       | [Token]  |       | Initializethe github authentication token. **token**: The Github Oauth user token                                                                                                                                                                                                                                                                                                                                                                              |
+| /stats        | [Option] | [VAL] | Keywords usage statistics. **print**: prints the current statistics. **add [VAL]** adds the keyword to the tracked keywords list. **delete [VAL]** deletes the keyword to the tracked keywords list. **start** starts statistics tracking.(Github token must be initialized first using /github) **stop** stops statistics tracking.,**subscribe** subscribe to the weekly statistics message. **unsubscribe** unsubscribe from the weekly statistics message. |
+| /stats        | [Option] | [VAL] | Links tracking. **print**prints the current links buffer waiting to be pushed to Wordpress. **start** starts links tracking. **stop** stops links tracking.                                                                                                                                                                                                                                                                                                    |
+| /archivetogit | [Option] |       | Archive messages to github. **start** starts the archiving to git. (Github token must be initialized first using /github) **stop** stops the archiving to git.                                                                                                                                                                                                                                                                                                 |
 
 [bb]: https://beepboophq.com
 [slapp]: https://github.com/BeepBoopHQ/slapp
