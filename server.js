@@ -23,7 +23,10 @@ var github = new GitHubApi({
 });
 
 var HELP_TEXT = `
-If you are looking for help or have a question, the quickest way to get an answer is to message one of the directors. @yannick and @sydneyneurotechx are the more active Directors on slack.
+Hi there! I’m NeuroBotX, your NeuroTechX Slack bot. I currently only have 1 response when you send me a message, so here is everything you need to know about NeuroTechX and this Slack.
+
+
+If you are looking for help or have a question about NeuroTechX, the quickest way to get an answer is to message one of the directors. @yannick and @sydneyneurotechx are the more active Directors on slack.
 
 Here is a list of all the directors and their usernames:
 
@@ -36,14 +39,16 @@ If you are looking for online Neurotech  resources, check out NeuroTechEDU
 
 Link: http://www.neurotechedu.com/
 
-If you are looking for a chapter to get connected to, please explore the different chapter public channels. All city chapter channels have a “_” at the beginning of it.
+If you are looking for a chapter to get connected to, please explore the different Slack public chapter channels. All city chapters channels have a “_” at the beginning of it.
 
-If you are looking for archived Slack Text, go to:
+To find a list of cities where we are located in, please visit http://neurotechx.com/ and see if there is a chapter near you!
+
+If you are looking for archived Slack text, go to:
 
 https://github.com/NeuroTechX/ntx_slack_archive
 `
 var WELCOME_TEXT = `
-Welcome to the NeuroTechX Slack! This Slack brings together hundreds of people from across the world to communicate about NeuroTechnology. Everyone here is passionate about the domain and is willing to help out.
+Welcome to the NeuroTechX Slack! This Slack brings together hundreds of people from across the world to communicate about Neurotechnology. Everyone here is passionate about the domain and is willing to help out.
 
 Here is how you should get started:
 
@@ -60,18 +65,18 @@ Communications Director: @lucia.gallardo
 Science Director:@ melanie
 
 
-If you are new to the domain of NeuroTechnology, we urge you to check out our NeurotechEDU page! There is a list of amazing resources that exist on it, that will be beneficial for you in helping to advance your knowledge in the domain. You will see how interesting it is to be able to find new ways to learn about the brain and how it work and what tools are available to you to do so. If you have questions related to the content, feel free to ask them in Slack
+If you are new to the domain of Neurotechnology, we urge you to check out our NeurotechEDU page! There is a list of amazing resources that exist on it that will help you to advance your knowledge in the domain. If you have questions related to the content, feel free to ask them in Slack
 
 Link: http://www.neurotechedu.com/
 
-Since NeurotechX is a bootstrapped non-profit, we are unable to pay for the premium version of Slack and therefore all messages after 10,000 are deleted. We have built a temporary solution by archiving all of the text onto our Github page.
+Since NeurotechX is a bootstrapped non-profit, we are unable to pay for the premium version of Slack and therefore all messages after 10,000 are deleted. We have built a temporary solution by archiving all of the text onto our Github page. You can visit the list of archived text here. We only track public channels.
 
 https://github.com/NeuroTechX/ntx_slack_archive
 
 
-
-
 Finally take a look at the different chapters that exist in NeuroTechX. You may discover that there is a local community for you to get connected to.  All city chapter channels have a “_” at the beginning of it.
+
+To find a list of cities where we are located in, please visit http://neurotechx.com/ and see if there is a chapter near you!
 `
 var LINKS_REGEX = /(\b(https?|ftp|file|http):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
 
@@ -618,9 +623,9 @@ function editPage(pageName,values){
   	if (!fileerror && fileresponse.statusCode == 200) {
 			//fileBody+="<ul>";
 			for(var i=0;i<values.length;i++){
-        var quotedText = values[i].text.replace(/([\n\r])/g, '> $1');
+        var quotedText = values[i].text.replace(/([\n\r])/g, '\n\n> $1');
 
-				fileBody+= "<"+values[i].ts+">\n **"+ values[i].user +"**" + " : > \n" + quotedText + "\n";
+				fileBody+= "<"+values[i].ts+">\n\n **"+ values[i].user +"**" + " : > \n\n" + quotedText + "\n\n";
 			}
 			//fileBody+="</ul>";
 			//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
@@ -660,8 +665,8 @@ function createPage(pageName,values){
       var strtkns = pn.split(".");
       var fileBody = "######"+strtkns[0]+"\n\n";
       for(var i=0;i<values.length;i++){
-        var quotedText = values[i].text.replace(/([\n\r])/g, '> $1');
-				fileBody+= "<"+values[i].ts+">\n **"+ values[i].user +"**" + " : > \n" + quotedText + "\n";
+        var quotedText = values[i].text.replace(/([\n\r])/g, '\n\n> $1');
+				fileBody+= "<"+values[i].ts+">\n\n **"+ values[i].user +"**" + " : > \n\n" + quotedText + "\n\n";
 			}
       //fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
       var content = Buffer.from(fileBody, 'ascii');
