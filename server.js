@@ -250,25 +250,25 @@ var stringMap = new HashMap();
 var msgMap = new HashMap();
 var msgMapLength = 0;
 var dictionary = [
-  'OpenBCI ',
-  'BCI ',
-  'EEG ',
-  'EMG ',
-  'Decoding ',
-  'Meetup ',
-  'Frequency ',
-  'Freq ',
-  'Signal ',
-  'EMD ',
-  'Matlab ',
-  'Python ',
-  'C++ ',
-  'Noise ',
-	'Empirical Mode Decomposition '
+  'openbci ',
+  'bci ',
+  'eeg ',
+  'emg ',
+  'decoding ',
+  'meetup ',
+  'frequency ',
+  'freq ',
+  'signal ',
+  'emd ',
+  'matlab ',
+  'python ',
+  'c++ ',
+  'noise ',
+	'empirical mode decomposition '
 ]
 
 for(var i=0;i<dictionary.length;i++){
-  stringMap.set(dictionary[i],0)
+  stringMap.set(dictionary[i].toLowerCase(),0)
 }
 
 var subscribedUsers = [];
@@ -760,9 +760,9 @@ function stats_unsubscribe(msg){
 
 }
 function stats_add(msg,value) {
-		var hash = stringMap.hash(value);
+		var hash = stringMap.hash(value.toLowerCase());
 		if ( ! (hash in stringMap._data) ) {
-			stringMap.set(value,0);
+			stringMap.set(value.toLowerCase(),0);
       msg.respond("Keyword added to the tracking list.");
 		}
     else{
