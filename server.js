@@ -763,16 +763,24 @@ function stats_add(msg,value) {
 		var hash = stringMap.hash(value);
 		if ( ! (hash in stringMap._data) ) {
 			stringMap.set(value,0);
+      msg.respond("Keyword added to the tracking list.");
 		}
-    msg.respond("Keyword added to the tracking list.");
+    else{
+      msg.respond("Keyword already on the tracking list.");
+    }
+
 }
 function stats_delete(msg,value) {
 
-	var hash = stringMap.hash(value);
+	var hash = stringMap.hash(value.toLowerCase());
 	if ( (hash in stringMap._data) ) {
-		stringMap.remove(value);
+		stringMap.remove(value.toLowerCase());
+    msg.respond("Keyword deleted from the tracking list.");
 	}
-  msg.respond("Keyword deleted from the tracking list.");
+  else {
+    msg.respond("Keyword not on the tracking list.");
+  }
+
 }
 function stats_refresh(msg) {
 	stringMap.clear();
