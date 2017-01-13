@@ -251,21 +251,21 @@ var stringMap = new HashMap();
 var msgMap = new HashMap();
 var msgMapLength = 0;
 var dictionary = [
-  'openbci ',
-  'bci ',
-  'eeg ',
-  'emg ',
-  'decoding ',
-  'meetup ',
-  'frequency ',
-  'freq ',
-  'signal ',
-  'emd ',
-  'matlab ',
-  'python ',
-  'c++ ',
-  'noise ',
-	'empirical mode decomposition '
+  'openbci',
+  'bci',
+  'eeg',
+  'emg',
+  'decoding',
+  'meetup',
+  'frequency',
+  'freq',
+  'signal',
+  'emd',
+  'matlab',
+  'python',
+  'c++',
+  'noise',
+	'empirical mode decomposition'
 ]
 
 for(var i=0;i<dictionary.length;i++){
@@ -477,11 +477,11 @@ slapp.command('/stats','(.*)', (msg, text, value)  => {
       var cmd = strtokens[0];
       var val = '';
       if(strtokens.length>1){
-        for(var i=1;i<strtokens.length;i++)
-          val += strtokens[i]+' ';
-      }
-      else {
-        val = strtokens[0]+' ';
+        for(var i=1;i<strtokens.length;i++){
+          if(i!=1)
+            val +=' ';
+          val += strtokens[i];
+        }
       }
       if(!text)
         msg.respond("Options for /stats: \n" +
