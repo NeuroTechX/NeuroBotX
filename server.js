@@ -7,7 +7,8 @@ const cron = require('node-cron');
 const GitHubApi = require("github");
 const request = require('request');
 const HashMap = require('hashmap');
-const fs = require('fs')
+const fs = require('fs')[]
+const verbose = require('./verbose.js');
 
 var github = new GitHubApi({
     // optional
@@ -22,229 +23,7 @@ var github = new GitHubApi({
     followRedirects: false, // default: true; there's currently an issue with non-get redirects, so allow ability to disable follow-redirects
     timeout: 5000
 });
-
-var HELP_TEXT = `
-Hi there! I’m NeuroBotX, your NeuroTechX Slack bot. I currently only have 1 response when you send me a message, so here is everything you need to know about NeuroTechX and this Slack.
-
-
-If you are looking for help or have a question about NeuroTechX, the quickest way to get an answer is to message one of the directors. @yannick and @sydneyneurotechx are the more active Directors on slack.
-
-Here is a list of all the directors and their usernames:
-
-Executive Director: @yannick
-Operations Director: @sydneyneurotechx
-Communications Director: @lucia.gallardo
-Science Director:@ melanie
-
-If you are looking for online Neurotech  resources, check out NeuroTechEDU
-
-Link: http://www.neurotechedu.com/
-
-If you are looking for a chapter to get connected to, please explore the different Slack public chapter channels. All city chapters channels have a “_” at the beginning of it.
-
-To find a list of cities where we are located in, please visit http://neurotechx.com/ and see if there is a chapter near you!
-
-If you are looking for archived Slack text, go to:
-
-https://github.com/NeuroTechX/ntx_slack_archive
-`
-var WELCOME_TEXT = `
-Welcome to the NeuroTechX Slack! This Slack brings together hundreds of people from across the world to communicate about Neurotechnology. Everyone here is passionate about the domain and is willing to help out.
-
-Here is how you should get started:
-
-
-The first thing you should do is read our code of conduct. It can be found at: http://ntx-dockit.readthedocs.io/en/latest/Conduct.html
-
-The second thing you should do is go to the #introductions channel in introduce yourself! Everyone here is very friendly!
-
-The third thing you should do is send a message to the directors of NeuroTechX and say hello! Not everyone is active at all times but you should get a response from most of them. Here are their usernames:
-
-Executive Director: @yannick
-Operations Director: @sydneyneurotechx
-Communications Director: @lucia.gallardo
-Science Director:@ melanie
-
-
-If you are new to the domain of Neurotechnology, we urge you to check out our NeurotechEDU page! There is a list of amazing resources that exist on it that will help you to advance your knowledge in the domain. If you have questions related to the content, feel free to ask them in Slack
-
-Link: http://www.neurotechedu.com/
-
-Since NeurotechX is a bootstrapped non-profit, we are unable to pay for the premium version of Slack and therefore all messages after 10,000 are deleted. We have built a temporary solution by archiving all of the text onto our Github page. You can visit the list of archived text here. We only track public channels.
-
-https://github.com/NeuroTechX/ntx_slack_archive
-
-
-Finally take a look at the different chapters that exist in NeuroTechX. You may discover that there is a local community for you to get connected to.  All city chapter channels have a “_” at the beginning of it.
-
-To find a list of cities where we are located in, please visit http://neurotechx.com/ and see if there is a chapter near you!
-`
 var LINKS_REGEX = /(\b(https?|ftp|file|http):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-
-	// function HashMap(other) {
-	// 	this.clear();
-	// 	switch (arguments.length) {
-	// 		case 0: break;
-	// 		case 1: this.copy(other); break;
-	// 		default: multi(this, arguments); break;
-	// 	}
-	// }
-
-	// var proto = HashMap.prototype = {
-	// 	constructor:HashMap,
-  //
-	// 	get:function(key) {
-	// 		var data = this._data[this.hash(key)];
-	// 		return data && data[1];
-	// 	},
-  //
-	// 	set:function(key, value) {
-	// 		// Store original key as well (for iteration)
-	// 		var hash = this.hash(key);
-	// 		if ( !(hash in this._data) ) {
-	// 			this._count++;
-	// 		}
-	// 		this._data[hash] = [key, value];
-	// 	},
-  //
-	// 	multi:function() {
-	// 		multi(this, arguments);
-	// 	},
-  //
-	// 	copy:function(other) {
-	// 		for (var hash in other._data) {
-	// 			if ( !(hash in this._data) ) {
-	// 				this._count++;
-	// 			}
-	// 			this._data[hash] = other._data[hash];
-	// 		}
-	// 	},
-  //
-	// 	has:function(key) {
-	// 		return this.hash(key) in this._data;
-	// 	},
-  //
-	// 	search:function(value) {
-	// 		for (var key in this._data) {
-	// 			if (this._data[key][1] === value) {
-	// 				return this._data[key][0];
-	// 			}
-	// 		}
-  //
-	// 		return null;
-	// 	},
-  //
-	// 	remove:function(key) {
-	// 		var hash = this.hash(key);
-	// 		if ( hash in this._data ) {
-	// 			this._count--;
-	// 			delete this._data[hash];
-	// 		}
-	// 	},
-  //
-	// 	type:function(key) {
-	// 		var str = Object.prototype.toString.call(key);
-	// 		var type = str.slice(8, -1).toLowerCase();
-	// 		// Some browsers yield DOMWindow for null and undefined, works fine on Node
-	// 		if (type === 'domwindow' && !key) {
-	// 			return key + '';
-	// 		}
-	// 		return type;
-	// 	},
-  //
-	// 	keys:function() {
-	// 		var keys = [];
-	// 		this.forEach(function(_, key) { keys.push(key); });
-	// 		return keys;
-	// 	},
-  //
-	// 	values:function() {
-	// 		var values = [];
-	// 		this.forEach(function(value) { values.push(value); });
-	// 		return values;
-	// 	},
-  //
-	// 	count:function() {
-	// 		return this._count;
-	// 	},
-  //
-	// 	clear:function() {
-	// 		// TODO: Would Object.create(null) make any difference
-	// 		this._data = {};
-	// 		this._count = 0;
-	// 	},
-  //
-	// 	clone:function() {
-	// 		return new HashMap(this);
-	// 	},
-  //
-	// 	hash:function(key) {
-	// 		switch (this.type(key)) {
-	// 			case 'undefined':
-	// 			case 'null':
-	// 			case 'boolean':
-	// 			case 'number':
-	// 			case 'regexp':
-	// 				return key + '';
-  //
-	// 			case 'date':
-	// 				return '♣' + key.getTime();
-  //
-	// 			case 'string':
-	// 				return '♠' + key;
-  //
-	// 			case 'array':
-	// 				var hashes = [];
-	// 				for (var i = 0; i < key.length; i++) {
-	// 					hashes[i] = this.hash(key[i]);
-	// 				}
-	// 				return '♥' + hashes.join('⁞');
-  //
-	// 			default:
-	// 				// TODO: Don't use expandos when Object.defineProperty is not available?
-	// 				if (!key.hasOwnProperty('_hmuid_')) {
-	// 					key._hmuid_ = ++HashMap.uid;
-	// 					hide(key, '_hmuid_');
-	// 				}
-  //
-	// 				return '♦' + key._hmuid_;
-	// 		}
-	// 	},
-  //
-	// 	forEach:function(func, ctx) {
-	// 		for (var key in this._data) {
-	// 			var data = this._data[key];
-	// 			func.call(ctx || this, data[1], data[0]);
-	// 		}
-	// 	}
-	// };
-  //
-	// HashMap.uid = 0;
-  //
-	// //- Add chaining to all methods that don't return something
-  //
-	// ['set','multi','copy','remove','clear','forEach'].forEach(function(method) {
-	// 	var fn = proto[method];
-	// 	proto[method] = function() {
-	// 		fn.apply(this, arguments);
-	// 		return this;
-	// 	};
-	// });
-  //
-	// //- Utils
-  //
-	// function multi(map, args) {
-	// 	for (var i = 0; i < args.length; i += 2) {
-	// 		map.set(args[i], args[i+1]);
-	// 	}
-	// }
-  //
-	// function hide(obj, prop) {
-	// 	// Make non iterable if supported
-	// 	if (Object.defineProperty) {
-	// 		Object.defineProperty(obj, prop, {enumerable:false});
-	// 	}
-	// }
 
 var github_token='';
 var stringMap = new HashMap();
@@ -411,7 +190,7 @@ function links_push(){
 
 // response to the user typing "help"
 slapp.message('help', ['mention', 'direct_message'], (msg) => {
-  msg.say(HELP_TEXT)
+  msg.say(verbose.HELP_TEXT)
 })
 
 slapp.event('team_join', (msg) => {
@@ -829,14 +608,14 @@ slapp.message(/^(thanks|thank you)/i, ['mention', 'direct_message'], (msg) => {
 
 // Catch-all for any other responses not handled above
 slapp.message('.*','direct_message', (msg) => {
-  msg.say(HELP_TEXT);
+  msg.say(verbose.HELP_TEXT);
 })
 slapp.message('.*', 'direct_mention', (msg) => {
   slapp.client.im.open({ token: msg.meta.bot_token,  user: msg.body.event.user }, (err, data) => {
     if (err) {
       return console.error(err)
     }
-    msg.say({ channel: data.channel.id, text: HELP_TEXT })
+    msg.say({ channel: data.channel.id, text: verbose.HELP_TEXT })
     })
 })
 
