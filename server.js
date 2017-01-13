@@ -476,7 +476,10 @@ slapp.command('/stats','(.*)', (msg, text, value)  => {
       var val = '';
       if(strtokens.length>1){
         for(var i=1;i<strtokens.length;i++)
-        val += strtokens[i];
+          val += strtokens[i]+' ';
+      }
+      else {
+        val = strtokens[0]+' ';
       }
       if(!text)
         msg.respond("Options for /stats: \n" +
@@ -655,8 +658,8 @@ function editPage(pageName,values){
   	}
 	});
 }
-function findChanelName(id){
-
+function formatDate(ts){
+  return ts.toLocaleDateString("en-US") + " " + ts.toLocaleTimeString(["en-US"], {hour: '2-digit', minute:'2-digit'});
 }
 function createPage(pageName,values){
     _("creating page with values ");
@@ -666,7 +669,7 @@ function createPage(pageName,values){
       var fileBody = "######"+strtkns[0]+"\n\n";
       for(var i=0;i<values.length;i++){
         var quotedText = values[i].text.replace(/([\n\r])/g, '\n\n> $1');
-				fileBody+= "<"+values[i].ts+">\n\n **"+ values[i].user +"**" + " : > \n\n" + quotedText + "\n\n";
+				fileBody+= "<"+formatDate(values[i].ts)+">\n\n **"+ values[i].user +"**" + " :\n\n >" + quotedText + "\n\n";
 			}
       //fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
       var content = Buffer.from(fileBody, 'ascii');
