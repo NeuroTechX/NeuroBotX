@@ -487,7 +487,7 @@ slapp.command('/stats','(.*)', (msg, text, value)  => {
         msg.respond("Options for /stats: \n" +
                 "\`print\` prints the current statistics.\n" +
                 "\`add [Keyword]\` adds the keyword to the tracked keywords list.\n" +
-                "\`delete [Keyword]\` deletes the keyword to the tracked keywords list.\n" +
+                "\`delete [Keyword]\` deletes the keyword from the tracked keywords list.\n" +
                 "\`start\` starts statistics tracking.(Github token must be initialized first using /github)\n" +
                 "\`stop\` stops statistics tracking.\n" +
                 "\`subscribe\` subscribe to the weekly statistics message.\n" +
