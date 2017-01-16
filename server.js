@@ -6,7 +6,9 @@ const Context = require('slapp-context-beepboop')
 const cron = require('node-cron');
 const GitHubApi = require("github");
 const request = require('request');
-const fs = require('fs')
+const HashMap = require('hashmap');
+const fs = require('fs');
+const verbose = require('./verbose.js');
 
 var github = new GitHubApi({
     // optional
@@ -21,7 +23,6 @@ var github = new GitHubApi({
     followRedirects: false, // default: true; there's currently an issue with non-get redirects, so allow ability to disable follow-redirects
     timeout: 5000
 });
-
 var HELP_TEXT = `
 Hi there! I’m NeuroBotX, your NeuroTechX Slack bot. I currently only have 1 response when you send me a message, so here is everything you need to know about NeuroTechX and this Slack.
 
@@ -80,195 +81,30 @@ To find a list of cities where we are located in, please visit http://neurotechx
 `
 var LINKS_REGEX = /(\b(https?|ftp|file|http):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
 
-	function HashMap(other) {
-		this.clear();
-		switch (arguments.length) {
-			case 0: break;
-			case 1: this.copy(other); break;
-			default: multi(this, arguments); break;
-		}
-	}
-
-	var proto = HashMap.prototype = {
-		constructor:HashMap,
-
-		get:function(key) {
-			var data = this._data[this.hash(key)];
-			return data && data[1];
-		},
-
-		set:function(key, value) {
-			// Store original key as well (for iteration)
-			var hash = this.hash(key);
-			if ( !(hash in this._data) ) {
-				this._count++;
-			}
-			this._data[hash] = [key, value];
-		},
-
-		multi:function() {
-			multi(this, arguments);
-		},
-
-		copy:function(other) {
-			for (var hash in other._data) {
-				if ( !(hash in this._data) ) {
-					this._count++;
-				}
-				this._data[hash] = other._data[hash];
-			}
-		},
-
-		has:function(key) {
-			return this.hash(key) in this._data;
-		},
-
-		search:function(value) {
-			for (var key in this._data) {
-				if (this._data[key][1] === value) {
-					return this._data[key][0];
-				}
-			}
-
-			return null;
-		},
-
-		remove:function(key) {
-			var hash = this.hash(key);
-			if ( hash in this._data ) {
-				this._count--;
-				delete this._data[hash];
-			}
-		},
-
-		type:function(key) {
-			var str = Object.prototype.toString.call(key);
-			var type = str.slice(8, -1).toLowerCase();
-			// Some browsers yield DOMWindow for null and undefined, works fine on Node
-			if (type === 'domwindow' && !key) {
-				return key + '';
-			}
-			return type;
-		},
-
-		keys:function() {
-			var keys = [];
-			this.forEach(function(_, key) { keys.push(key); });
-			return keys;
-		},
-
-		values:function() {
-			var values = [];
-			this.forEach(function(value) { values.push(value); });
-			return values;
-		},
-
-		count:function() {
-			return this._count;
-		},
-
-		clear:function() {
-			// TODO: Would Object.create(null) make any difference
-			this._data = {};
-			this._count = 0;
-		},
-
-		clone:function() {
-			return new HashMap(this);
-		},
-
-		hash:function(key) {
-			switch (this.type(key)) {
-				case 'undefined':
-				case 'null':
-				case 'boolean':
-				case 'number':
-				case 'regexp':
-					return key + '';
-
-				case 'date':
-					return '♣' + key.getTime();
-
-				case 'string':
-					return '♠' + key;
-
-				case 'array':
-					var hashes = [];
-					for (var i = 0; i < key.length; i++) {
-						hashes[i] = this.hash(key[i]);
-					}
-					return '♥' + hashes.join('⁞');
-
-				default:
-					// TODO: Don't use expandos when Object.defineProperty is not available?
-					if (!key.hasOwnProperty('_hmuid_')) {
-						key._hmuid_ = ++HashMap.uid;
-						hide(key, '_hmuid_');
-					}
-
-					return '♦' + key._hmuid_;
-			}
-		},
-
-		forEach:function(func, ctx) {
-			for (var key in this._data) {
-				var data = this._data[key];
-				func.call(ctx || this, data[1], data[0]);
-			}
-		}
-	};
-
-	HashMap.uid = 0;
-
-	//- Add chaining to all methods that don't return something
-
-	['set','multi','copy','remove','clear','forEach'].forEach(function(method) {
-		var fn = proto[method];
-		proto[method] = function() {
-			fn.apply(this, arguments);
-			return this;
-		};
-	});
-
-	//- Utils
-
-	function multi(map, args) {
-		for (var i = 0; i < args.length; i += 2) {
-			map.set(args[i], args[i+1]);
-		}
-	}
-
-	function hide(obj, prop) {
-		// Make non iterable if supported
-		if (Object.defineProperty) {
-			Object.defineProperty(obj, prop, {enumerable:false});
-		}
-	}
-
 var github_token='';
 var stringMap = new HashMap();
 var msgMap = new HashMap();
 var msgMapLength = 0;
 var dictionary = [
-  'OpenBCI',
-  'BCI',
-  'EEG',
-  'EMG',
-  'Decoding',
-  'Meetup',
-  'Frequency',
-  'Freq',
-  'Signal',
-  'EMD',
-  'Matlab',
-  'Python',
-  'C++',
-  'Noise',
-	'Empirical Mode Decomposition'
+  'openbci',
+  'bci',
+  'eeg',
+  'emg',
+  'decoding',
+  'meetup',
+  'frequency',
+  'freq',
+  'signal',
+  'emd',
+  'matlab',
+  'python',
+  'c++',
+  'noise',
+	'empirical mode decomposition'
 ]
 
 for(var i=0;i<dictionary.length;i++){
-  stringMap.set(dictionary[i],0)
+  stringMap.set(dictionary[i].toLowerCase(),0)
 }
 
 var subscribedUsers = [];
@@ -331,35 +167,35 @@ function links_print(msg){
 		}
 	}
 	else {
-		msg.say("Links tracking is not in progress.");
+		msg.respond("Links tracking is not in progress.");
 	}
 }
 function links_start(msg){
   if(github_token !=''){
   	if(!isTrackingLinks){
   		isTrackingLinks=true;
-  	msg.say("Links tracking started.");
+  	msg.respond("Links tracking started.");
   	}
   	else {
-  		msg.say("Links tracking is already in progress.");
+  		msg.respond("Links tracking is already in progress.");
   	}
   }else{
-    msg.say("Please set the github token first using /github [Token].");
+    msg.respond("Please set the github token first using /github [Token].");
   }
 
 }
 function links_stop(msg){
 	if(isTrackingLinks){
 		isTrackingLinks=false;
-		msg.say("Links tracking stopped.");
+		msg.respond("Links tracking stopped.");
 	}
 	else {
-		msg.say("Links tracking already stopped.");
+		msg.respond("Links tracking already stopped.");
 	}
 }
 function links_refresh(msg){
 	links = [];
-	msg.say("Stored links deleted.");
+	msg.respond("Stored links deleted.");
 }
 function links_push(){
 	var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_resources/master/_pages/slack-links.md";
@@ -410,7 +246,7 @@ function links_push(){
 
 // response to the user typing "help"
 slapp.message('help', ['mention', 'direct_message'], (msg) => {
-  msg.say(HELP_TEXT)
+  msg.say(verbose.HELP_TEXT)
 })
 
 slapp.event('team_join', (msg) => {
@@ -418,7 +254,7 @@ slapp.event('team_join', (msg) => {
     if (err) {
       return console.error(err)
     }
-    msg.say({ channel: data.channel.id, text: WELCOME_TEXT })
+    msg.say({ channel: data.channel.id, text: verbose.WELCOME_TEXT })
     })
 })
 
@@ -426,7 +262,8 @@ slapp.message('(.*)', 'ambient', (msg) => {
 	if(isTrackingStats){
     var lowerCaseText =  msg.body.event.text.toLowerCase();
 		stringMap.forEach(function(value, key) {
-			var occ = lowerCaseText.split(key.toLowerCase()).length - 1;
+			var occ = lowerCaseText.split(key).length - 1;
+      console.log("Occurences of " + key + " " +occ);
 			stringMap.set(key,stringMap.get(key)+occ);
 		})
 	}
@@ -474,13 +311,18 @@ slapp.command('/stats','(.*)', (msg, text, value)  => {
       var strtokens = text.split(" ");
       var cmd = strtokens[0];
       var val = '';
-      if(cmd.length==2);
-        val = strtokens[1];
+      if(strtokens.length>1){
+        for(var i=1;i<strtokens.length;i++){
+          if(i!=1)
+            val +=' ';
+          val += strtokens[i];
+        }
+      }
       if(!text)
-        msg.say("Options for /stats: \n" +
+        msg.respond("Options for /stats: \n" +
                 "\`print\` prints the current statistics.\n" +
                 "\`add [Keyword]\` adds the keyword to the tracked keywords list.\n" +
-                "\`delete [Keyword]\` deletes the keyword to the tracked keywords list.\n" +
+                "\`delete [Keyword]\` deletes the keyword from the tracked keywords list.\n" +
                 "\`start\` starts statistics tracking.(Github token must be initialized first using /github)\n" +
                 "\`stop\` stops statistics tracking.\n" +
                 "\`subscribe\` subscribe to the weekly statistics message.\n" +
@@ -503,10 +345,10 @@ slapp.command('/stats','(.*)', (msg, text, value)  => {
       else if(cmd == 'unsubscribe')
         stats_unsubscribe(msg)
       else
-        msg.say("Please use /stats to print the available options.");
+        msg.respond("Please use /stats to print the available options.");
     }
     else {
-      msg.say("Sorry, you're not an admin.");
+      msg.respond("Sorry, you're not an admin.");
     }
   })
 })
@@ -514,7 +356,7 @@ slapp.command('/archivetogit','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
     if( data.user.is_admin){
       if(!text)
-        msg.say("Options for /archivetogit: \n" +
+        msg.respond("Options for /archivetogit: \n" +
                 "\`start\` starts the archiving to git. (Github token must be initialized first using /github)\n" +
                 "\`stop\` stops the archiving to git.\n"
               );
@@ -523,11 +365,11 @@ slapp.command('/archivetogit','(.*)', (msg, text, value)  => {
       else if(text == 'stop')
         archive_stop(msg);
       else {
-        msg.say("Please use /archivetogit to print the available options.");
+        msg.respond("Please use /archivetogit to print the available options.");
       }
     }
     else {
-      msg.say("Sorry, you're not an admin.");
+      msg.respond("Sorry, you're not an admin.");
     }
   })
 })
@@ -539,10 +381,10 @@ slapp.command('/github','(.*)', (msg, text, value)  => {
         type: "token",
         token: github_token
       });
-      msg.say("Github Token initialized.");
+      msg.respond("Github Token initialized.");
     }
     else {
-      msg.say("Sorry, you're not an admin.");
+      msg.respond("Sorry, you're not an admin.");
     }
   })
 })
@@ -550,22 +392,22 @@ function archive_start(msg){
   if(github_token!=''){
     if(!isArchiving){
   		isArchiving=true;
-  	msg.say("Archiving started.");
+  	msg.respond("Archiving started.");
   	}
   	else {
-  		msg.say("Archiving is already in progress.");
+  		msg.respond("Archiving is already in progress.");
   	}
   }else{
-    msg.say("Please set the github token first.");
+    msg.respond("Please set the github token first.");
   }
 }
 function archive_stop(msg){
   if(isArchiving){
 		isArchiving=false;
-		msg.say("Archiving stopped.");
+		msg.respond("Archiving stopped.");
 	}
 	else {
-		msg.say("Archiving is already stoped.");
+		msg.respond("Archiving is already stoped.");
 	}
 }
 function archive_push(channel){
@@ -621,7 +463,8 @@ function editPage(pageName,values){
   	if (!fileerror && fileresponse.statusCode == 200) {
 			//fileBody+="<ul>";
 			for(var i=0;i<values.length;i++){
-				fileBody+= ""+values[i].ts+" "+ values[i].user +"" + " : " + values[i].text + "\n\n";
+        var quotedText = values[i].text.replace(/([\n\r])/g, '\n\n> $1');
+        fileBody+= ""+formatDate(values[i].ts)+"\n\n **"+ values[i].user +"**" + " :\n\n >" + quotedText + "\n\n";
 			}
 			//fileBody+="</ul>";
 			//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
@@ -651,8 +494,8 @@ function editPage(pageName,values){
   	}
 	});
 }
-function findChanelName(id){
-
+function formatDate(ts){
+  return ts.toLocaleDateString("en-US") + " " + ts.toLocaleTimeString(["en-US"], {hour: '2-digit', minute:'2-digit'});
 }
 function createPage(pageName,values){
     _("creating page with values ");
@@ -661,7 +504,8 @@ function createPage(pageName,values){
       var strtkns = pn.split(".");
       var fileBody = "######"+strtkns[0]+"\n\n";
       for(var i=0;i<values.length;i++){
-				fileBody+= ""+values[i].ts+" "+ values[i].user +"" + " : " + values[i].text + "\n\n";
+        var quotedText = values[i].text.replace(/([\n\r])/g, '\n\n> $1');
+				fileBody+= ""+formatDate(values[i].ts)+"\n\n **"+ values[i].user +"**" + " :\n\n >" + quotedText + "\n\n";
 			}
       //fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
       var content = Buffer.from(fileBody, 'ascii');
@@ -679,7 +523,7 @@ slapp.command('/links','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
     if( data.user.is_admin){
       if(!text)
-        msg.say("Options for /links: \n" +
+        msg.respond("Options for /links: \n" +
                 "\`print\` prints the current links buffer waiting to be pushed to Wordpress.\n" +
                 "\`start\` starts links tracking.\n" +
                 "\`stop\` stops links tracking.\n"
@@ -693,11 +537,11 @@ slapp.command('/links','(.*)', (msg, text, value)  => {
       else if(text == 'stop')
         links_stop(msg);
       else {
-        msg.say("Please use /links to print the available options \n");
+        msg.respond("Please use /links to print the available options \n");
       }
     }
     else {
-      msg.say("Sorry, you're not an admin");
+      msg.respond("Sorry, you're not an admin");
     }
   })
 })
@@ -706,12 +550,12 @@ function stats_print(msg){
   if(isTrackingStats){
     var str = '';
     stringMap.forEach(function(value, key) {
-      str = str + key + ' : ' + value + '\n';
+      str = str + key + ': ' + value + '\n';
     });
     msg.respond(str)
   }
   else {
-    msg.say("No tracking in progress");
+    msg.respond("No tracking in progress");
   }
 }
 function stats_subscribe(msg){
@@ -725,10 +569,10 @@ function stats_subscribe(msg){
 	}
 	if(!isSub){
 		subscribedUsers[subscribedUsers.length]=msg.body.user_id;
-		msg.say("You successfully subscribed to the weekly statistics.");
+		msg.respond("You successfully subscribed to the weekly statistics.");
 	}
 	else {
-		msg.say("You're already subscribed to the weekly statistics.");
+		msg.respond("You're already subscribed to the weekly statistics.");
 	}
 
 }
@@ -744,28 +588,36 @@ function stats_unsubscribe(msg){
 		}
 	}
 	if(!wasSub){
-		msg.say("You're not subscribed to the weekly statistics.");
+		msg.respond("You're not subscribed to the weekly statistics.");
 	}
 	else {
-		msg.say("You successfully unsubscribed from the weekly statistics");
+		msg.respond("You successfully unsubscribed from the weekly statistics");
 	}
 
 
 }
 function stats_add(msg,value) {
-		var hash = stringMap.hash(value);
+		var hash = stringMap.hash(value.toLowerCase());
 		if ( ! (hash in stringMap._data) ) {
-			stringMap.set(value,0);
+			stringMap.set(value.toLowerCase(),0);
+      msg.respond("Keyword added to the tracking list.");
 		}
-    msg.say("Keyword added to the tracking list.");
+    else{
+      msg.respond("Keyword already on the tracking list.");
+    }
+
 }
 function stats_delete(msg,value) {
 
-	var hash = stringMap.hash(value);
+	var hash = stringMap.hash(value.toLowerCase());
 	if ( (hash in stringMap._data) ) {
-		stringMap.remove(value);
+		stringMap.remove(value.toLowerCase());
+    msg.respond("Keyword deleted from the tracking list.");
 	}
-  msg.say("Keyword deleted from the tracking list.");
+  else {
+    msg.respond("Keyword not on the tracking list.");
+  }
+
 }
 function stats_refresh(msg) {
 	stringMap.clear();
@@ -774,16 +626,16 @@ function stats_start(msg) {
   if(github_token!=''){
   	botToken=msg.meta.bot_token;
   	if(isTrackingStats){
-  		msg.say("Statistics tracking already in progress.");
+  		msg.respond("Statistics tracking already in progress.");
   	}
   	else {
   		isTrackingStats = true;
   		//weeklyTask.start();
-  		msg.say("Statistics tracking started.");
+  		msg.respond("Statistics tracking started.");
   	}
   }
   else {
-    msg.say("Please set the github token first using /github [Token].");
+    msg.respond("Please set the github token first using /github [Token].");
   }
 }
 function stats_stop(msg) {
@@ -791,10 +643,10 @@ function stats_stop(msg) {
 	if(isTrackingStats){
 		isTrackingStats=false;
 		//weeklyTask.stop();
-		msg.say("Statistics tracking stopped.");
+		msg.respond("Statistics tracking stopped.");
 	}
 	else {
-		msg.say("Statistics tracking is already stopped.");
+		msg.respond("Statistics tracking is already stopped.");
 	}
 
 }
@@ -811,8 +663,16 @@ slapp.message(/^(thanks|thank you)/i, ['mention', 'direct_message'], (msg) => {
 
 
 // Catch-all for any other responses not handled above
-slapp.message('.*', ['direct_mention', 'direct_message'], (msg) => {
-  msg.say(HELP_TEXT);
+slapp.message('.*','direct_message', (msg) => {
+  msg.say(verbose.HELP_TEXT);
+})
+slapp.message('.*', 'direct_mention', (msg) => {
+  slapp.client.im.open({ token: msg.meta.bot_token,  user: msg.body.event.user }, (err, data) => {
+    if (err) {
+      return console.error(err)
+    }
+    msg.say({ channel: data.channel.id, text: verbose.HELP_TEXT })
+    })
 })
 
 // attach Slapp to express server

@@ -1,6 +1,6 @@
-# Slapp-app
+# NeuroBotX
 
-This repository is meant as an example and starting point for building a Slack app on [Beep Boop][bb].  It's written in [node.js](), uses the [Slapp][slapp] library, and takes advantage of the [Slack Events API][slack-events-api].
+This repository is an App for Slack intended to be hosted on [Beep Boop][bb].  It's written in [node.js](), uses the [Slapp][slapp] library, and takes advantage of the [Slack Events API][slack-events-api].
 
 ## Setup Instructions
 
@@ -10,8 +10,11 @@ Once you've created a new [Beep Boop](bb) project with this repo, go to your pro
 
 Follow the steps laid out in the wizard. You'll want to enable **Event Subscriptions** on your Slack App using the `URL` provided and add subscriptions for the following **Bot Events**:
 
++ `im_open`
++ `im_close`
 + `message.channels`
 + `message.im`
++ `team_join`
 
 ### 🔥 it up
 
@@ -23,15 +26,14 @@ Once your project has started, go to the **Teams** tab and add your new Slack Ap
 
 ![Add Team](https://cloud.githubusercontent.com/assets/367275/19364343/012e4922-914b-11e6-8f0a-bb020b016fd2.png)
 
-Send `@slappbot` a Direct Message of `help` to see what it can do.
+## Usage
 
-![Help](https://cloud.githubusercontent.com/assets/367275/19364707/7a4f8964-914c-11e6-99cd-d4cd65c9061a.png)
-
-### Why is my Bot Offline?
-
-![Bot Offline](https://cloud.githubusercontent.com/assets/367275/19364857/3944ba24-914d-11e6-9939-a37ed07b954e.png)
-
-Your bot will not show as "online", which is a current limitation of the [Slack Events API](slack-events-api) (no way to set presence). If you really want your bot to show online, [check out this work-around](presence-polyfill).
+| Command       | Arg 0    | Arg 1 | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+|---------------|----------|-------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| /github       | [Token]  |       | Initialize the github authentication token.<br />**token**: The Github Oauth user token<br />                                                                                                                                                                                                                                                                                                                                                                              |
+| /stats        | [Option] | [VAL] | Keywords usage statistics.<br /> **print**: prints the current statistics.<br /> **add [VAL]** adds [VAL] to the tracked keywords list.<br /> **delete [VAL]** deletes [VAL] from the tracked keywords list.<br /> **start** starts statistics tracking.(Github token must be initialized first using /github)<br /> **stop** stops statistics tracking.<br />**subscribe** subscribe to the weekly statistics message.<br /> **unsubscribe** unsubscribe from the weekly statistics message. |
+| /links        | [Option] | [VAL] | Links tracking.<br /> **print** prints the current links buffer waiting to be pushed to Wordpress.<br /> **start** starts links tracking.<br /> **stop** stops links tracking.                                                                                                                                                                                                                                                                                                    |
+| /archivetogit | [Option] |       | Archive messages to github.<br /> **start** starts the archiving to git. (Github token must be initialized first using /github)<br /> **stop** stops the archiving to git.                                                                                                                                                                                                                                                                                                 |
 
 [bb]: https://beepboophq.com
 [slapp]: https://github.com/BeepBoopHQ/slapp
