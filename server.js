@@ -520,9 +520,7 @@ function stats_subscribe(msg){
 	}
 
 }
-
 function stats_unsubscribe(msg){
-
 	var wasSub = false;
 	for(var i=0;i<subscribedUsers.length;i++){
 		if(subscribedUsers[i]==msg.body.user_id){
