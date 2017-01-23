@@ -1,6 +1,6 @@
 const cron = require('node-cron');
 const HashMap = require('hashmap');
-const slapp = require('./slapp.js').get;
+const slapp = require('./slapp.js').get();
 
 var stringMap = new HashMap();
 var subscribedUsers = [];
