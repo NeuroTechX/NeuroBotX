@@ -180,7 +180,7 @@ function stats_start(msg) {
     msg.respond("Please set the github token first using /github [Token].");
   }
 }
-function receive(){
+function receive(msg){
   if(isTrackingStats){
     var lowerCaseText =  msg.body.event.text.toLowerCase();
     stringMap.forEach(function(value, key) {

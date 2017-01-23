@@ -91,10 +91,6 @@ function archive_push(channel){
    owner:'NeuroTechX',
    repo:'ntx_slack_archive',
    path:''},function(err,result){
-    _("listPages")
-    _(result)
-    _("path Type")
-    _(result[0].type)
     var found = false;
     for (var i = 0; i < result.length && !found; i++) {
       if (result[i].name === channelPageName) {
@@ -109,8 +105,7 @@ function archive_push(channel){
   });
 }
 function editPage(pageName,values){
-  _("Editing page with values ");
-  _(values);
+
   var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_archive/master/"+pageName;
 	request.get(filePath, function (fileerror, fileresponse, fileBody) {
   	if (!fileerror && fileresponse.statusCode == 200) {

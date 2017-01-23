@@ -8,11 +8,6 @@ var links = require('./links.js');
 var stats = require('./stats.js');
 var github = require('./github.js');
 
-function _(s) {
-  var str = JSON.stringify(s, null, 4);
-  console.log(str);
-}
-
 // use `PORT` env var on Beep Boop - default to 3000 locally
 var port = process.env.PORT || 3000
 

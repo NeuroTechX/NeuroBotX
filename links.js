@@ -1,6 +1,7 @@
 const slapp = require('./slapp.js').get();
 const fs = require('fs')
-var github = require('./github.js')
+const request = require('request');
+var github = require('./github.js');
 
 var LINKS_REGEX = /(\b(https?|ftp|file|http):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
 
