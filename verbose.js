@@ -38,7 +38,7 @@ The third thing you should do is send a message to the directors of NeuroTechX a
 Executive Director: @yannick
 Operations Director: @sydneyneurotechx
 Communications Director: @lucia.gallardo
-Science Director:@ melanie
+Science Director: @melanie
 
 
 If you are new to the domain of Neurotechnology, we urge you to check out our NeurotechEDU page! There is a list of amazing resources that exist on it that will help you to advance your knowledge in the domain. If you have questions related to the content, feel free to ask them in Slack
