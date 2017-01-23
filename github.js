@@ -43,7 +43,7 @@ slapp.command('/github','(.*)', (msg, text, value)  => {
   });
 });
 
-module.exports:{
+module.exports = {
   get:get,
   getToken:getToken
 }
