@@ -127,3 +127,6 @@ function links_push(){
   	}
 	});
 }
+module.exports = {
+  receive:receive
+}

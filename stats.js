@@ -199,3 +199,7 @@ function stats_stop(msg) {
 		msg.respond("Statistics tracking is already stopped.");
 	}
 }
+
+module.exports = {
+  receive:receive
+}

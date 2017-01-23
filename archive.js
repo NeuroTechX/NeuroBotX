@@ -168,3 +168,6 @@ function createPage(pageName,values){
         content:b64content
       });
 }
+module.exports = {
+  receive:receive
+}
