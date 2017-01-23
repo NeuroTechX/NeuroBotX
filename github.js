@@ -1,4 +1,5 @@
 const Slapp = require('slapp')
+const GitHubApi = require('github');
 var github_token = '';
 var github = new GitHubApi({
     // optional
