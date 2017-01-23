@@ -165,7 +165,7 @@ function stats_refresh(msg) {
 	stringMap.clear();
 }
 function stats_start(msg) {
-  if(github_token!=''){
+  if(github.getToken()!=''){
   	botToken=msg.meta.bot_token;
   	if(isTrackingStats){
   		msg.respond("Statistics tracking already in progress.");
