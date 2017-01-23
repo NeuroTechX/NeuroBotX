@@ -1,4 +1,4 @@
-const slapp = require('slapp').get();
+const slapp = require('./slapp.js').get();
 const fs = require('fs')
 var github = require('./github.js')
 
