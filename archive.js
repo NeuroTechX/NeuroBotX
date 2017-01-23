@@ -1,4 +1,4 @@
-const Slapp = require('slapp')
+const slapp = require('./slapp.js').get();
 const HashMap = require('hashmap');
 const request = require('request');
 const fs = require('fs');

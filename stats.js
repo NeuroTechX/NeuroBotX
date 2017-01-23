@@ -1,6 +1,6 @@
 const cron = require('node-cron');
-const Slapp = require('slapp')
 const HashMap = require('hashmap');
+const slapp = require('./slapp.js').get;
 
 var stringMap = new HashMap();
 var subscribedUsers = [];
@@ -197,5 +197,4 @@ function stats_stop(msg) {
 	else {
 		msg.respond("Statistics tracking is already stopped.");
 	}
-
 }
