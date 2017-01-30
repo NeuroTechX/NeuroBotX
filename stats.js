@@ -37,15 +37,32 @@ function saveStats(){
 function loadStats(){
   kv.list("stats_",function(err,list){
     if(!err && list.length){
+      var ps = [];
       for(var i=0;i<list.length;i++){
-        if(list[i])
-          kv.get(list[i],function(err,value){
-            if(!err && value)
-              stringMap.set(list[i].replace("stats_",""),parseInt(value));
-          });
+        ps[ps.length] = loadStat(list[i]);
       }
+      var result = Promise.resolve();
+      ps.forEach(function (p) {
+        result = result.then(p);
+      });
     }
   });
+}
+function loadStat(key){
+  return function(){
+    var promise = new Promise(function(resolve, reject) {
+      if(key)
+        kv.get(key,function(err,value){
+          if(!err && value){
+            stringMap.set(key.replace("stats_",""), parseInt(value));
+            resolve();
+          }
+          else {
+            return reject();
+          }
+        });
+    });
+  }
 }
 /**
  * function that handles the cron event and sends the weekly stats for registered users
