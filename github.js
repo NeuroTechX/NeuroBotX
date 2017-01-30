@@ -22,7 +22,7 @@ function init(){
     var channels = data.channels;
     var found = false;
     var channelID = '';
-    for(int i=0;i<channels.length;i++)
+    for(var i=0;i<channels.length;i++)
       if(channels[i].name ===github_token_channel){
         found=true;
         channelID=channels[i].id;
@@ -40,7 +40,7 @@ function outit(){
       var channels = data.channels;
       var found = false;
       var channelID = '';
-      for(int i=0;i<channels.length;i++)
+      for(var i=0;i<channels.length;i++)
         if(channels[i].name ===github_token_channel){
           found=true;
           channelID=channels[i].id;
