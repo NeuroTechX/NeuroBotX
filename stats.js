@@ -242,5 +242,5 @@ function stats_stop(msg) {
 
 module.exports = {
   receive:receive,
-  cronPoke:cronePoke
+  cronPoke:cronPoke
 }
