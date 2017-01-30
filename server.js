@@ -65,7 +65,7 @@ function poke(){
  * This function saves the bot state and restarts the beepboophq server.
  */
 function restart(){
-
+  //Restart the beepboopserver
 }
 // attach Slapp to express server
 var server = slapp.attachToExpress(express())
