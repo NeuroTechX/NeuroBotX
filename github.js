@@ -1,5 +1,6 @@
 const slapp = require('./slapp.js').get();
 const GitHubApi = require('github');
+const request = require('request');
 var kv = require('beepboop-persist')();
 var github_token = '';
 
