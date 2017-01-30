@@ -99,6 +99,5 @@ module.exports = {
   init:init,
   get:get,
   getToken:getToken,
-  saveToken:saveToken,
   restart:restart
 }
