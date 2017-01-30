@@ -57,12 +57,48 @@ slapp.command('/github','(.*)', (msg, text, value)  => {
     }
   });
 });
-function saveToken(){
+/**
+ * This function saves the bot state and restarts the beepboophq server.
+ */
+function restart(){
+  var filePath = "https://raw.githubusercontent.com/NeuroTechX/NeuroBotX/master/metamorphosis";
+	request.get(filePath, function (fileerror, fileresponse, fileBody) {
+  	if (!fileerror && fileresponse.statusCode == 200) {
+			fileBody+="0";
+      var content = Buffer.from(fileBody, 'ascii');
+      var b64content = content.toString('base64');
+			var blobPath = "https://api.github.com/repos/NeuroTechX/NeuroBotX/contents/metamorphosis";
+      var options = {
+        url: blobPath,
+        headers: {
+          'User-Agent': 'Edubot-GitHub-App'
+        }
+      };
+			request.get(options, function (bloberror, blobresponse, blobBody) {
+	    	if (!bloberror && blobresponse.statusCode == 200) {
+          var shaStr = JSON.parse(blobBody).sha;
+          ("Sha str")
+					github.repos.updateFile({
+						owner:"NeuroTechX",
+						repo:"NeuroBotX",
+						path:"Metamorphosis",
+						message:"Meta Push",
+						content:b64content,
+						sha: shaStr
+					}, function(err, res) {
+            console.log("Metamorphosis!");
+              });
 
+				}
+			});
+  	}
+	});
 }
+
 module.exports = {
   init:init,
   get:get,
   getToken:getToken,
-  saveToken:saveToken
+  saveToken:saveToken,
+  restart:restart
 }

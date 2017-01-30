@@ -3,6 +3,7 @@ const express = require('express')
 const verbose = require('./verbose.js');
 const slapp = require('./slapp.js').get();
 const cron = require('node-cron');
+const request = require('request');
 var archive = require('./archive.js');
 var links = require('./links.js');
 var stats = require('./stats.js');
@@ -45,7 +46,8 @@ slapp.message(/^(thanks|thank you)/i, ['mention', 'direct_message'], (msg) => {
 
 // Catch every direct message to the bot and answer it with the help text
 slapp.message('.*','direct_message', (msg) => {
-  msg.say(verbose.HELP_TEXT);
+  //msg.say(verbose.HELP_TEXT);
+  restart();
 })
 // Catch every message mentioning the bot and answer it with the help text
 slapp.message('.*', 'direct_mention', (msg) => {
@@ -59,45 +61,7 @@ var weeklyTask = cron.schedule('30 8 * * Friday',poke());
 function poke(){
   stats.cronPoke();
   stats.saveStats();
-  restart();
-}
-
-/**
- * This function saves the bot state and restarts the beepboophq server.
- */
-function restart(){
-  var filePath = "https://raw.githubusercontent.com/NeuroTechX/NeuroBotX/master/metamorphosis";
-	request.get(filePath, function (fileerror, fileresponse, fileBody) {
-  	if (!fileerror && fileresponse.statusCode == 200) {
-			fileBody+="0";
-      var content = Buffer.from(fileBody, 'ascii');
-      var b64content = content.toString('base64');
-			var blobPath = "https://api.github.com/repos/NeuroTechX/NeuroBotX/contents/metamorphosis";
-      var options = {
-        url: blobPath,
-        headers: {
-          'User-Agent': 'Edubot-GitHub-App'
-        }
-      };
-			request.get(options, function (bloberror, blobresponse, blobBody) {
-	    	if (!bloberror && blobresponse.statusCode == 200) {
-          var shaStr = JSON.parse(blobBody).sha;
-          ("Sha str")
-					github.get().repos.updateFile({
-						owner:"NeuroTechX",
-						repo:"NeuroBotX",
-						path:"Metamorphosis",
-						message:"Meta Push",
-						content:b64content,
-						sha: shaStr
-					}, function(err, res) {
-            console.log("Metamorphosis!");
-              });
-
-				}
-			});
-  	}
-	});
+  github.restart();
 }
 
 // attach Slapp to express server
