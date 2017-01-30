@@ -38,9 +38,11 @@ function loadStats(){
   kv.list("stats_",function(err,list){
     if(!err && list.length){
       for(var i=0;i<list.length;i++){
-        kv.get(list[i],function(err,value){
-          stringMap.set(list[i].replace("stats_",""),parseInt(value));
-        });
+        if(list[i])
+          kv.get(list[i],function(err,value){
+            if(!err && value)
+              stringMap.set(list[i].replace("stats_",""),parseInt(value));
+          });
       }
     }
   });
