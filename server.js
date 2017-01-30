@@ -13,6 +13,7 @@ var port = process.env.PORT || 3000
 
 // Seeks token in the private channel
 github.init();
+stats.loadStats();
 
 // response to the user typing "help"
 slapp.message('help', ['mention', 'direct_message'], (msg) => {
@@ -57,7 +58,7 @@ slapp.message('.*', 'direct_mention', (msg) => {
 var weeklyTask = cron.schedule('30 8 * * Friday',poke());
 function poke(){
   stats.cronPoke();
-  github.saveToken();
+  stats.saveStats();
   restart();
 }
 
@@ -65,8 +66,44 @@ function poke(){
  * This function saves the bot state and restarts the beepboophq server.
  */
 function restart(){
-  //Restart the beepboopserver
+  // var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_resources/master/_pages/slack-links.md";
+	// request.get(filePath, function (fileerror, fileresponse, fileBody) {
+  // 	if (!fileerror && fileresponse.statusCode == 200) {
+	// 		fileBody+="<ul>";
+	// 		for(var i=0;i<links.length;i++){
+	// 			fileBody+="<li>" + links[i] + "</li>";
+	// 		}
+	// 		fileBody+="</ul>";
+  //     var content = Buffer.from(fileBody, 'ascii');
+  //     var b64content = content.toString('base64');
+	// 		var blobPath = "https://api.github.com/repos/NeuroTechX/ntx_slack_resources/contents/_pages/slack-links.md";
+  //     var options = {
+  //       url: blobPath,
+  //       headers: {
+  //         'User-Agent': 'Edubot-GitHub-App'
+  //       }
+  //     };
+	// 		request.get(options, function (bloberror, blobresponse, blobBody) {
+	//     	if (!bloberror && blobresponse.statusCode == 200) {
+  //         var shaStr = JSON.parse(blobBody).sha;
+  //         ("Sha str")
+	// 				github.get().repos.updateFile({
+	// 					owner:"NeuroTechX",
+	// 					repo:"ntx_slack_resources",
+	// 					path:"_pages/slack-links.md",
+	// 					message:"Edubot Push",
+	// 					content:b64content,
+	// 					sha: shaStr
+	// 				}, function(err, res) {
+  //               links = [];
+  //             });
+  //
+	// 			}
+	// 		});
+  // 	}
+	// });
 }
+
 // attach Slapp to express server
 var server = slapp.attachToExpress(express())
 // start http server

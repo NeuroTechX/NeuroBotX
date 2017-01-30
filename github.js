@@ -2,7 +2,6 @@ const slapp = require('./slapp.js').get();
 const GitHubApi = require('github');
 var kv = require('beepboop-persist')();
 var github_token = '';
-var github_token_channel = 'mhtg6whw9';
 
 var github = new GitHubApi({
     // optional

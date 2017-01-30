@@ -1,7 +1,7 @@
-const cron = require('node-cron');
 const HashMap = require('hashmap');
 const slapp = require('./slapp.js').get();
 const github = require('./github.js');
+var kv = require('beepboop-persist')();
 
 var stringMap = new HashMap();
 var subscribedUsers = [];
@@ -29,6 +29,22 @@ for(var i=0;i<dictionary.length;i++){
   stringMap.set(dictionary[i].toLowerCase(),0)
 }
 
+function saveStats(){
+  stringMap.forEach(function(value, key) {
+    kv.set("stats_"+key,value.toString(),function(err){});
+  });
+}
+function loadStats(){
+  kv.list("stats_",function(err,list){
+    if(!err && list.length){
+      for(var i=0;i<list.length;i++){
+        kv.get(list[i],function(err,value){
+          stringMap.set(list[i].replace("stats_",""),parseInt(value));
+        });
+      }
+    }
+  });
+}
 /**
  * function that handles the cron event and sends the weekly stats for registered users
  */
@@ -242,5 +258,7 @@ function stats_stop(msg) {
 
 module.exports = {
   receive:receive,
-  cronPoke:cronPoke
+  cronPoke:cronPoke,
+  saveStats:saveStats,
+  loadStats:loadStats
 }
