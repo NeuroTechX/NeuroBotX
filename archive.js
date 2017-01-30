@@ -5,12 +5,18 @@ const fs = require('fs');
 
 var github = require('./github.js')
 
+// Hashmap storing the archive waiting to be pushed to github.
 var msgMap = new HashMap();
 var msgMapLength = 0;
+// Archiving feature state
 var isArchiving = false;
-
+// Number of messages per channel before push to github
 const ARCHIVE_BUFFER_MAX_LENGTH = 10;
 
+/**
+ * This function receives a message and store it in a hashmap that will be pushed to the github archive
+ * @param {object} msg the message sent by slapp that is meant to be archived
+ */
 function receive(msg){
   if(isArchiving){
     slapp.client.channels.info({token:msg.meta.bot_token,channel:msg.body.event.channel}, (err, resultChannel) => {
@@ -58,7 +64,10 @@ slapp.command('/archivetogit','(.*)', (msg, text, value)  => {
     }
   })
 })
-
+/**
+ * This function starts the message archiving if a github token is specified
+ * @param {object} msg the message received from slapp following the user command
+ */
 function archive_start(msg){
   if(github.getToken()!=''){
     if(!isArchiving){
@@ -72,6 +81,10 @@ function archive_start(msg){
     msg.respond("Please set the github token first.");
   }
 }
+/**
+ * This function stops the message archiving
+ * @param {object} msg the message received from slapp following the user command
+ */
 function archive_stop(msg){
   if(isArchiving){
 		isArchiving=false;
@@ -81,6 +94,10 @@ function archive_stop(msg){
 		msg.respond("Archiving is already stoped.");
 	}
 }
+/**
+ * This function pushes the array from the archiving hashmap corresponding to the channel specifed
+ * @param {string} chanel the name of the channel that will be archived
+ */
 function archive_push(channel){
   var values = msgMap.get(channel).slice();
   var newArr = [];
@@ -104,6 +121,11 @@ function archive_push(channel){
     }
   });
 }
+/**
+ * This function edits the github page specified by pageName adding values to it
+ * @param {string} pageName the name of the page (Channel) to edit
+ * @param {array} values the values to add to the page
+ */
 function editPage(pageName,values){
 
   var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_archive/master/"+pageName;
@@ -141,9 +163,18 @@ function editPage(pageName,values){
   	}
 	});
 }
+/**
+ * This function formats the timestamp to a user friendly format
+ * @param {timestamp} ts the time stamp to format
+ */
 function formatDate(ts){
   return ts.toLocaleDateString("en-US") + " " + ts.toLocaleTimeString(["en-US"], {hour: '2-digit', minute:'2-digit'});
 }
+/**
+ * This function creates a github archiving page
+ * @param {string} pageName the name of the page (Channel) to create
+ * @param {array} values the values to add to the page
+ */
 function createPage(pageName,values){
       var pn = pageName;
       var strtkns = pn.split(".");

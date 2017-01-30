@@ -11,17 +11,21 @@ var github = require('./github.js');
 // use `PORT` env var on Beep Boop - default to 3000 locally
 var port = process.env.PORT || 3000
 
+// Seeks token in the private channel
+github.init();
+
 // response to the user typing "help"
 slapp.message('help', ['mention', 'direct_message'], (msg) => {
   msg.say(verbose.HELP_TEXT)
 });
 
+// response to the user joining the slack team
 slapp.event('team_join', (msg) => {
   slapp.client.im.open({ token: msg.meta.bot_token,  user: msg.body.event.user.id }, (err, data) => {
     msg.say({ channel: data.channel.id, text: verbose.WELCOME_TEXT })
   })
 })
-
+// Collect and dispatch all messages posted on public channels
 slapp.message('(.*)', 'ambient', (msg) => {
   stats.receive(msg);
   links.receive(msg);
@@ -38,23 +42,32 @@ slapp.message(/^(thanks|thank you)/i, ['mention', 'direct_message'], (msg) => {
   ])
 })
 
-// Catch-all for any other responses not handled above
+// Catch every direct message to the bot and answer it with the help text
 slapp.message('.*','direct_message', (msg) => {
   msg.say(verbose.HELP_TEXT);
 })
-
+// Catch every message mentioning the bot and answer it with the help text
 slapp.message('.*', 'direct_mention', (msg) => {
   slapp.client.im.open({ token: msg.meta.bot_token,  user: msg.body.event.user }, (err, data) => {
     msg.say({ channel: data.channel.id, text: verbose.HELP_TEXT })
   })
 })
 
+// Weekly stats newsletter and server restart
+var weeklyTask = cron.schedule('30 8 * * Friday',poke());
+function poke(){
+  stats.cronPoke();
+  github.saveToken();
+  restart();
+}
+
+/**
+ * This function saves the bot state and restarts the beepboophq server.
+ */
+function restart(){
+
+}
 // attach Slapp to express server
 var server = slapp.attachToExpress(express())
 // start http server
-server.listen(port, (err) => {
-  if (err) {
-    return console.error(err)
-  }
-  console.log(`Listening on port ${port}`)
-})
+server.listen(port, (err) => {})

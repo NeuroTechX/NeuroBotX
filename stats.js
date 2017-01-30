@@ -29,7 +29,10 @@ for(var i=0;i<dictionary.length;i++){
   stringMap.set(dictionary[i].toLowerCase(),0)
 }
 
-var weeklyTask = cron.schedule('30 8 * * Friday', function(){
+/**
+ * function that handles the cron event and sends the weekly stats for registered users
+ */
+function cronPoke(){
 	if(isTrackingStats){
 		for(var i=0;i<subscribedUsers.length;i++){
 			var str = 'Weekly Stats :\n';
@@ -47,7 +50,7 @@ var weeklyTask = cron.schedule('30 8 * * Friday', function(){
 			})
 		}
 	}
-});
+}
 slapp.command('/stats','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
     if( data.user.is_admin){
@@ -95,6 +98,10 @@ slapp.command('/stats','(.*)', (msg, text, value)  => {
     }
   })
 })
+/**
+ * This function prints the currents stats
+ * @param {object} msg the command message sent by slapp to print
+ */
 function stats_print(msg){
   if(isTrackingStats){
     var str = '';
@@ -107,6 +114,10 @@ function stats_print(msg){
     msg.respond("No tracking in progress");
   }
 }
+/**
+ * This function subscribes the user the weekly stats
+ * @param {object} msg the command message sent by slapp to subscribe
+ */
 function stats_subscribe(msg){
 	var isSub = false;
 	for(var i=0;i<subscribedUsers.length;i++){
@@ -124,6 +135,10 @@ function stats_subscribe(msg){
 	}
 
 }
+/**
+ * This function unsubscribes the user the weekly stats
+ * @param {object} msg the command message sent by slapp to unsubscribe
+ */
 function stats_unsubscribe(msg){
 	var wasSub = false;
 	for(var i=0;i<subscribedUsers.length;i++){
@@ -140,6 +155,11 @@ function stats_unsubscribe(msg){
 		msg.respond("You successfully unsubscribed from the weekly statistics");
 	}
 }
+/**
+ * This function add a keyword to the tracked keywords list
+ * @param {object} msg the command message sent by slapp to add the keyword
+ * @param {string} value the keyword to add
+ */
 function stats_add(msg,value) {
 		var hash = stringMap.hash(value.toLowerCase());
 		if ( ! (hash in stringMap._data) ) {
@@ -150,6 +170,11 @@ function stats_add(msg,value) {
       msg.respond("Keyword already on the tracking list.");
     }
 }
+/**
+ * This function deletes a keyword to the tracked keywords list
+ * @param {object} msg the command message sent by slapp to delete the keyword
+ * @param {string} value the keyword to delete
+ */
 function stats_delete(msg,value) {
 
 	var hash = stringMap.hash(value.toLowerCase());
@@ -161,10 +186,17 @@ function stats_delete(msg,value) {
     msg.respond("Keyword not on the tracking list.");
   }
 
-}
+}/**
+ * This function clears the stats
+ * @param {object} msg the command message sent by slapp to delete the keyword
+ */
 function stats_refresh(msg) {
 	stringMap.clear();
 }
+/**
+ * This function starts the stats tracking
+ * @param {object} msg the message received from slapp following the user command
+ */
 function stats_start(msg) {
   if(github.getToken()!=''){
   	botToken=msg.meta.bot_token;
@@ -180,6 +212,10 @@ function stats_start(msg) {
     msg.respond("Please set the github token first using /github [Token].");
   }
 }
+/**
+ * This function receives a slapp message and tracks the keywords contained in it
+ * @param {object} msg the message sent by slapp that is meant to be archived
+ */
 function receive(msg){
   if(isTrackingStats){
     var lowerCaseText =  msg.body.event.text.toLowerCase();
@@ -190,6 +226,10 @@ function receive(msg){
     })
   }
 }
+/**
+ * This function stops the stats tracking
+ * @param {object} msg the message received from slapp following the user command
+ */
 function stats_stop(msg) {
 	if(isTrackingStats){
 		isTrackingStats=false;
@@ -201,5 +241,6 @@ function stats_stop(msg) {
 }
 
 module.exports = {
-  receive:receive
+  receive:receive,
+  cronPoke:cronePoke
 }
