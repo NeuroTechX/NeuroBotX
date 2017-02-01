@@ -56,7 +56,7 @@ slapp.message('.*', 'direct_mention', (msg) => {
 })
 
 // Weekly stats newsletter and server restart
-var weeklyTask = cron.schedule('30 8 * * Friday',poke());
+var weeklyTask = cron.schedule('00 10 * * Wednesday',poke());
 function poke(){
   stats.cronPoke();
   stats.saveStats();
