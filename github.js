@@ -3,7 +3,10 @@ const GitHubApi = require('github');
 const request = require('request');
 var kv = require('beepboop-persist')();
 var github_token = '';
-
+function _(obj){
+  var str = JSON.stringify(obj, null, 4); // (Optional) beautiful indented output.
+  console.log(str);
+}
 var github = new GitHubApi({
     // optional
     debug: true,
@@ -67,9 +70,12 @@ slapp.command('/github','(.*)', (msg, text, value)  => {
  * This function saves the bot state and restarts the beepboophq server.
  */
 function restart(){
+  _("github preparing to restart")
   var filePath = "https://raw.githubusercontent.com/NeuroTechX/NeuroBotX/master/metamorphosis";
 	request.get(filePath, function (fileerror, fileresponse, fileBody) {
   	if (!fileerror && fileresponse.statusCode == 200) {
+      _("file body received");
+      _(fileBody);
 			fileBody+="0";
       var content = Buffer.from(fileBody, 'ascii');
       var b64content = content.toString('base64');
@@ -81,6 +87,8 @@ function restart(){
         }
       };
 			request.get(options, function (bloberror, blobresponse, blobBody) {
+        _("blob received");
+        _(blobBody);
 	    	if (!bloberror && blobresponse.statusCode == 200) {
           var shaStr = JSON.parse(blobBody).sha;
           ("Sha str")

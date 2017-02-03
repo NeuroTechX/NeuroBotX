@@ -65,7 +65,7 @@ slapp.message('.*', 'direct_mention', (msg) => {
 
 // Weekly stats newsletter and server restart
 var weeklyTask = new cronJob('* */5 * * * *',
-  function poke(){
+  function(){
     _("restarting called");
     stats.handle_restart();
     links.handle_restart();
