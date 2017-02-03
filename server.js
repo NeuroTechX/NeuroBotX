@@ -64,7 +64,7 @@ slapp.message('.*', 'direct_mention', (msg) => {
 var weeklyTask = cron.schedule('00 10 * * Wednesday',poke());
 function poke(){
   stats.cronPoke();
-  stats.saveStats();
+  //stats.saveStats();
   github.restart();
 }
 

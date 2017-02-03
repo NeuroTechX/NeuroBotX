@@ -57,14 +57,13 @@ function loadStats(){
     _(result);
     if(!err && result){
       _("iterating kv results");
-      if(result.length)
-        for(index in result) {
-          _("index");
-          _(index);
-          _("result");
-          _(result);
-          stringMap.put(index,result[index]);
-        }
+      for(index in result) {
+        _("index");
+        _(index);
+        _("result");
+        _(result);
+        stringMap.put(index,result[index]);
+      }
     }
   });
 }
