@@ -30,15 +30,16 @@ for(var i=0;i<dictionary.length;i++){
 }
 
 function saveStats(){
-  var arr = [];
+
   kv.get('stats', function (err, val) {
     if(!err &&val)
       kv.del('stats', function(err){});
   })
+  var obj = {};
   stringMap.forEach(function(value, key) {
-    arr.push([key,value]);
+    obj[key] = value;
   });
-  kv.set("stats",arr,function(err){});
+  kv.set("stats",obj,function(err){console.log("error setting stats" + err)});
 }
 function loadStats(){
   stringMap.clear();
@@ -146,7 +147,7 @@ function stats_print(msg){
  */
 function stats_reset(msg){
   stringMap.clear();
-  kv.del('stats',function(err){});
+  kv.del('stats',function(err){console.log("error while deleting stats from kv"+err)});
   msg.respond("Stats reseted");
 }
 /**
