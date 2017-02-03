@@ -64,14 +64,15 @@ slapp.message('.*', 'direct_mention', (msg) => {
 })
 
 // Weekly stats newsletter and server restart
-var weeklyTask = new cronJob('* */5 * * * *', poke(),null,false);
-function poke(){
-  _("restarting called");
-  stats.handle_restart();
-  links.handle_restart();
-  archive.handle_restart();
-  github.restart();
-}
+var weeklyTask = new cronJob('* */5 * * * *',
+  function poke(){
+    _("restarting called");
+    stats.handle_restart();
+    links.handle_restart();
+    archive.handle_restart();
+    github.restart();
+  },null,false);
+
 weeklyTask.start();
 
 // attach Slapp to express server
