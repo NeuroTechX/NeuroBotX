@@ -41,23 +41,9 @@ function saveStats(){
   kv.set("stats",arr,function(err){});
 }
 function loadStats(){
-  kv.del("stats_openbci",function(err){});
-  kv.del("stats_bci",function(err){});
-  kv.del("stats_eeg",function(err){});
-  kv.del("stats_emg",function(err){});
-  kv.del("stats_decoding",function(err){});
-  kv.del("stats_meetup",function(err){});
-  kv.del("stats_frequency",function(err){});
-  kv.del("stats_freq",function(err){});
-  kv.del("stats_signal",function(err){});
-  kv.del("stats_emd",function(err){});
-  kv.del("stats_matlab",function(err){});
-  kv.del("stats_python",function(err){});
-  kv.del("stats_c++",function(err){});
-  kv.del("stats_noise",function(err){});
-  kv.del("stats_empirical mode decomposition",function(err){});
   stringMap.clear();
   kv.get("stats",function(err,result){
+    console.log(result);
     if(!err && result){
       if(result.length)
         result.forEach(function (stat) {
