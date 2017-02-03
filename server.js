@@ -2,7 +2,7 @@
 const express = require('express')
 const verbose = require('./verbose.js');
 const slapp = require('./slapp.js').get();
-const cron = require('node-cron');
+const cronJob = require('cron').CronJob;
 var archive = require('./archive.js');
 var links = require('./links.js');
 var stats = require('./stats.js');
@@ -64,7 +64,7 @@ slapp.message('.*', 'direct_mention', (msg) => {
 })
 
 // Weekly stats newsletter and server restart
-var weeklyTask = cron.schedule('*/5 * * * *',poke());
+var weeklyTask = new cronJob('* */5 * * * *', poke());
 function poke(){
   _("restarting called");
   stats.handle_restart();
@@ -72,6 +72,7 @@ function poke(){
   archive.handle_restart();
   github.restart();
 }
+weeklyTask.start();
 
 // attach Slapp to express server
 var server = slapp.attachToExpress(express())

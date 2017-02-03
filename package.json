@@ -18,10 +18,10 @@
   "homepage": "https://github.com/BeepBoopHQ/starter-slapp-app#readme",
   "dependencies": {
     "bluebird": "^3.4.6",
+    "cron": "^1.2.1",
     "express": "^4.14.0",
     "github": "^7.0.1",
     "hashmap": "^2.0.6",
-    "node-cron": "^1.1.2",
     "nodemon": "^1.11.0",
     "request": "^2.79.0",
     "slapp": "^1.2.0",
