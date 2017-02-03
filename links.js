@@ -113,6 +113,14 @@ function links_refresh(msg){
 	msg.respond("Stored links deleted.");
 }
 /**
+ * This function that handles the module behaviour when the server is about to restart
+ */
+function handle_restart(){
+  if(links.length){
+    links_push();
+  }
+}
+/**
  * This function pushes the content of the buffer to github
  */
 function links_push(){
@@ -154,5 +162,6 @@ function links_push(){
 	});
 }
 module.exports = {
-  receive:receive
+  receive:receive,
+  handle_restart:handle_restart
 }

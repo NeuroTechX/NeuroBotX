@@ -50,7 +50,9 @@ slapp.message(/^(thanks|thank you)/i, ['mention', 'direct_message'], (msg) => {
 slapp.message('.*','direct_message', (msg) => {
   //msg.say(verbose.HELP_TEXT);
   _("restarting called");
-  stats.saveStats();
+  stats.handle_restart();
+  links.handle_restart();
+  archive.handle_restart();
   github.restart();
 })
 // Catch every message mentioning the bot and answer it with the help text

@@ -31,7 +31,9 @@ var dictionary = [
 for(var i=0;i<dictionary.length;i++){
   stringMap.set(dictionary[i].toLowerCase(),0)
 }
-
+function handle_restart(){
+  saveStats();
+}
 function saveStats(){
   _("savin stats");
   var obj = {};
@@ -62,7 +64,7 @@ function loadStats(){
         _(index);
         _("result");
         _(result);
-        stringMap.put(index,result[index]);
+        stringMap.set(index,result[index]);
       }
     }
   });
@@ -297,5 +299,6 @@ module.exports = {
   receive:receive,
   cronPoke:cronPoke,
   saveStats:saveStats,
-  loadStats:loadStats
+  loadStats:loadStats,
+  handle_restart:handle_restart
 }

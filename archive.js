@@ -14,6 +14,17 @@ var isArchiving = false;
 const ARCHIVE_BUFFER_MAX_LENGTH = 10;
 
 /**
+ * This function that handles the module behaviour when the server is about to restart
+ */
+function handle_restart(){
+  keys = msgMap.keys();
+  keys.forEach(function(key){
+    var array = msgMap.get(key);
+    if(array.length)
+      archive_push(key);
+  })
+}
+/**
  * This function receives a message and store it in a hashmap that will be pushed to the github archive
  * @param {object} msg the message sent by slapp that is meant to be archived
  */
@@ -195,5 +206,6 @@ function createPage(pageName,values){
       });
 }
 module.exports = {
-  receive:receive
+  receive:receive,
+  handle_restart:handle_restart
 }
