@@ -39,7 +39,10 @@ function saveStats(){
   stringMap.forEach(function(value, key) {
     obj[key] = value;
   });
-  kv.set("stats",obj,function(err){console.log("error setting stats" + err)});
+  kv.set("stats",obj,function(err){
+    if(err)
+      console.log("error setting stats" + err);
+  });
 }
 function loadStats(){
   stringMap.clear();
@@ -47,9 +50,10 @@ function loadStats(){
     console.log(result);
     if(!err && result){
       if(result.length)
-        result.forEach(function (stat) {
-          stringMap.put(stat[0],stat[1]);
-        });
+        for(index in result) {
+          console.log("loading index "+index +" value "+ result[index]);
+          stringMap.put(index,result[index]);
+        }
     }
   });
 }
@@ -147,7 +151,10 @@ function stats_print(msg){
  */
 function stats_reset(msg){
   stringMap.clear();
-  kv.del('stats',function(err){console.log("error while deleting stats from kv"+err)});
+  kv.del('stats',function(err){
+    if(err)
+      console.log("error while deleting stats from kv"+err);
+  });
   msg.respond("Stats reseted");
 }
 /**
