@@ -30,39 +30,40 @@ for(var i=0;i<dictionary.length;i++){
 }
 
 function saveStats(){
+  var arr = [];
+  kv.get('stats', function (err, val) {
+    if(!err &&val)
+      kv.del('stats', function(err){});
+  })
   stringMap.forEach(function(value, key) {
-    kv.set("stats_"+key,value.toString(),function(err){});
+    arr.push([key,value]);
   });
+  kv.set("stats",arr,function(err){});
 }
 function loadStats(){
-  kv.list("stats_",function(err,list){
-    if(!err && list.length){
-      var ps = [];
-      for(var i=0;i<list.length;i++){
-        ps[ps.length] = loadStat(list[i]);
-      }
-      var result = Promise.resolve();
-      ps.forEach(function (p) {
-        result = result.then(p);
+  kv.del("stats_openbci",function(err){});
+  kv.del("stats_bci",function(err){});
+  kv.del("stats_eeg",function(err){});
+  kv.del("stats_emg",function(err){});
+  kv.del("stats_decoding",function(err){});
+  kv.del("stats_meetup",function(err){});
+  kv.del("stats_frequency",function(err){});
+  kv.del("stats_freq",function(err){});
+  kv.del("stats_signal",function(err){});
+  kv.del("stats_emd",function(err){});
+  kv.del("stats_matlab",function(err){});
+  kv.del("stats_python",function(err){});
+  kv.del("stats_c++",function(err){});
+  kv.del("stats_noise",function(err){});
+  kv.del("stats_empirical mode decomposition",function(err){});
+  stringMap.clear();
+  kv.get("stats",function(err,result){
+    if(!err && result.length){
+      result.forEach(function (stat) {
+        stringMap.put(stat[0],stat[1]);
       });
     }
   });
-}
-function loadStat(key){
-  return function(){
-    var promise = new Promise(function(resolve, reject) {
-      if(key)
-        kv.get(key,function(err,value){
-          if(!err && value){
-            stringMap.set(key.replace("stats_",""), parseInt(value));
-            resolve();
-          }
-          else {
-            return reject();
-          }
-        });
-    });
-  }
 }
 /**
  * function that handles the cron event and sends the weekly stats for registered users
@@ -102,6 +103,7 @@ slapp.command('/stats','(.*)', (msg, text, value)  => {
       if(!text)
         msg.respond("Options for /stats: \n" +
                 "\`print\` prints the current statistics.\n" +
+                "\`reset\` resets the current statistics.\n" +
                 "\`add [Keyword]\` adds the keyword to the tracked keywords list.\n" +
                 "\`delete [Keyword]\` deletes the keyword from the tracked keywords list.\n" +
                 "\`start\` starts statistics tracking.(Github token must be initialized first using /github)\n" +
@@ -111,6 +113,8 @@ slapp.command('/stats','(.*)', (msg, text, value)  => {
               );
       else if(cmd == 'print')
         stats_print(msg);
+      else if(cmd == 'reset')
+        stats_reset(msg);
       else if(cmd == 'add')
         stats_add(msg,val);
       else if(cmd == 'delete')
@@ -148,6 +152,15 @@ function stats_print(msg){
   else {
     msg.respond("No tracking in progress");
   }
+}
+/**
+ * This function resets the currents stats
+ * @param {object} msg the command message sent by slapp to reset
+ */
+function stats_reset(msg){
+  stringMap.clear();
+  kv.del('stats',function(err){});
+  msg.respond("Stats reseted");
 }
 /**
  * This function subscribes the user the weekly stats
