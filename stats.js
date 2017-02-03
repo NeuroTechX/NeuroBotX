@@ -50,20 +50,12 @@ function saveStats(){
   });
 }
 function loadStats(){
-  _("Loading stats")
-  _("StringMap cleared")
   stringMap.clear();
   kv.get("stats",function(err,result){
-    _("kv get stats callback")
-    _("kv callback result")
+    _("stats found :")
     _(result);
     if(!err && result){
-      _("iterating kv results");
       for(index in result) {
-        _("index");
-        _(index);
-        _("result");
-        _(result);
         stringMap.set(index,result[index]);
       }
     }

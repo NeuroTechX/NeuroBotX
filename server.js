@@ -54,12 +54,7 @@ slapp.message(/^(thanks|thank you)/i, ['mention', 'direct_message'], (msg) => {
 
 // Catch every direct message to the bot and answer it with the help text
 slapp.message('.*','direct_message', (msg) => {
-  //msg.say(verbose.HELP_TEXT);
-  _("restarting called");
-  stats.handle_restart();
-  links.handle_restart();
-  archive.handle_restart();
-  github.restart();
+  msg.say(verbose.HELP_TEXT);
 })
 // Catch every message mentioning the bot and answer it with the help text
 slapp.message('.*', 'direct_mention', (msg) => {
@@ -69,10 +64,12 @@ slapp.message('.*', 'direct_mention', (msg) => {
 })
 
 // Weekly stats newsletter and server restart
-var weeklyTask = cron.schedule('00 10 * * Wednesday',poke());
+var weeklyTask = cron.schedule('*/5 * * * *',poke());
 function poke(){
-  stats.cronPoke();
-  //stats.saveStats();
+  _("restarting called");
+  stats.handle_restart();
+  links.handle_restart();
+  archive.handle_restart();
   github.restart();
 }
 
