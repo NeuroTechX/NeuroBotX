@@ -72,6 +72,7 @@ function poke(){
   archive.handle_restart();
   github.restart();
 }
+weeklyTask.start();
 
 // attach Slapp to express server
 var server = slapp.attachToExpress(express())
