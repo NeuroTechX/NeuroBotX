@@ -58,10 +58,11 @@ function loadStats(){
   kv.del("stats_empirical mode decomposition",function(err){});
   stringMap.clear();
   kv.get("stats",function(err,result){
-    if(!err && result.length){
-      result.forEach(function (stat) {
-        stringMap.put(stat[0],stat[1]);
-      });
+    if(!err && result){
+      if(result.length)
+        result.forEach(function (stat) {
+          stringMap.put(stat[0],stat[1]);
+        });
     }
   });
 }
