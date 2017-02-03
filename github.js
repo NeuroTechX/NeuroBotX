@@ -18,13 +18,18 @@ var github = new GitHubApi({
     timeout: 5000
 });
 
-function init(){
+function init(cb){
   kv.list("github_token",function(err,keys){
     console.log("err"+err);
     if(!err &&keys.length)
       kv.get("github_token",function(err,val){
-        if(!err && val)
+        if(!err && val){
           github_token = val;
+          cb(true);
+        }
+        else {
+          cb(false);
+        }
       });
   });
 }

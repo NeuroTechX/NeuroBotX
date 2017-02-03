@@ -15,7 +15,13 @@ function _(obj){
 var port = process.env.PORT || 3000
 
 // Seeks token in the private channel
-github.init();
+github.init(function(tokenFound){
+  if(tokenFound){
+    stats.start();
+    links.start();
+    archive.start();
+  }
+});
 stats.loadStats();
 
 // response to the user typing "help"

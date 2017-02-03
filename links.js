@@ -73,6 +73,9 @@ function links_print(msg){
 		msg.respond("Links tracking is not in progress.");
 	}
 }
+function start(){
+  isTrackingLinks=true;
+}
 /**
  * This function starts the links detection and storage
  * @param {object} msg the message received from slapp following the user command
@@ -163,5 +166,6 @@ function links_push(){
 }
 module.exports = {
   receive:receive,
-  handle_restart:handle_restart
+  handle_restart:handle_restart,
+  start:start
 }

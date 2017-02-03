@@ -248,6 +248,9 @@ function stats_delete(msg,value) {
 function stats_refresh(msg) {
 	stringMap.clear();
 }
+function start(){
+  isTrackingStats=true;
+}
 /**
  * This function starts the stats tracking
  * @param {object} msg the message received from slapp following the user command
@@ -300,5 +303,6 @@ module.exports = {
   cronPoke:cronPoke,
   saveStats:saveStats,
   loadStats:loadStats,
-  handle_restart:handle_restart
+  handle_restart:handle_restart,
+  start:start
 }
