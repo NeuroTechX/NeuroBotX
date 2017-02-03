@@ -8,7 +8,7 @@ var links = require('./links.js');
 var stats = require('./stats.js');
 var github = require('./github.js');
 function _(obj){
-  str = JSON.stringify(obj, null, 4); // (Optional) beautiful indented output.
+  var str = JSON.stringify(obj, null, 4); // (Optional) beautiful indented output.
   console.log(str);
 }
 // use `PORT` env var on Beep Boop - default to 3000 locally

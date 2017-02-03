@@ -7,7 +7,7 @@ var stringMap = new HashMap();
 var subscribedUsers = [];
 var isTrackingStats = false;
 function _(obj){
-  str = JSON.stringify(obj, null, 4); // (Optional) beautiful indented output.
+  var str = JSON.stringify(obj, null, 4); // (Optional) beautiful indented output.
   console.log(str);
 }
 var dictionary = [
