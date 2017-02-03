@@ -7,7 +7,10 @@ var archive = require('./archive.js');
 var links = require('./links.js');
 var stats = require('./stats.js');
 var github = require('./github.js');
-
+function _(obj){
+  str = JSON.stringify(obj, null, 4); // (Optional) beautiful indented output.
+  console.log(str);
+}
 // use `PORT` env var on Beep Boop - default to 3000 locally
 var port = process.env.PORT || 3000
 
@@ -46,6 +49,7 @@ slapp.message(/^(thanks|thank you)/i, ['mention', 'direct_message'], (msg) => {
 // Catch every direct message to the bot and answer it with the help text
 slapp.message('.*','direct_message', (msg) => {
   //msg.say(verbose.HELP_TEXT);
+  _("restarting called");
   stats.saveStats();
   github.restart();
 })

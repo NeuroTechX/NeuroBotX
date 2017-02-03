@@ -6,7 +6,10 @@ var kv = require('beepboop-persist')();
 var stringMap = new HashMap();
 var subscribedUsers = [];
 var isTrackingStats = false;
-
+function _(obj){
+  str = JSON.stringify(obj, null, 4); // (Optional) beautiful indented output.
+  console.log(str);
+}
 var dictionary = [
   'openbci',
   'bci',
@@ -30,28 +33,36 @@ for(var i=0;i<dictionary.length;i++){
 }
 
 function saveStats(){
-
-  kv.get('stats', function (err, val) {
-    if(!err &&val)
-      kv.del('stats', function(err){});
-  })
+  _("savin stats");
   var obj = {};
   stringMap.forEach(function(value, key) {
     obj[key] = value;
   });
+  _("obj to save");
+  _(obj);
   kv.set("stats",obj,function(err){
-    if(err)
-      console.log("error setting stats" + err);
+    if(err){
+      _("error setting stats");
+      _(err);
+      }
   });
 }
 function loadStats(){
+  _("Loading stats")
+  _("StringMap cleared")
   stringMap.clear();
   kv.get("stats",function(err,result){
-    console.log(result);
+    _("kv get stats callback")
+    _("kv callback result")
+    _(result);
     if(!err && result){
+      _("iterating kv results");
       if(result.length)
         for(index in result) {
-          console.log("loading index "+index +" value "+ result[index]);
+          _("index");
+          _(index);
+          _("result");
+          _(result);
           stringMap.put(index,result[index]);
         }
     }
