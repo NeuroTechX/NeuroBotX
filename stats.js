@@ -35,12 +35,11 @@ function handle_restart(){
   saveStats();
 }
 function saveStats(){
-  _("savin stats");
   var obj = {};
   stringMap.forEach(function(value, key) {
     obj[key] = value;
   });
-  _("obj to save");
+  _("Saving stats to the kv :");
   _(obj);
   kv.set("stats",obj,function(err){
     if(err){
@@ -52,11 +51,15 @@ function saveStats(){
 function loadStats(){
   stringMap.clear();
   kv.get("stats",function(err,result){
-    _("stats found :")
-    _(result);
-    if(!err && result){
-      for(index in result) {
-        stringMap.set(index,result[index]);
+    if(err)
+      _("error while loading stats from the kv");
+    else{
+      if(!err && result){
+        _("Stats found on the kv:")
+        _(result);
+        for(index in result) {
+          stringMap.set(index,result[index]);
+        }
       }
     }
   });

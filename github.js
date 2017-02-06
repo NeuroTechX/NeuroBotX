@@ -1,6 +1,7 @@
 const slapp = require('./slapp.js').get();
 const GitHubApi = require('github');
 const request = require('request');
+
 var kv = require('beepboop-persist')();
 var github_token = '';
 function _(obj){
@@ -23,14 +24,17 @@ var github = new GitHubApi({
 
 function init(cb){
   kv.list("github_token",function(err,keys){
-    console.log("err"+err);
+    if(err)
+      console.log("Error while finding github token from kv");
     if(!err &&keys.length)
       kv.get("github_token",function(err,val){
         if(!err && val){
           github_token = val;
+          console.log("Github token found and set to " + val);
           cb(true);
         }
         else {
+          console.log("Github token not found on the kv");
           cb(false);
         }
       });
@@ -54,7 +58,12 @@ slapp.command('/github','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
     if( data.user.is_admin){
       github_token = text;
-      kv.set("github_token",github_token,function(err){});
+      kv.set("github_token",github_token,function(err){
+        if(err)
+          console.log("Error while setting github token on the kv");
+        else
+          console.log("Github token set on the kv. t: " + github_token);
+      });
       github.authenticate({
         type: "token",
         token: github_token

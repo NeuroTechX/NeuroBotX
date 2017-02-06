@@ -3,6 +3,7 @@ const express = require('express')
 const verbose = require('./verbose.js');
 const slapp = require('./slapp.js').get();
 const cronJob = require('cron').CronJob;
+var lo = require('lodash');
 var archive = require('./archive.js');
 var links = require('./links.js');
 var stats = require('./stats.js');
@@ -15,13 +16,16 @@ function _(obj){
 var port = process.env.PORT || 3000
 
 // Seeks token in the private channel
-github.init(function(tokenFound){
-  if(tokenFound){
-    stats.start();
-    links.start();
-    archive.start();
-  }
-});
+github.init(lo.throttle(
+  function(tokenFound){
+    if(tokenFound){
+      stats.start();
+      links.start();
+      archive.start();
+    }
+  },60001
+  )
+);
 stats.loadStats();
 
 // response to the user typing "help"
