@@ -70,11 +70,11 @@ slapp.message('.*', 'direct_mention', (msg) => {
 var restartInProgress = false;
 
 // Weekly stats newsletter and server restart
-var weeklyTask = new cronJob('* */5 * * * *',
+var weeklyTask = new cronJob('* */10 * * * *',
   lo.throttle(function(){
     _("restarting called");
     var currentTS = Math.floor(Date.now() / 1000);
-    var restartTS = serverStartTS + 120;
+    var restartTS = serverStartTS + 86400;//day;
     console.log("Current TimeStamp:");
     console.log(currentTS);
     console.log("Restart TimeStamp:");

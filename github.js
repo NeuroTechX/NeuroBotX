@@ -30,7 +30,7 @@ function init(cb){
     if(!err &&keys.length)
       kv.get("github_token",function(err,val){
         if(!err && val){
-          github_token = val;
+          setToken(val);
           console.log("Github token found and set to " + val);
           cb(true);
         }
