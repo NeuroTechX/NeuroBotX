@@ -74,7 +74,7 @@ var weeklyTask = new cronJob('* */5 * * * *',
   lo.throttle(function(){
     _("restarting called");
     var currentTS = Math.floor(Date.now() / 1000);
-    var restartTS = serverStartTS + 300;
+    var restartTS = serverStartTS + 120;
     console.log("Current TimeStamp:");
     console.log(currentTS);
     console.log("Restart TimeStamp:");
