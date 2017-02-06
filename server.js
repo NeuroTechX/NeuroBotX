@@ -15,6 +15,7 @@ function _(obj){
 // use `PORT` env var on Beep Boop - default to 3000 locally
 var port = process.env.PORT || 3000
 
+var serverStartTS = Math.floor(Date.now() / 1000);
 // Seeks token in the private channel
 github.init(
   function(tokenFound){
@@ -72,7 +73,14 @@ var restartInProgress = false;
 var weeklyTask = new cronJob('* */5 * * * *',
   lo.throttle(function(){
     _("restarting called");
-    if(!restartInProgress){
+    var currentTS = Math.floor(Date.now() / 1000);
+    var restartTS = serverStartTS + 300;
+    console.log("Current TimeStamp:");
+    console.log(currentTS);
+    console.log("Restart TimeStamp:");
+    console.log(restartTS);
+    if(!restartInProgress && currentTS>=restartTS){
+      console.log("restart actually accepted");
       stats.handle_restart();
       links.handle_restart();
       archive.handle_restart();

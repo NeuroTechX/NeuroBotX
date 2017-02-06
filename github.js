@@ -86,6 +86,7 @@ function restart(){
       _("file body received");
       _(fileBody);
 			fileBody+="0";
+      fs.writeFile("metamorphosis.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
       var content = Buffer.from(fileBody, 'ascii');
       var b64content = content.toString('base64');
 			var blobPath = "https://api.github.com/repos/NeuroTechX/NeuroBotX/contents/metamorphosis.md";
@@ -101,7 +102,7 @@ function restart(){
 	    	if (!bloberror && blobresponse.statusCode == 200) {
           var shaStr = JSON.parse(blobBody).sha;
           ("Sha str")
-					github.repos.updateFile({
+					get().repos.updateFile({
 						owner:"NeuroTechX",
 						repo:"NeuroBotX",
 						path:"metamorphosis.md",
