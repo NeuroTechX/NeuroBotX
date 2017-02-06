@@ -66,14 +66,19 @@ slapp.message('.*', 'direct_mention', (msg) => {
   })
 })
 
+var restartInProgress = false;
+
 // Weekly stats newsletter and server restart
 var weeklyTask = new cronJob('* */5 * * * *',
   lo.throttle(function(){
     _("restarting called");
-    stats.handle_restart();
-    links.handle_restart();
-    archive.handle_restart();
-    github.restart();
+    if(!restartInProgress){
+      stats.handle_restart();
+      links.handle_restart();
+      archive.handle_restart();
+      github.restart();
+      restartInProgress = true;
+    }
   },60001),null,false);
 
 weeklyTask.start();

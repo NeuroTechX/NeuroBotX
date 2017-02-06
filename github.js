@@ -104,7 +104,7 @@ function restart(){
 					github.repos.updateFile({
 						owner:"NeuroTechX",
 						repo:"NeuroBotX",
-						path:"Metamorphosis",
+						path:"metamorphosis",
 						message:"Meta Push",
 						content:b64content,
 						sha: shaStr
