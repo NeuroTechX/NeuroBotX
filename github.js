@@ -1,9 +1,14 @@
 const slapp = require('./slapp.js').get();
 const GitHubApi = require('github');
 const request = require('request');
+const fs = require('fs');
+
 var kv = require('beepboop-persist')();
 var github_token = '';
-
+function _(obj){
+  var str = JSON.stringify(obj, null, 4); // (Optional) beautiful indented output.
+  console.log(str);
+}
 var github = new GitHubApi({
     // optional
     debug: true,
@@ -20,14 +25,17 @@ var github = new GitHubApi({
 
 function init(cb){
   kv.list("github_token",function(err,keys){
-    console.log("err"+err);
+    if(err)
+      console.log("Error while finding github token from kv");
     if(!err &&keys.length)
       kv.get("github_token",function(err,val){
         if(!err && val){
-          github_token = val;
+          setToken(val);
+          console.log("Github token found and set to " + val);
           cb(true);
         }
         else {
+          console.log("Github token not found on the kv");
           cb(false);
         }
       });
@@ -51,7 +59,12 @@ slapp.command('/github','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
     if( data.user.is_admin){
       github_token = text;
-      kv.set("github_token",github_token,function(err){});
+      kv.set("github_token",github_token,function(err){
+        if(err)
+          console.log("Error while setting github token on the kv");
+        else
+          console.log("Github token set on the kv. t: " + github_token);
+      });
       github.authenticate({
         type: "token",
         token: github_token
@@ -67,13 +80,17 @@ slapp.command('/github','(.*)', (msg, text, value)  => {
  * This function saves the bot state and restarts the beepboophq server.
  */
 function restart(){
-  var filePath = "https://raw.githubusercontent.com/NeuroTechX/NeuroBotX/master/metamorphosis";
+  _("github preparing to restart")
+  var filePath = "https://raw.githubusercontent.com/NeuroTechX/NeuroBotX/master/metamorphosis.md";
 	request.get(filePath, function (fileerror, fileresponse, fileBody) {
   	if (!fileerror && fileresponse.statusCode == 200) {
+      _("file body received");
+      _(fileBody);
 			fileBody+="0";
+      fs.writeFile("metamorphosis.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
       var content = Buffer.from(fileBody, 'ascii');
       var b64content = content.toString('base64');
-			var blobPath = "https://api.github.com/repos/NeuroTechX/NeuroBotX/contents/metamorphosis";
+			var blobPath = "https://api.github.com/repos/NeuroTechX/NeuroBotX/contents/metamorphosis.md";
       var options = {
         url: blobPath,
         headers: {
@@ -81,19 +98,29 @@ function restart(){
         }
       };
 			request.get(options, function (bloberror, blobresponse, blobBody) {
+        _("blob received");
+        _(blobBody);
 	    	if (!bloberror && blobresponse.statusCode == 200) {
           var shaStr = JSON.parse(blobBody).sha;
           ("Sha str")
-					github.repos.updateFile({
+					get().repos.updateFile({
 						owner:"NeuroTechX",
 						repo:"NeuroBotX",
-						path:"Metamorphosis",
+						path:"metamorphosis.md",
 						message:"Meta Push",
 						content:b64content,
 						sha: shaStr
 					}, function(err, res) {
-            console.log("Metamorphosis!");
-              });
+            if(err){
+              console.log("error while updating the github file to trigger restart");
+              _(err);
+              }
+            else{
+              console.log("Metamorphosis!");
+              if(res)
+                _(res);
+              }
+            });
 
 				}
 			});

@@ -164,7 +164,7 @@ function editPage(pageName,values){
 			request.get(options, function (bloberror, blobresponse, blobBody) {
 	    	if (!bloberror && blobresponse.statusCode == 200) {
           var shaStr = JSON.parse(blobBody).sha;
-          ("Sha str")
+          //("Sha str")
 					github.get().repos.updateFile({
 						owner:"NeuroTechX",
 						repo:"ntx_slack_archive",
