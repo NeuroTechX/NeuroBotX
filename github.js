@@ -80,7 +80,7 @@ slapp.command('/github','(.*)', (msg, text, value)  => {
  */
 function restart(){
   _("github preparing to restart")
-  var filePath = "https://raw.githubusercontent.com/NeuroTechX/NeuroBotX/master/metamorphosis";
+  var filePath = "https://raw.githubusercontent.com/NeuroTechX/NeuroBotX/master/metamorphosis.md";
 	request.get(filePath, function (fileerror, fileresponse, fileBody) {
   	if (!fileerror && fileresponse.statusCode == 200) {
       _("file body received");
@@ -88,7 +88,7 @@ function restart(){
 			fileBody+="0";
       var content = Buffer.from(fileBody, 'ascii');
       var b64content = content.toString('base64');
-			var blobPath = "https://api.github.com/repos/NeuroTechX/NeuroBotX/contents/metamorphosis";
+			var blobPath = "https://api.github.com/repos/NeuroTechX/NeuroBotX/contents/metamorphosis.md";
       var options = {
         url: blobPath,
         headers: {
