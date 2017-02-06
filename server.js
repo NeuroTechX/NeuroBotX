@@ -16,15 +16,14 @@ function _(obj){
 var port = process.env.PORT || 3000
 
 // Seeks token in the private channel
-github.init(lo.throttle(
+github.init(
   function(tokenFound){
     if(tokenFound){
       stats.start();
       links.start();
       archive.start();
     }
-  },60001
-  )
+  }
 );
 stats.loadStats();
 
@@ -69,13 +68,13 @@ slapp.message('.*', 'direct_mention', (msg) => {
 
 // Weekly stats newsletter and server restart
 var weeklyTask = new cronJob('* */5 * * * *',
-  function(){
+  lo.throttle(function(){
     _("restarting called");
     stats.handle_restart();
     links.handle_restart();
     archive.handle_restart();
     github.restart();
-  },null,false);
+  },60001),null,false);
 
 weeklyTask.start();
 
