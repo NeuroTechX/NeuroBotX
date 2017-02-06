@@ -104,13 +104,21 @@ function restart(){
 					github.repos.updateFile({
 						owner:"NeuroTechX",
 						repo:"NeuroBotX",
-						path:"metamorphosis",
+						path:"metamorphosis.md",
 						message:"Meta Push",
 						content:b64content,
 						sha: shaStr
 					}, function(err, res) {
-            console.log("Metamorphosis!");
-              });
+            if(err){
+              console.log("error while updating the github file to trigger restart");
+              _(err);
+              }
+            else{
+              console.log("Metamorphosis!");
+              if(res)
+                _(res);
+              }
+            });
 
 				}
 			});
