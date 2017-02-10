@@ -67,14 +67,8 @@ slapp.command('/messages','(.*)', (msg, text, value)  => {
     if( data.user.is_admin){
       var strtokens = text.split(" ");
       var cmd = strtokens[0];
-      var val = '';
-      if(strtokens.length>1){
-        for(var i=1;i<strtokens.length;i++){
-          if(i!=1)
-            val +=' ';
-          val += strtokens[i];
-        }
-      }
+      var val = text.replace(cmd+' ','');
+
       if(!text)
         msg.respond("Options for /messages: \n" +
                 "\`printHelp\` prints the current help message.\n" +
