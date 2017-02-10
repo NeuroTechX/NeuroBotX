@@ -60,6 +60,7 @@ var weeklyTask = new cronJob('* */10 * * * *',
 
 weeklyTask.start();
 
+
 // attach Slapp to express server
 var server = slapp.attachToExpress(express())
 // start http server
