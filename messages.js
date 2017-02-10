@@ -124,9 +124,21 @@ function setWelcome(msg,val){
 }
 function defaultHelp(msg){
   current_help_text = verbose.HELP_TEXT;
+  kv.set("msgHelp",verbose.HELP_TEXT,function(err){
+    if(err){
+      _("error setting msgWelcome in the kv");
+      _(err);
+      }
+  })
 }
 function defaultWelcome(msg){
   current_welcome_text = verbose.WELCOME_TEXT;
+  kv.set("msgWelcome",verbose.WELCOME_TEXT,function(err){
+    if(err){
+      _("error setting msgWelcome in the kv");
+      _(err);
+      }
+  })
 }
 module.exports = {
   init:init
