@@ -106,6 +106,7 @@ function printWelcome(msg){
 }
 function setHelp(msg,val){
   current_help_text = val;
+  msg.respond("New help message set");
   kv.set("msgHelp",val,function(err){
     if(err){
       _("error setting msgHelp in the kv");
@@ -114,6 +115,7 @@ function setHelp(msg,val){
   });
 }
 function setWelcome(msg,val){
+  msg.respond("New welcome message set");
   current_welcome_text = val;
   kv.set("msgWelcome",val,function(err){
     if(err){
@@ -123,6 +125,7 @@ function setWelcome(msg,val){
   });
 }
 function defaultHelp(msg){
+  msg.respond("Help set to Default");
   current_help_text = verbose.HELP_TEXT;
   kv.set("msgHelp",verbose.HELP_TEXT,function(err){
     if(err){
@@ -132,6 +135,7 @@ function defaultHelp(msg){
   })
 }
 function defaultWelcome(msg){
+  msg.respond("Welcome set to Default");
   current_welcome_text = verbose.WELCOME_TEXT;
   kv.set("msgWelcome",verbose.WELCOME_TEXT,function(err){
     if(err){
