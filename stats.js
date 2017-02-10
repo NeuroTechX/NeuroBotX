@@ -24,8 +24,7 @@ var dictionary = [
   'matlab',
   'python',
   'c++',
-  'noise',
-	'empirical mode decomposition'
+  'noise'
 ]
 
 for(var i=0;i<dictionary.length;i++){
@@ -60,6 +59,12 @@ function loadStats(){
         for(index in result) {
           stringMap.set(index,result[index]);
         }
+      }
+    }
+    var keys = stringMap.keys();
+    if(!keys.length){
+      for(var i=0;i<dictionary.length;i++){
+        stringMap.set(dictionary[i].toLowerCase(),0)
       }
     }
   });
