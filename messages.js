@@ -134,3 +134,6 @@ function defaultHelp(msg){
 function defaultWelcome(msg){
   current_welcome_text = verbose.WELCOME_TEXT;
 }
+module.exports = {
+  init:init
+}
