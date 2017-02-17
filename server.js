@@ -50,11 +50,12 @@ var weeklyTask = new cronJob('* */10 * * * *',
     console.log(restartTS);
     if(!restartInProgress && currentTS>=restartTS){
       console.log("restart actually accepted");
+      restartInProgress = true;
       stats.handle_restart();
       links.handle_restart();
       archive.handle_restart();
-      setTimeout(github.restart(),120000);
-      restartInProgress = true;
+      //setTimeout(github.restart(),120000);
+      restartInProgress = false;
     }
   },60001),null,false);
 
