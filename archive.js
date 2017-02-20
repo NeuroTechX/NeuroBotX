@@ -6,12 +6,13 @@ const fs = require('fs');
 var github = require('./github.js')
 
 // Hashmap storing the archive waiting to be pushed to github.
-var msgMap = new HashMap();
-var msgMapLength = 0;
+// var msgMap = new HashMap();
+// var msgMapLength = 0;
+var buffer =[];
 // Archiving feature state
 var isArchiving = false;
 // Number of messages per channel before push to github
-const ARCHIVE_BUFFER_MAX_LENGTH = 10;
+//const ARCHIVE_BUFFER_MAX_LENGTH = 10;
 
 /**
  * This function that handles the module behaviour when the server is about to restart
@@ -32,24 +33,28 @@ function receive(msg){
   if(isArchiving){
     slapp.client.channels.info({token:msg.meta.bot_token,channel:msg.body.event.channel}, (err, resultChannel) => {
       slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.event.user}, (uerr, resultUser) => {
-        var hash = msgMap.hash(resultChannel.channel.name);
-  			if ( ! (hash in msgMap._data) ) {
-          var timeStamp = new Date(msg.body.event.ts * 1000)
-          var obj = {user:resultUser.user.name,ts:timeStamp,text:msg.body.event.text};
-          var array = [obj];
-          msgMap.set(resultChannel.channel.name,array)
-          msgMapLength++;
-        }
-        else{
-          var array = msgMap.get(resultChannel.channel.name);
-          var timeStamp = new Date(msg.body.event.ts * 1000)
-          var obj = {user:resultUser.user.name,ts:timeStamp,text:msg.body.event.text};
-          array.push(obj)
-          msgMap.set(resultChannel.channel.name,array)
-          msgMapLength++;
-          if(array.length == ARCHIVE_BUFFER_MAX_LENGTH)
-            archive_push(resultChannel.channel.name);
-        }
+        // var hash = msgMap.hash(resultChannel.channel.name);
+  			// if ( ! (hash in msgMap._data) ) {
+        //   var timeStamp = new Date(msg.body.event.ts * 1000)
+        //   var obj = {user:resultUser.user.name,ts:timeStamp,text:msg.body.event.text};
+        //   var array = [obj];
+        //   msgMap.set(resultChannel.channel.name,array)
+        //   msgMapLength++;
+        // }
+        // else{
+        //   var array = msgMap.get(resultChannel.channel.name);
+        //   var timeStamp = new Date(msg.body.event.ts * 1000)
+        //   var obj = {user:resultUser.user.name,ts:timeStamp,text:msg.body.event.text};
+        //   array.push(obj)
+        //   msgMap.set(resultChannel.channel.name,array)
+        //   msgMapLength++;
+        //   if(array.length == ARCHIVE_BUFFER_MAX_LENGTH)
+        //     archive_push(resultChannel.channel.name);
+        // }
+        var timeStamp = new Date(msg.body.event.ts * 1000)
+        var obj = {user:resultUser.user.name,ts:timeStamp,text:msg.body.event.text,channel:resultChannel.channel.name};
+        buffer.push([obj]);
+        archive_push();
       });
     });
   }
@@ -110,15 +115,14 @@ function archive_stop(msg){
 	}
 }
 /**
- * This function pushes the array from the archiving hashmap corresponding to the channel specifed
- * @param {string} channel the name of the channel that will be archived
+ * This function pushes the message from the buffer to github
  */
-function archive_push(channel){
-  var values = msgMap.get(channel).slice();
-  var newArr = [];
-  msgMap.set(channel,newArr);
-  var channelName = channel;
-  var channelPageName = channelName + '.md';
+function archive_push(){
+  // var values = msgMap.get(channel).slice();
+  // var newArr = [];
+  // msgMap.set(channel,newArr);
+  // var channelName = channel;
+  var channelPageName = buffer[0].channel + '.md';
   github.get().repos.getContent({
    owner:'NeuroTechX',
    repo:'ntx_slack_archive',
@@ -130,36 +134,36 @@ function archive_push(channel){
       }
     }
     if(found)
-      editPage(channelPageName,values);
+      editPage(buffer[0]);
     else {
-      createPage(channelPageName,values);
+      createPage(buffer[0]);
     }
   });
 }
 /**
  * This function edits the github page specified by pageName adding values to it
- * @param {string} pageName the name of the page (Channel) to edit
- * @param {array} values the values to add to the page
+ * @param {string} obj the data to push
  */
-function editPage(pageName,values){
+function editPage(obj){
 
-  var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_archive/master/"+pageName;
-	request.get(filePath, function (fileerror, fileresponse, fileBody) {
+  var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_archive/master/"+obj.channel+'.md';
+  var propertiesObject = {access_token:github.getToken()};
+	request.get({url:filePath, qs:propertiesObject}, function (fileerror, fileresponse, fileBody) {
   	if (!fileerror && fileresponse.statusCode == 200) {
-			//fileBody+="<ul>";
-			for(var i=0;i<values.length;i++){
-        var quotedText = values[i].text.replace(/([\n\r])/g, '\n\n> $1');
-        fileBody+= ""+formatDate(values[i].ts)+"\n\n **"+ values[i].user +"**" + " :\n\n >" + quotedText + "\n\n";
-			}
-			fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
+
+      var quotedText = obj.text.replace(/([\n\r])/g, '\n\n> $1');
+      fileBody+= ""+formatDate(obj.ts)+"\n\n **"+ obj.user +"**" + " :\n\n >" + quotedText + "\n\n";
+
+			//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
       var content = Buffer.from(fileBody, 'ascii');
       var b64content = content.toString('base64');
-			var blobPath = "https://api.github.com/repos/NeuroTechX/ntx_slack_archive/contents/"+pageName;
+			var blobPath = "https://api.github.com/repos/NeuroTechX/ntx_slack_archive/contents/"+obj.channel+'.md';
       var options = {
         url: blobPath,
         headers: {
           'User-Agent': 'Edubot-GitHub-App'
-        }
+        },
+        qs:propertiesObject
       };
 			request.get(options, function (bloberror, blobresponse, blobBody) {
 	    	if (!bloberror && blobresponse.statusCode == 200) {
@@ -168,7 +172,7 @@ function editPage(pageName,values){
 					github.get().repos.updateFile({
 						owner:"NeuroTechX",
 						repo:"ntx_slack_archive",
-						path:pageName,
+						path:obj.channel+'.md',
 						message:"Edubot Push",
 						content:b64content,
 						sha: shaStr
@@ -187,24 +191,20 @@ function formatDate(ts){
 }
 /**
  * This function creates a github archiving page
- * @param {string} pageName the name of the page (Channel) to create
- * @param {array} values the values to add to the page
+ * @param {string} obj data to push
  */
-function createPage(pageName,values){
-      var pn = pageName;
-      var strtkns = pn.split(".");
-      var fileBody = "######"+strtkns[0]+"\n\n";
-      for(var i=0;i<values.length;i++){
-        var quotedText = values[i].text.replace(/([\n\r])/g, '\n\n> $1');
-				fileBody+= ""+formatDate(values[i].ts)+"\n\n **"+ values[i].user +"**" + " :\n\n >" + quotedText + "\n\n";
-			}
+function createPage(obj){
+      var fileBody = "######"+obj.channel+"\n\n";
+      var quotedText = obj.text.replace(/([\n\r])/g, '\n\n> $1');
+			fileBody+= ""+formatDate(obj.ts)+"\n\n **"+ obj.user +"**" + " :\n\n >" + quotedText + "\n\n";
+
       var content = Buffer.from(fileBody, 'ascii');
       var b64content = content.toString('base64');
 
       github.get().repos.createFile({
         owner:"NeuroTechX",
         repo:"ntx_slack_archive",
-        path:pageName,
+        path:obj.channel+'.md',
         message:"Edubot Push",
         content:b64content
       });

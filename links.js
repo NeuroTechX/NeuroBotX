@@ -11,7 +11,11 @@ var LINKS_REGEX = /(\b(https?|ftp|file|http):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-
 var isTrackingLinks = false;
 var links = [];
 var linksDetector = new RegExp(LINKS_REGEX);
-
+// Simple logging function
+function _(obj){
+  var str = JSON.stringify(obj, null, 4);
+  console.log(str);
+}
 /**
  * This function receives a slapp message and stores the message text in a buffer if it finds an hyper link in it
  * @param {object} msg the message sent by slapp that is meant to be archived
@@ -130,14 +134,14 @@ function links_push(){
 	var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_resources/master/_pages/slack-links.md";
   var propertiesObject = { access_token:github.getToken()};
 	request.get({url:filePath, qs:propertiesObject}, function (fileerror, fileresponse, fileBody) {
+    console.log("Get file response");
+    _(fileresponse);
   	if (!fileerror && fileresponse.statusCode == 200) {
 			fileBody+="<ul>";
 			for(var i=0;i<links.length;i++){
 				fileBody+="<li>" + links[i] + "</li>";
 			}
 			fileBody+="</ul>";
-      console.log('new file body');
-      console.log(fileBody);
       var content = Buffer.from(fileBody, 'ascii');
       var b64content = content.toString('base64');
 			var blobPath = "https://api.github.com/repos/NeuroTechX/ntx_slack_resources/contents/_pages/slack-links.md";

@@ -276,12 +276,17 @@ function stats_start(msg) {
  */
 function receive(msg){
   if(isTrackingStats){
+    var atLeastOneKeywordFound = false;
     var lowerCaseText =  msg.body.event.text.toLowerCase();
     stringMap.forEach(function(value, key) {
       var occ = lowerCaseText.split(key).length - 1;
-      console.log("Occurences of " + key + " " +occ);
+      if(occ>=1)
+        atLeastOneKeywordFound=true;
       stringMap.set(key,stringMap.get(key)+occ);
     })
+    if(atLeastOneKeywordFound){
+      saveStats();
+    }
   }
 }
 /**
