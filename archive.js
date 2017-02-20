@@ -54,7 +54,7 @@ function receive(msg){
     });
   }
 }
-
+// Sets the handler for the slash command
 slapp.command('/archivetogit','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
     if( data.user.is_admin){
@@ -111,7 +111,7 @@ function archive_stop(msg){
 }
 /**
  * This function pushes the array from the archiving hashmap corresponding to the channel specifed
- * @param {string} chanel the name of the channel that will be archived
+ * @param {string} channel the name of the channel that will be archived
  */
 function archive_push(channel){
   var values = msgMap.get(channel).slice();

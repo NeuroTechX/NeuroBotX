@@ -1,12 +1,19 @@
 const slapp = require('./slapp.js').get();
 const verbose = require('./verbose.js');
 var kv = require('beepboop-persist')();
+
+// Simple logging function
 function _(obj){
   var str = JSON.stringify(obj, null, 4); // (Optional) beautiful indented output.
   console.log(str);
 }
+
 var current_help_text = verbose.HELP_TEXT;
 var current_welcome_text = verbose.WELCOME_TEXT;
+
+/**
+ * This function initializes the bot messages
+ */
 function init(){
   kv.get("msgHelp",function(err,result){
     if(err){
@@ -31,7 +38,8 @@ function init(){
     }
   });
 }
-// response to the user typing "help"
+
+//Behaviour of the bot when he is mentioned or mesages with DM
 slapp.message('help', ['mention', 'direct_message'], (msg) => {
   msg.say(current_help_text)
 });
@@ -62,13 +70,13 @@ slapp.message('.*', 'direct_mention', (msg) => {
     msg.say({ channel: data.channel.id, text:current_help_text})
   })
 })
+// Handler of the slash command
 slapp.command('/messages','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
     if( data.user.is_admin){
       var strtokens = text.split(" ");
       var cmd = strtokens[0];
       var val = text.replace(cmd+' ','');
-
       if(!text)
         msg.respond("Options for /messages: \n" +
                 "\`printHelp\` prints the current help message.\n" +
@@ -98,12 +106,25 @@ slapp.command('/messages','(.*)', (msg, text, value)  => {
     }
   })
 })
+/**
+ * Prints the current help message
+ * @param {object} msg the slash command message sent by slapp
+ */
 function printHelp(msg){
   msg.respond(current_help_text);
 }
+/**
+ * Prints the current welcome message
+ * @param {object} msg the slash command message sent by slapp
+ */
 function printWelcome(msg){
   msg.respond(current_welcome_text);
 }
+/**
+ * Sets the current help message to the default one
+ * @param {object} msg the slash command message sent by slapp
+ * @param {object} val the value sent with the command
+ */
 function setHelp(msg,val){
   current_help_text = val;
   msg.respond("New help message set");
@@ -114,6 +135,11 @@ function setHelp(msg,val){
       }
   });
 }
+/**
+ * Sets the current welcome message to the default one
+ * @param {object} msg the slash command message sent by slapp
+ * @param {object} val the value sent with the command
+ */
 function setWelcome(msg,val){
   msg.respond("New welcome message set");
   current_welcome_text = val;
@@ -124,6 +150,10 @@ function setWelcome(msg,val){
       }
   });
 }
+/**
+ * Sets the current help message to the default one
+ * @param {object} msg the slash command message sent by slapp
+ */
 function defaultHelp(msg){
   msg.respond("Help set to Default");
   current_help_text = verbose.HELP_TEXT;
@@ -134,6 +164,10 @@ function defaultHelp(msg){
       }
   })
 }
+/**
+ * Sets the current welcome message to the default one
+ * @param {object} msg the slash command message sent by slapp
+ */
 function defaultWelcome(msg){
   msg.respond("Welcome set to Default");
   current_welcome_text = verbose.WELCOME_TEXT;
