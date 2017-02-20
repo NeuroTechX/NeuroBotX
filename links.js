@@ -6,12 +6,16 @@ var github = require('./github.js');
 // Hyper links detection regex
 var LINKS_REGEX = /(\b(https?|ftp|file|http):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
 // Max buffer length before pushing to github
-const LINKS_BUFFER_MAX_LENGTH = 10;
+// const LINKS_BUFFER_MAX_LENGTH = 10;
 
 var isTrackingLinks = false;
 var links = [];
 var linksDetector = new RegExp(LINKS_REGEX);
-
+// Simple logging function
+function _(obj){
+  var str = JSON.stringify(obj, null, 4);
+  console.log(str);
+}
 /**
  * This function receives a slapp message and stores the message text in a buffer if it finds an hyper link in it
  * @param {object} msg the message sent by slapp that is meant to be archived
@@ -20,9 +24,9 @@ function receive(msg){
   if(isTrackingLinks)
 		if(linksDetector.test(msg.body.event.text)){
 			links[links.length]=msg.body.event.text;
-      if(links.length == LINKS_BUFFER_MAX_LENGTH){
-        links_push();
-      }
+      //if(links.length == LINKS_BUFFER_MAX_LENGTH){
+      links_push();
+      //}
     }
 }
 slapp.command('/links','(.*)', (msg, text, value)  => {
@@ -128,7 +132,10 @@ function handle_restart(){
  */
 function links_push(){
 	var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_resources/master/_pages/slack-links.md";
-	request.get(filePath, function (fileerror, fileresponse, fileBody) {
+  var propertiesObject = { access_token:github.getToken()};
+	request.get({url:filePath, qs:propertiesObject}, function (fileerror, fileresponse, fileBody) {
+    console.log("Get file response");
+    _(fileresponse);
   	if (!fileerror && fileresponse.statusCode == 200) {
 			fileBody+="<ul>";
 			for(var i=0;i<links.length;i++){

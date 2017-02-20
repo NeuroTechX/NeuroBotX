@@ -8,8 +8,10 @@ var links = require('./links.js');
 var stats = require('./stats.js');
 var github = require('./github.js');
 var messages = require('./messages.js');
+
+// Simple logging function
 function _(obj){
-  var str = JSON.stringify(obj, null, 4); // (Optional) beautiful indented output.
+  var str = JSON.stringify(obj, null, 4);
   console.log(str);
 }
 // use `PORT` env var on Beep Boop - default to 3000 locally
@@ -26,7 +28,9 @@ github.init(
     }
   }
 );
+// Load the stats from the strorage if any
 stats.loadStats();
+// Load the default bot messages
 messages.init();
 
 // Collect and dispatch all messages posted on public channels
@@ -35,32 +39,6 @@ slapp.message('(.*)', 'ambient', (msg) => {
   links.receive(msg);
   archive.receive(msg);
 })
-
-var restartInProgress = false;
-
-// Weekly stats newsletter and server restart
-var weeklyTask = new cronJob('* */10 * * * *',
-  lo.throttle(function(){
-    _("restarting called");
-    var currentTS = Math.floor(Date.now() / 1000);
-    var restartTS = serverStartTS + 86400;//day;
-    console.log("Current TimeStamp:");
-    console.log(currentTS);
-    console.log("Restart TimeStamp:");
-    console.log(restartTS);
-    if(!restartInProgress && currentTS>=restartTS){
-      console.log("restart actually accepted");
-      restartInProgress = true;
-      stats.handle_restart();
-      links.handle_restart();
-      archive.handle_restart();
-      //setTimeout(github.restart(),120000);
-      restartInProgress = false;
-    }
-  },60001),null,false);
-
-weeklyTask.start();
-
 
 // attach Slapp to express server
 var server = slapp.attachToExpress(express())
