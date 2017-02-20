@@ -40,27 +40,6 @@ slapp.message('(.*)', 'ambient', (msg) => {
   archive.receive(msg);
 })
 
-////////////////////////////////////Auto commit for restart
-// // Indicates if the bot entered a process of restart
-// var restartInProgress = false;
-//
-// // Weekly stats newsletter and server restart
-// var weeklyTask = new cronJob('* */10 * * * *',
-//   lo.throttle(function(){
-//     var currentTS = Math.floor(Date.now() / 1000);
-//     var restartTS = serverStartTS + 86400;//day;
-//     if(!restartInProgress && currentTS>=restartTS){
-//       console.log("restart actually accepted");
-//       restartInProgress = true;
-//       stats.handle_restart();
-//       links.handle_restart();
-//       archive.handle_restart();
-//       restartInProgress = false;
-//     }
-//   },60001),null,false);
-//weeklyTask.start();
-
-
 // attach Slapp to express server
 var server = slapp.attachToExpress(express())
 // start http server
