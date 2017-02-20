@@ -136,6 +136,8 @@ function links_push(){
 				fileBody+="<li>" + links[i] + "</li>";
 			}
 			fileBody+="</ul>";
+      console.log('new file body');
+      console.log(fileBody);
       var content = Buffer.from(fileBody, 'ascii');
       var b64content = content.toString('base64');
 			var blobPath = "https://api.github.com/repos/NeuroTechX/ntx_slack_resources/contents/_pages/slack-links.md";
