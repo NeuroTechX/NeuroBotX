@@ -4,7 +4,10 @@ const request = require('request');
 const fs = require('fs');
 
 var github = require('./github.js')
-
+function _(obj){
+  var str = JSON.stringify(obj, null, 4);
+  console.log(str);
+}
 // Hashmap storing the archive waiting to be pushed to github.
 // var msgMap = new HashMap();
 // var msgMapLength = 0;
