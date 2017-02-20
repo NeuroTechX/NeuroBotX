@@ -52,7 +52,10 @@ function receive(msg){
         //     archive_push(resultChannel.channel.name);
         // }
         var timeStamp = new Date(msg.body.event.ts * 1000)
-        var obj = {user:resultUser.user.name,ts:timeStamp,text:msg.body.event.text,channel:resultChannel.channel.name};
+        var obj = {user:resultUser.user.name,
+                    ts:timeStamp,
+                    text:msg.body.event.text,
+                    channel:resultChannel.channel.name};
         buffer.push([obj]);
         archive_push();
       });
@@ -118,6 +121,8 @@ function archive_stop(msg){
  * This function pushes the message from the buffer to github
  */
 function archive_push(){
+  _('ARCHIVE PUSH buffer:');
+  _(buffer);
   // var values = msgMap.get(channel).slice();
   // var newArr = [];
   // msgMap.set(channel,newArr);
