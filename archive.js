@@ -59,7 +59,7 @@ function receive(msg){
                     ts:timeStamp,
                     text:msg.body.event.text,
                     channel:resultChannel.channel.name};
-        buffer.push([obj]);
+        buffer.push(obj);
         archive_push();
       });
     });
@@ -184,8 +184,10 @@ function editPage(obj){
 						message:"Edubot Push",
 						content:b64content,
 						sha: shaStr
-					});
-				}
+					}, function(err, res) {
+            buffer = [];
+          });
+        }
 			});
   	}
 	});
@@ -215,6 +217,8 @@ function createPage(obj){
         path:obj.channel+'.md',
         message:"Edubot Push",
         content:b64content
+      }, function(err, res) {
+        buffer = [];
       });
 }
 module.exports = {
