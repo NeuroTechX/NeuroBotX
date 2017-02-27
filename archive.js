@@ -36,7 +36,6 @@ function receive(msg){
                     ts:timeStamp,
                     text:msg.body.event.text,
                     channel:resultChannel.channel.name};
-        //buffer.push(obj);
         archive_push(obj);
       });
     });
@@ -172,6 +171,20 @@ function editPage(obj){
     },
     function(err,res){
     	if (!err) {
+        var taggedUsers = obj.text.match(/([<][@][U][A-Za-z0-9]+[>])/g);
+        var taggedUsersIds = taggedUsers.slice();
+        for(var i=0;i<taggedUsersIds.length;i++){
+          taggedUsersIds[i].replace(/(<|@|>)/g,'');
+        }
+        var ps = [];
+        for(var i=0;i<taggedUsersIds.length;i++){
+          ps.push(getUserInfoPromise(taggedUsersIds[i]));
+        }
+        Promise.all(ps).then(function(results){
+          for(var i=0;i<taggedUsers.length;i++){
+            obj.text.replace(taggedUsers[i],resulta[i]);
+          }
+        });
         var quotedText = obj.text.replace(/([\n\r])/g, '\n\n> $1');
         var b64fileBody = res.content;
         var bufBody = new Buffer(b64fileBody, 'base64')
