@@ -24,9 +24,7 @@ function receive(msg){
   if(isTrackingLinks)
 		if(linksDetector.test(msg.body.event.text)){
 			links[links.length]=msg.body.event.text;
-      //if(links.length == LINKS_BUFFER_MAX_LENGTH){
       links_push();
-      //}
     }
 }
 slapp.command('/links','(.*)', (msg, text, value)  => {
