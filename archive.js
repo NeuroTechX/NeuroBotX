@@ -2,6 +2,7 @@ const slapp = require('./slapp.js').get();
 const HashMap = require('hashmap');
 const request = require('request');
 const fs = require('fs');
+var kv = require('beepboop-persist')();
 
 var github = require('./github.js')
 function _(obj){
@@ -172,19 +173,21 @@ function editPage(obj){
     function(err,res){
     	if (!err) {
         var taggedUsers = obj.text.match(/([<][@][U][A-Za-z0-9]+[>])/g);
-        var taggedUsersIds = taggedUsers.slice();
-        for(var i=0;i<taggedUsersIds.length;i++){
-          taggedUsersIds[i].replace(/(<|@|>)/g,'');
-        }
-        var ps = [];
-        for(var i=0;i<taggedUsersIds.length;i++){
-          ps.push(getUserInfoPromise(taggedUsersIds[i]));
-        }
-        Promise.all(ps).then(function(results){
-          for(var i=0;i<taggedUsers.length;i++){
-            obj.text.replace(taggedUsers[i],resulta[i]);
+        if(taggedUsers){
+          var taggedUsersIds = taggedUsers.slice();
+          for(var i=0;i<taggedUsersIds.length;i++){
+            taggedUsersIds[i].replace(/(<|@|>)/g,'');
           }
-        });
+          var ps = [];
+          for(var i=0;i<taggedUsersIds.length;i++){
+            ps.push(getUserInfoPromise(taggedUsersIds[i]));
+          }
+          Promise.all(ps).then(function(results){
+            for(var i=0;i<taggedUsers.length;i++){
+              obj.text.replace(taggedUsers[i],results[i]);
+            }
+          });
+        }
         var quotedText = obj.text.replace(/([\n\r])/g, '\n\n> $1');
         var b64fileBody = res.content;
         var bufBody = new Buffer(b64fileBody, 'base64')
@@ -235,12 +238,18 @@ function createPage(obj){
 }
 function getUserInfoPromise(uid){
   return new Promise(function(resolve, reject) {
-    slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
+    kv.get("bot_token",function(err,bToken){
       if(err)
-        reject(err);
-      else
-        resolve(data.user.name);
-    });
+        _("error while loading bot token");
+      else if(!err && result){
+        slapp.client.users.info({token:bToken,user:uid}, (err, data) => {
+          if(err)
+            reject(err);
+          else
+            resolve(data.user.name);
+        });
+      }
+    }
   });
 }
 module.exports = {

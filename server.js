@@ -2,6 +2,7 @@
 const express = require('express')
 const slapp = require('./slapp.js').get();
 const cronJob = require('cron').CronJob;
+var kv = require('beepboop-persist')();
 var lo = require('lodash');
 var archive = require('./archive.js');
 var links = require('./links.js');
@@ -35,6 +36,12 @@ messages.init();
 
 // Collect and dispatch all messages posted on public channels
 slapp.message('(.*)', 'ambient', (msg) => {
+  kv.set("bot_token",msg.meta.bot_token.,function(err){
+    if(err){
+      _("error setting bot token");
+      _(err);
+    }
+  });
   stats.receive(msg);
   links.receive(msg);
   archive.receive(msg);
