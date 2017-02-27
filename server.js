@@ -44,15 +44,3 @@ slapp.message('(.*)', 'ambient', (msg) => {
 var server = slapp.attachToExpress(express())
 // start http server
 server.listen(port, (err) => {})
-
-
-function getUserInfoPromise(uid){
-  return new Promise(function(resolve, reject) {
-    slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
-      if(err)
-        reject(err);
-      else
-        resolve(data.user.name);
-    });
-  });
-}

@@ -233,6 +233,16 @@ function createPage(obj){
       }, function(err, res) {
       });
 }
+function getUserInfoPromise(uid){
+  return new Promise(function(resolve, reject) {
+    slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
+      if(err)
+        reject(err);
+      else
+        resolve(data.user.name);
+    });
+  });
+}
 module.exports = {
   receive:receive,
   handle_restart:handle_restart,
