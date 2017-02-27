@@ -103,7 +103,7 @@ function archive_stop(msg){
 function archive_push(obj){
   _('ARCHIVE PUSH buffer:');
   _(buffer);
-  var channelPageName = buffer[0].channel + '.md';
+  var channelPageName = obj.channel + '.md';
   github.get().repos.getContent({
    owner:'NeuroTechX',
    repo:'ntx_slack_archive',
