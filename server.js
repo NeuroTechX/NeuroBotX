@@ -36,7 +36,7 @@ messages.init();
 
 // Collect and dispatch all messages posted on public channels
 slapp.message('(.*)', 'ambient', (msg) => {
-  kv.set("bot_token",msg.meta.bot_token.,function(err){
+  kv.set("bot_token",msg.meta.bot_token,function(err){
     if(err){
       _("error setting bot token");
       _(err);
