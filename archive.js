@@ -172,47 +172,42 @@ function editPage(obj){
     },
     function(err,res){
     	if (!err) {
+        var ps = [];
         var taggedUsers = obj.text.match(/([<][@][U][A-Za-z0-9]+[>])/g);
-        _("taggedUsers");
-        _(taggedUsers)
         if(taggedUsers){
           var taggedUsersIds = taggedUsers.slice();
           for(var i=0;i<taggedUsersIds.length;i++){
             taggedUsersIds[i] = taggedUsersIds[i].replace(/(<|@|>)/g,'');
           }
-          _("taggedUsersIds");
-          _(taggedUsersIds)
-          var ps = [];
+
           for(var i=0;i<taggedUsersIds.length;i++){
             ps.push(getUserInfoPromise(taggedUsersIds[i]));
           }
+        }
           Promise.all(ps).then(function(results){
-            _("results");
-            _(results)
-            for(var i=0;i<taggedUsers.length;i++){
-              _('iteration '+i);
+            for(var i=0;i<results.length;i++){
               obj.text = obj.text.replace(taggedUsers[i],results[i]);
               _(obj.text);
             }
+          }).then(function(){
+            var quotedText = obj.text.replace(/([\n\r])/g, '\n\n> $1');
+            var b64fileBody = res.content;
+            var bufBody = new Buffer(b64fileBody, 'base64')
+            var fileBody = bufBody.toString();
+            fileBody+= ""+formatDate(obj.ts)+"\n\n **"+ obj.user +"**" + " :\n\n >" + quotedText + "\n\n";
+            var content = Buffer.from(fileBody, 'ascii');
+            var b64content = content.toString('base64');
+            var shaStr = res.sha;
+            github.get().repos.updateFile({
+              owner:"NeuroTechX",
+              repo:"ntx_slack_archive",
+              path:obj.channel+'.md',
+              message:"Edubot Push",
+              content:b64content,
+              sha: shaStr
+            }, function(err, res) {
+            });
           });
-        }
-        var quotedText = obj.text.replace(/([\n\r])/g, '\n\n> $1');
-        var b64fileBody = res.content;
-        var bufBody = new Buffer(b64fileBody, 'base64')
-        var fileBody = bufBody.toString();
-        fileBody+= ""+formatDate(obj.ts)+"\n\n **"+ obj.user +"**" + " :\n\n >" + quotedText + "\n\n";
-        var content = Buffer.from(fileBody, 'ascii');
-        var b64content = content.toString('base64');
-        var shaStr = res.sha;
-    		github.get().repos.updateFile({
-    			owner:"NeuroTechX",
-    			repo:"ntx_slack_archive",
-    			path:obj.channel+'.md',
-    			message:"Edubot Push",
-    			content:b64content,
-    			sha: shaStr
-    		}, function(err, res) {
-        });
     	}
 	});
 }
