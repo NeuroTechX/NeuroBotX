@@ -180,6 +180,9 @@ function editPage(obj){
       //var fileBody = res.slice();
       _("Res slice")
       _(res);
+      var b64fileBody = res.content;
+      var bufBody = new Buffer(b64fileBody, 'base64')
+      var fileBody = bufBody.toString();
       fileBody+= ""+formatDate(obj.ts)+"\n\n **"+ obj.user +"**" + " :\n\n >" + quotedText + "\n\n";
 
 			//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
