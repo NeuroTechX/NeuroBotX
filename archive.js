@@ -249,7 +249,7 @@ function getUserInfoPromise(uid){
             resolve(data.user.name);
         });
       }
-    }
+    });
   });
 }
 module.exports = {
