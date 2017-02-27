@@ -178,7 +178,7 @@ function editPage(obj){
         if(taggedUsers){
           var taggedUsersIds = taggedUsers.slice();
           for(var i=0;i<taggedUsersIds.length;i++){
-            taggedUsersIds[i].replace(/(<|@|>)/g,'');
+            taggedUsersIds[i] = taggedUsersIds[i].replace(/(<|@|>)/g,'');
           }
           _("taggedUsersIds");
           _(taggedUsersIds)
