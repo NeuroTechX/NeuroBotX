@@ -36,8 +36,8 @@ function receive(msg){
                     ts:timeStamp,
                     text:msg.body.event.text,
                     channel:resultChannel.channel.name};
-        buffer.push(obj);
-        archive_push();
+        //buffer.push(obj);
+        archive_push(obj);
       });
     });
   }
@@ -100,7 +100,7 @@ function archive_stop(msg){
 /**
  * This function pushes the message from the buffer to github
  */
-function archive_push(){
+function archive_push(obj){
   _('ARCHIVE PUSH buffer:');
   _(buffer);
   var channelPageName = buffer[0].channel + '.md';
@@ -115,9 +115,9 @@ function archive_push(){
       }
     }
     if(found)
-      editPage(buffer[0]);
+      editPage(obj);
     else {
-      createPage(buffer[0]);
+      createPage(obj);
     }
   });
 }
@@ -188,7 +188,6 @@ function editPage(obj){
     			content:b64content,
     			sha: shaStr
     		}, function(err, res) {
-          buffer = [];
         });
     	}
 	});
@@ -219,7 +218,6 @@ function createPage(obj){
         message:"Edubot Push",
         content:b64content
       }, function(err, res) {
-        buffer = [];
       });
 }
 module.exports = {
