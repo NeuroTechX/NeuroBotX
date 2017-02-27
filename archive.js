@@ -171,34 +171,26 @@ function editPage(obj){
       path:obj.channel+'.md',
     },
     function(err,res){
-  // var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_archive/master/"+obj.channel+'.md';
-  // var propertiesObject = {access_token:github.getToken()};
-	// request.get({url:filePath, qs:propertiesObject}, function (fileerror, fileresponse, fileBody) {
-  	if (!err) {
-      var quotedText = obj.text.replace(/([\n\r])/g, '\n\n> $1');
-      //var fileBody = res.slice();
-      _("Res slice")
-      _(res);
-      var b64fileBody = res.content;
-      var bufBody = new Buffer(b64fileBody, 'base64')
-      var fileBody = bufBody.toString();
-      fileBody+= ""+formatDate(obj.ts)+"\n\n **"+ obj.user +"**" + " :\n\n >" + quotedText + "\n\n";
-
-			//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
-      var content = Buffer.from(fileBody, 'ascii');
-      var b64content = content.toString('base64');
-      var shaStr = res.sha;
-  		github.get().repos.updateFile({
-  			owner:"NeuroTechX",
-  			repo:"ntx_slack_archive",
-  			path:obj.channel+'.md',
-  			message:"Edubot Push",
-  			content:b64content,
-  			sha: shaStr
-  		}, function(err, res) {
-        buffer = [];
-      });
-  	}
+    	if (!err) {
+        var quotedText = obj.text.replace(/([\n\r])/g, '\n\n> $1');
+        var b64fileBody = res.content;
+        var bufBody = new Buffer(b64fileBody, 'base64')
+        var fileBody = bufBody.toString();
+        fileBody+= ""+formatDate(obj.ts)+"\n\n **"+ obj.user +"**" + " :\n\n >" + quotedText + "\n\n";
+        var content = Buffer.from(fileBody, 'ascii');
+        var b64content = content.toString('base64');
+        var shaStr = res.sha;
+    		github.get().repos.updateFile({
+    			owner:"NeuroTechX",
+    			repo:"ntx_slack_archive",
+    			path:obj.channel+'.md',
+    			message:"Edubot Push",
+    			content:b64content,
+    			sha: shaStr
+    		}, function(err, res) {
+          buffer = [];
+        });
+    	}
 	});
 }
 /**
