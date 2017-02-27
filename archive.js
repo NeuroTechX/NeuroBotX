@@ -175,7 +175,6 @@ function editPage(obj){
   // var propertiesObject = {access_token:github.getToken()};
 	// request.get({url:filePath, qs:propertiesObject}, function (fileerror, fileresponse, fileBody) {
   	if (!err) {
-
       var quotedText = obj.text.replace(/([\n\r])/g, '\n\n> $1');
       //var fileBody = res.slice();
       _("Res slice")
@@ -188,30 +187,17 @@ function editPage(obj){
 			//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
       var content = Buffer.from(fileBody, 'ascii');
       var b64content = content.toString('base64');
-			var blobPath = "https://api.github.com/repos/NeuroTechX/ntx_slack_archive/contents/"+obj.channel+'.md';
-      var options = {
-        url: blobPath,
-        headers: {
-          'User-Agent': 'Edubot-GitHub-App'
-        },
-        qs:propertiesObject
-      };
-			request.get(options, function (bloberror, blobresponse, blobBody) {
-	    	if (!bloberror && blobresponse.statusCode == 200) {
-          var shaStr = JSON.parse(blobBody).sha;
-          //("Sha str")
-					github.get().repos.updateFile({
-						owner:"NeuroTechX",
-						repo:"ntx_slack_archive",
-						path:obj.channel+'.md',
-						message:"Edubot Push",
-						content:b64content,
-						sha: shaStr
-					}, function(err, res) {
-            buffer = [];
-          });
-        }
-			});
+      var shaStr = res.sha;
+  		github.get().repos.updateFile({
+  			owner:"NeuroTechX",
+  			repo:"ntx_slack_archive",
+  			path:obj.channel+'.md',
+  			message:"Edubot Push",
+  			content:b64content,
+  			sha: shaStr
+  		}, function(err, res) {
+        buffer = [];
+      });
   	}
 	});
 }
