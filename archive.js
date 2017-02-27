@@ -173,11 +173,15 @@ function editPage(obj){
     function(err,res){
     	if (!err) {
         var taggedUsers = obj.text.match(/([<][@][U][A-Za-z0-9]+[>])/g);
+        _("taggedUsers");
+        _(taggedUsers)
         if(taggedUsers){
           var taggedUsersIds = taggedUsers.slice();
           for(var i=0;i<taggedUsersIds.length;i++){
             taggedUsersIds[i].replace(/(<|@|>)/g,'');
           }
+          _("taggedUsersIds");
+          _(taggedUsersIds)
           var ps = [];
           for(var i=0;i<taggedUsersIds.length;i++){
             ps.push(getUserInfoPromise(taggedUsersIds[i]));
