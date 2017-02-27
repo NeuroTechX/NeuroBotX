@@ -188,7 +188,7 @@ function editPage(obj){
           }
           Promise.all(ps).then(function(results){
             for(var i=0;i<taggedUsers.length;i++){
-              obj.text.replace(taggedUsers[i],results[i]);
+              obj.text = obj.text.replace(taggedUsers[i],results[i]);
             }
           });
         }
