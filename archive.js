@@ -241,7 +241,7 @@ function getUserInfoPromise(uid){
     kv.get("bot_token",function(err,bToken){
       if(err)
         _("error while loading bot token");
-      else if(!err && result){
+      else if(!err && bToken){
         slapp.client.users.info({token:bToken,user:uid}, (err, data) => {
           if(err)
             reject(err);
