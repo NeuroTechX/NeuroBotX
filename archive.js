@@ -177,7 +177,7 @@ function editPage(obj){
   	if (!err) {
 
       var quotedText = obj.text.replace(/([\n\r])/g, '\n\n> $1');
-      var fileBody = res.slice();
+      //var fileBody = res.slice();
       _("Res slice")
       _(res);
       fileBody+= ""+formatDate(obj.ts)+"\n\n **"+ obj.user +"**" + " :\n\n >" + quotedText + "\n\n";
