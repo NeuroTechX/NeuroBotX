@@ -24,6 +24,7 @@ If you are looking for *archived Slack* text, go to:
 https://github.com/NeuroTechX/ntx_slack_archive
 
 If you'd like to *get involved*, now is the time! Have a look at our 2017 Committees at : http://neurotechx.com/opportunities/index.html.
+Thanks to BeepBoopHQ for sponsoring NeuroTechX with free bot support. To learn more about BeepBoopHQ, please visit their website: *https://beepboophq.com/*
 `
 var WELCOME_TEXT = `
 Welcome to the NeuroTechX Slack! This Slack brings together hundreds of people from across the world to communicate about Neurotechnology. Everyone here is passionate about the domain and is willing to help out.
@@ -57,6 +58,7 @@ Finally take a look at the different chapters that exist in NeuroTechX. You may 
 To find a *list of cities* where we are located in, please visit http://neurotechx.com/ and see if there is a chapter near you!
 
 If you'd like to get involved, now is the time! Have a look at our 2017 Committees at : http://neurotechx.com/opportunities/index.html.
+Thanks to BeepBoopHQ for sponsoring NeuroTechX with free bot support. To learn more about BeepBoopHQ, please visit their website: *https://beepboophq.com/*
 `
 exports.HELP_TEXT = HELP_TEXT;
 exports.WELCOME_TEXT = WELCOME_TEXT;
