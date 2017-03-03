@@ -139,11 +139,13 @@ function links_push(data){
       var b64fileBody = res.content;
       var bufBody = new Buffer(b64fileBody, 'base64')
       var fileBody = bufBody.toString();
-
-			fileBody+="<ul>";
-			
-			fileBody+="<li>" + data + "</li>";
-			fileBody+="</ul>";
+      var extractedLinks = data.match(/([<][h][^<]*[>])/gi);
+      for(var i=0;i<extractedLinks.length;i++){
+        extractedLinks[i]=extractedLinks[i].replace(/(<|>)/g,'');
+        fileBody+="<ul>";
+        fileBody+="<li>" + extractedLinks[i] + "</li>";
+        fileBody+="</ul>";
+      }
       var content = Buffer.from(fileBody, 'ascii');
       var b64content = content.toString('base64');
 			var blobPath = "https://api.github.com/repos/NeuroTechX/ntx_slack_resources/contents/_pages/slack-links.md";
