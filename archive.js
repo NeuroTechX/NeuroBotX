@@ -2,20 +2,16 @@ const slapp = require('./slapp.js').get();
 const HashMap = require('hashmap');
 const request = require('request');
 const fs = require('fs');
+var kv = require('beepboop-persist')();
 
 var github = require('./github.js')
 function _(obj){
   var str = JSON.stringify(obj, null, 4);
   console.log(str);
 }
-// Hashmap storing the archive waiting to be pushed to github.
-// var msgMap = new HashMap();
-// var msgMapLength = 0;
 var buffer =[];
 // Archiving feature state
 var isArchiving = false;
-// Number of messages per channel before push to github
-//const ARCHIVE_BUFFER_MAX_LENGTH = 10;
 
 /**
  * This function that handles the module behaviour when the server is about to restart
@@ -36,31 +32,12 @@ function receive(msg){
   if(isArchiving){
     slapp.client.channels.info({token:msg.meta.bot_token,channel:msg.body.event.channel}, (err, resultChannel) => {
       slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.event.user}, (uerr, resultUser) => {
-        // var hash = msgMap.hash(resultChannel.channel.name);
-  			// if ( ! (hash in msgMap._data) ) {
-        //   var timeStamp = new Date(msg.body.event.ts * 1000)
-        //   var obj = {user:resultUser.user.name,ts:timeStamp,text:msg.body.event.text};
-        //   var array = [obj];
-        //   msgMap.set(resultChannel.channel.name,array)
-        //   msgMapLength++;
-        // }
-        // else{
-        //   var array = msgMap.get(resultChannel.channel.name);
-        //   var timeStamp = new Date(msg.body.event.ts * 1000)
-        //   var obj = {user:resultUser.user.name,ts:timeStamp,text:msg.body.event.text};
-        //   array.push(obj)
-        //   msgMap.set(resultChannel.channel.name,array)
-        //   msgMapLength++;
-        //   if(array.length == ARCHIVE_BUFFER_MAX_LENGTH)
-        //     archive_push(resultChannel.channel.name);
-        // }
         var timeStamp = new Date(msg.body.event.ts * 1000)
         var obj = {user:resultUser.user.name,
                     ts:timeStamp,
                     text:msg.body.event.text,
                     channel:resultChannel.channel.name};
-        buffer.push(obj);
-        archive_push();
+        archive_push(obj);
       });
     });
   }
@@ -123,14 +100,10 @@ function archive_stop(msg){
 /**
  * This function pushes the message from the buffer to github
  */
-function archive_push(){
+function archive_push(obj){
   _('ARCHIVE PUSH buffer:');
   _(buffer);
-  // var values = msgMap.get(channel).slice();
-  // var newArr = [];
-  // msgMap.set(channel,newArr);
-  // var channelName = channel;
-  var channelPageName = buffer[0].channel + '.md';
+  var channelPageName = obj.channel + '.md';
   github.get().repos.getContent({
    owner:'NeuroTechX',
    repo:'ntx_slack_archive',
@@ -142,9 +115,9 @@ function archive_push(){
       }
     }
     if(found)
-      editPage(buffer[0]);
+      editPage(obj);
     else {
-      createPage(buffer[0]);
+      createPage(obj);
     }
   });
 }
@@ -152,44 +125,90 @@ function archive_push(){
  * This function edits the github page specified by pageName adding values to it
  * @param {string} obj the data to push
  */
+// function editPage(obj){
+//   var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_archive/master/"+obj.channel+'.md';
+//   var propertiesObject = {access_token:github.getToken()};
+// 	request.get({url:filePath, qs:propertiesObject}, function (fileerror, fileresponse, fileBody) {
+//   	if (!fileerror && fileresponse.statusCode == 200) {
+//
+//       var quotedText = obj.text.replace(/([\n\r])/g, '\n\n> $1');
+//       fileBody+= ""+formatDate(obj.ts)+"\n\n **"+ obj.user +"**" + " :\n\n >" + quotedText + "\n\n";
+//
+// 			//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
+//       var content = Buffer.from(fileBody, 'ascii');
+//       var b64content = content.toString('base64');
+// 			var blobPath = "https://api.github.com/repos/NeuroTechX/ntx_slack_archive/contents/"+obj.channel+'.md';
+//       var options = {
+//         url: blobPath,
+//         headers: {
+//           'User-Agent': 'Edubot-GitHub-App'
+//         },
+//         qs:propertiesObject
+//       };
+// 			request.get(options, function (bloberror, blobresponse, blobBody) {
+// 	    	if (!bloberror && blobresponse.statusCode == 200) {
+//           var shaStr = JSON.parse(blobBody).sha;
+//           //("Sha str")
+// 					github.get().repos.updateFile({
+// 						owner:"NeuroTechX",
+// 						repo:"ntx_slack_archive",
+// 						path:obj.channel+'.md',
+// 						message:"Edubot Push",
+// 						content:b64content,
+// 						sha: shaStr
+// 					}, function(err, res) {
+//             buffer = [];
+//           });
+//         }
+// 			});
+//   	}
+// 	});
+// }
 function editPage(obj){
+  github.get().repos.getContent({
+      owner:"NeuroTechX",
+      repo:"ntx_slack_archive",
+      path:obj.channel+'.md',
+    },
+    function(err,res){
+    	if (!err) {
+        var ps = [];
+        var taggedUsers = obj.text.match(/([<][@][U][A-Za-z0-9]+[>])/g);
+        if(taggedUsers){
+          var taggedUsersIds = taggedUsers.slice();
+          for(var i=0;i<taggedUsersIds.length;i++){
+            taggedUsersIds[i] = taggedUsersIds[i].replace(/(<|@|>)/g,'');
+          }
 
-  var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_archive/master/"+obj.channel+'.md';
-  var propertiesObject = {access_token:github.getToken()};
-	request.get({url:filePath, qs:propertiesObject}, function (fileerror, fileresponse, fileBody) {
-  	if (!fileerror && fileresponse.statusCode == 200) {
-
-      var quotedText = obj.text.replace(/([\n\r])/g, '\n\n> $1');
-      fileBody+= ""+formatDate(obj.ts)+"\n\n **"+ obj.user +"**" + " :\n\n >" + quotedText + "\n\n";
-
-			//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
-      var content = Buffer.from(fileBody, 'ascii');
-      var b64content = content.toString('base64');
-			var blobPath = "https://api.github.com/repos/NeuroTechX/ntx_slack_archive/contents/"+obj.channel+'.md';
-      var options = {
-        url: blobPath,
-        headers: {
-          'User-Agent': 'Edubot-GitHub-App'
-        },
-        qs:propertiesObject
-      };
-			request.get(options, function (bloberror, blobresponse, blobBody) {
-	    	if (!bloberror && blobresponse.statusCode == 200) {
-          var shaStr = JSON.parse(blobBody).sha;
-          //("Sha str")
-					github.get().repos.updateFile({
-						owner:"NeuroTechX",
-						repo:"ntx_slack_archive",
-						path:obj.channel+'.md',
-						message:"Edubot Push",
-						content:b64content,
-						sha: shaStr
-					}, function(err, res) {
-            buffer = [];
-          });
+          for(var i=0;i<taggedUsersIds.length;i++){
+            ps.push(getUserInfoPromise(taggedUsersIds[i]));
+          }
         }
-			});
-  	}
+          Promise.all(ps).then(function(results){
+            for(var i=0;i<results.length;i++){
+              obj.text = obj.text.replace(taggedUsers[i],results[i]);
+              _(obj.text);
+            }
+          }).then(function(){
+            var quotedText = obj.text.replace(/([\n\r])/g, '\n\n> $1');
+            var b64fileBody = res.content;
+            var bufBody = new Buffer(b64fileBody, 'base64')
+            var fileBody = bufBody.toString();
+            fileBody+= ""+formatDate(obj.ts)+"\n\n **"+ obj.user +"**" + " :\n\n >" + quotedText + "\n\n";
+            var content = Buffer.from(fileBody, 'ascii');
+            var b64content = content.toString('base64');
+            var shaStr = res.sha;
+            github.get().repos.updateFile({
+              owner:"NeuroTechX",
+              repo:"ntx_slack_archive",
+              path:obj.channel+'.md',
+              message:"Edubot Push",
+              content:b64content,
+              sha: shaStr
+            }, function(err, res) {
+            });
+          });
+    	}
 	});
 }
 /**
@@ -218,8 +237,23 @@ function createPage(obj){
         message:"Edubot Push",
         content:b64content
       }, function(err, res) {
-        buffer = [];
       });
+}
+function getUserInfoPromise(uid){
+  return new Promise(function(resolve, reject) {
+    kv.get("bot_token",function(err,bToken){
+      if(err)
+        _("error while loading bot token");
+      else if(!err && bToken){
+        slapp.client.users.info({token:bToken,user:uid}, (err, data) => {
+          if(err)
+            reject(err);
+          else
+            resolve(data.user.name);
+        });
+      }
+    });
+  });
 }
 module.exports = {
   receive:receive,

@@ -23,10 +23,8 @@ function _(obj){
 function receive(msg){
   if(isTrackingLinks)
 		if(linksDetector.test(msg.body.event.text)){
-			links[links.length]=msg.body.event.text;
-      //if(links.length == LINKS_BUFFER_MAX_LENGTH){
-      links_push();
-      //}
+			// links[links.length]=;
+      links_push(msg.body.event.text);
     }
 }
 slapp.command('/links','(.*)', (msg, text, value)  => {
@@ -130,18 +128,24 @@ function handle_restart(){
 /**
  * This function pushes the content of the buffer to github
  */
-function links_push(){
-	var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_resources/master/_pages/slack-links.md";
-  var propertiesObject = { access_token:github.getToken()};
-	request.get({url:filePath, qs:propertiesObject}, function (fileerror, fileresponse, fileBody) {
-    console.log("Get file response");
-    _(fileresponse);
-  	if (!fileerror && fileresponse.statusCode == 200) {
-			fileBody+="<ul>";
-			for(var i=0;i<links.length;i++){
-				fileBody+="<li>" + links[i] + "</li>";
-			}
-			fileBody+="</ul>";
+function links_push(data){
+  github.get().repos.getContent({
+      owner:"NeuroTechX",
+      repo:"ntx_slack_resources",
+      path:"_pages/slack-links.md",
+    },
+  function(err,res){
+  	if (!err) {
+      var b64fileBody = res.content;
+      var bufBody = new Buffer(b64fileBody, 'base64')
+      var fileBody = bufBody.toString();
+      var extractedLinks = data.match(/([<][h][^<]*[>])/gi);
+      for(var i=0;i<extractedLinks.length;i++){
+        extractedLinks[i]=extractedLinks[i].replace(/(<|>)/g,'');
+        fileBody+="<ul>";
+        fileBody+="<li>" + extractedLinks[i] + "</li>";
+        fileBody+="</ul>";
+      }
       var content = Buffer.from(fileBody, 'ascii');
       var b64content = content.toString('base64');
 			var blobPath = "https://api.github.com/repos/NeuroTechX/ntx_slack_resources/contents/_pages/slack-links.md";

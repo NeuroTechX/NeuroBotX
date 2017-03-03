@@ -74,9 +74,13 @@ slapp.message('.*', 'direct_mention', (msg) => {
 slapp.command('/messages','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
     if( data.user.is_admin){
+      _("text")
+      _(text)
       var strtokens = text.split(" ");
       var cmd = strtokens[0];
       var val = text.replace(cmd+' ','');
+      _("val")
+      _(val)
       if(!text)
         msg.respond("Options for /messages: \n" +
                 "\`printHelp\` prints the current help message.\n" +
