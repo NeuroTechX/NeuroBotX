@@ -15,28 +15,61 @@ var current_welcome_text = verbose.WELCOME_TEXT;
  * This function initializes the bot messages
  */
 function init(){
-  kv.get("msgHelp",function(err,result){
-    if(err){
-      _("error while loading help message from the kv");
-      current_help_text = verbose.HELP_TEXT;
-    }
-    else if(result)
-      current_help_text = result;
-    else{
-      current_help_text = verbose.HELP_TEXT;
-    }
+  github.get().repos.getContent({
+      owner:"NeuroTechX",
+      repo:"ntx_slack_archive",
+      path:'help.md',
+    },
+    function(err,res){
+    	if (!err) {
+        var b64fileBody = res.content;
+        var bufBody = new Buffer(b64fileBody, 'base64')
+        var fileBody = bufBody.toString();
+        current_help_text = fileBody;
+      }
+      else{
+        current_help_text = verbose.HELP_TEXT;
+      }
   });
-  kv.get("msgWelcome",function(err,result){
-    if(err){
-      _("error while loading welcome message from the kv");
-      current_welcome_text = verbose.WELCOME_TEXT;
-    }
-    else if(result)
-      current_welcome_text = result;
-    else{
-      current_welcome_text = verbose.WELCOME_TEXT;
-    }
+  github.get().repos.getContent({
+      owner:"NeuroTechX",
+      repo:"ntx_slack_archive",
+      path:'welcome.md',
+    },
+    function(err,res){
+      if (!err) {
+        var b64fileBody = res.content;
+        var bufBody = new Buffer(b64fileBody, 'base64')
+        var fileBody = bufBody.toString();
+        current_welcome_text = fileBody;
+      }
+      else {
+        current_welcome_text=verbose.WELCOME_TEXT;
+      }
   });
+}
+  // kv.get("msgHelp",function(err,result){
+  //   if(err){
+  //     _("error while loading help message from the kv");
+  //     current_help_text = verbose.HELP_TEXT;
+  //   }
+  //   else if(result)
+  //     current_help_text = result;
+  //   else{
+  //     current_help_text = verbose.HELP_TEXT;
+  //   }
+  // });
+  // kv.get("msgWelcome",function(err,result){
+  //   if(err){
+  //     _("error while loading welcome message from the kv");
+  //     current_welcome_text = verbose.WELCOME_TEXT;
+  //   }
+  //   else if(result)
+  //     current_welcome_text = result;
+  //   else{
+  //     current_welcome_text = verbose.WELCOME_TEXT;
+  //   }
+  // });
 }
 
 //Behaviour of the bot when he is mentioned or mesages with DM
@@ -159,28 +192,49 @@ function setWelcome(msg,val){
  * @param {object} msg the slash command message sent by slapp
  */
 function defaultHelp(msg){
-  msg.respond("Help set to Default");
-  current_help_text = verbose.HELP_TEXT;
-  kv.set("msgHelp",verbose.HELP_TEXT,function(err){
-    if(err){
-      _("error setting msgWelcome in the kv");
-      _(err);
+
+  github.get().repos.getContent({
+      owner:"NeuroTechX",
+      repo:"ntx_slack_archive",
+      path:'help.md',
+    },
+    function(err,res){
+    	if (!err) {
+        var b64fileBody = res.content;
+        var bufBody = new Buffer(b64fileBody, 'base64')
+        var fileBody = bufBody.toString();
+        current_help_text = fileBody;
+        msg.respond("Help set to Default from the github file");
       }
-  })
+      else{
+        current_help_text = verbose.HELP_TEXT;
+        msg.respond("Coudn't read from github. Help set to default from the hard-coded string");
+      }
+  });
 }
 /**
  * Sets the current welcome message to the default one
  * @param {object} msg the slash command message sent by slapp
  */
 function defaultWelcome(msg){
-  msg.respond("Welcome set to Default");
-  current_welcome_text = verbose.WELCOME_TEXT;
-  kv.set("msgWelcome",verbose.WELCOME_TEXT,function(err){
-    if(err){
-      _("error setting msgWelcome in the kv");
-      _(err);
+  github.get().repos.getContent({
+      owner:"NeuroTechX",
+      repo:"ntx_slack_archive",
+      path:'welcome.md',
+    },
+    function(err,res){
+      if (!err) {
+        var b64fileBody = res.content;
+        var bufBody = new Buffer(b64fileBody, 'base64')
+        var fileBody = bufBody.toString();
+        current_welcome_text = fileBody;
+        msg.respond("Welcome set to Default from the github file");
       }
-  })
+      else {
+        current_welcome_text=verbose.WELCOME_TEXT;
+        msg.respond("Coudn't read from github. Welcome set to default from the hard-coded string");
+      }
+  });
 }
 module.exports = {
   init:init
