@@ -1,5 +1,6 @@
 const slapp = require('./slapp.js').get();
 const verbose = require('./verbose.js');
+var github = require('./github.js');
 var kv = require('beepboop-persist')();
 
 // Simple logging function
