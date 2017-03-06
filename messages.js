@@ -70,7 +70,7 @@ function init(){
   //     current_welcome_text = verbose.WELCOME_TEXT;
   //   }
   // });
-}
+//}
 
 //Behaviour of the bot when he is mentioned or mesages with DM
 slapp.message('help', ['mention', 'direct_message'], (msg) => {
