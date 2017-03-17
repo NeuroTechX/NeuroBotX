@@ -49,29 +49,6 @@ function init(){
       }
   });
 }
-  // kv.get("msgHelp",function(err,result){
-  //   if(err){
-  //     _("error while loading help message from the kv");
-  //     current_help_text = verbose.HELP_TEXT;
-  //   }
-  //   else if(result)
-  //     current_help_text = result;
-  //   else{
-  //     current_help_text = verbose.HELP_TEXT;
-  //   }
-  // });
-  // kv.get("msgWelcome",function(err,result){
-  //   if(err){
-  //     _("error while loading welcome message from the kv");
-  //     current_welcome_text = verbose.WELCOME_TEXT;
-  //   }
-  //   else if(result)
-  //     current_welcome_text = result;
-  //   else{
-  //     current_welcome_text = verbose.WELCOME_TEXT;
-  //   }
-  // });
-//}
 
 //Behaviour of the bot when he is mentioned or mesages with DM
 slapp.message('help', ['mention', 'direct_message'], (msg) => {
@@ -119,23 +96,17 @@ slapp.command('/messages','(.*)', (msg, text, value)  => {
         msg.respond("Options for /messages: \n" +
                 "\`printHelp\` prints the current help message.\n" +
                 "\`printWelcome\` prints the current welcome message.\n" +
-                "\`setHelp [ARG]\`  sets [ARG] as the new help message.\n" +
-                "\`setWelcome [ARG]\` sets [ARG] as the new welcome message.\n" +
-                "\`defaultHelp \`  sets the help message to the default value.\n" +
-                "\`defaultWelcome \` sets the welcome message to the default value.\n"
+                "\`reloadHelpFromGithub \`  reloads the help messages from the ntx_slack_archive github repo.\n" +
+                "\`reloadWelcomeFromGithub \` reloads the welcome messages from the ntx_slack_archive github repo.\n"
               );
       else if(cmd == 'printHelp')
         printHelp(msg);
       else if(cmd == 'printWelcome')
         printWelcome(msg);
-      else if(cmd == 'setHelp')
-        setHelp(msg,val);
-      else if(cmd == 'setWelcome')
-        setWelcome(msg,val);
-      else if(cmd == 'defaultHelp')
-        defaultHelp(msg);
-      else if(cmd == 'defaultWelcome')
-        defaultWelcome(msg);
+      else if(cmd == 'reloadHelpFromGithub')
+        reloadHelpFromGithub(msg);
+      else if(cmd == 'reloadWelcomeFromGithub')
+        reloadWelcomeFromGithub(msg);
       else
         msg.respond("Please use /messages to print the available options.");
     }
@@ -158,41 +129,12 @@ function printHelp(msg){
 function printWelcome(msg){
   msg.respond(current_welcome_text);
 }
-/**
- * Sets the current help message to the default one
- * @param {object} msg the slash command message sent by slapp
- * @param {object} val the value sent with the command
- */
-function setHelp(msg,val){
-  current_help_text = val;
-  msg.respond("New help message set");
-  kv.set("msgHelp",val,function(err){
-    if(err){
-      _("error setting msgHelp in the kv");
-      _(err);
-      }
-  });
-}
-/**
- * Sets the current welcome message to the default one
- * @param {object} msg the slash command message sent by slapp
- * @param {object} val the value sent with the command
- */
-function setWelcome(msg,val){
-  msg.respond("New welcome message set");
-  current_welcome_text = val;
-  kv.set("msgWelcome",val,function(err){
-    if(err){
-      _("error setting msgWelcome in the kv");
-      _(err);
-      }
-  });
-}
+
 /**
  * Sets the current help message to the default one
  * @param {object} msg the slash command message sent by slapp
  */
-function defaultHelp(msg){
+function reloadHelpFromGithub(msg){
 
   github.get().repos.getContent({
       owner:"NeuroTechX",
@@ -217,7 +159,7 @@ function defaultHelp(msg){
  * Sets the current welcome message to the default one
  * @param {object} msg the slash command message sent by slapp
  */
-function defaultWelcome(msg){
+function reloadWelcomeFromGithub(msg){
   github.get().repos.getContent({
       owner:"NeuroTechX",
       repo:"ntx_slack_archive",

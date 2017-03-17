@@ -3,6 +3,8 @@ const slapp = require('./slapp.js').get();
 const github = require('./github.js');
 var kv = require('beepboop-persist')();
 
+const GA_TRACKING_ID = "UA-92703237-1";
+
 var stringMap = new HashMap();
 var subscribedUsers = [];
 var isTrackingStats = false;
@@ -280,8 +282,10 @@ function receive(msg){
     var lowerCaseText =  msg.body.event.text.toLowerCase();
     stringMap.forEach(function(value, key) {
       var occ = lowerCaseText.split(key).length - 1;
-      if(occ>=1)
+      if(occ>=1){
         atLeastOneKeywordFound=true;
+        trackEvent(key);
+      }
       stringMap.set(key,stringMap.get(key)+occ);
     })
     if(atLeastOneKeywordFound){
@@ -303,6 +307,38 @@ function stats_stop(msg) {
 	}
 }
 
+function trackEvent (value, cb) {
+  const data = {
+    v: '1', // API Version.
+    tid: GA_TRACKING_ID, // Tracking ID / Property ID.
+    // Anonymous Client Identifier. Ideally, this should be a UUID that
+    // is associated with particular user, device, or browser instance.
+    cid: '607',
+    t: 'event', // Event hit type.
+    ec: "Slack", // Event category.
+    ea: "Stat", // Event action.
+    el: "Keyword", // Event label.
+    ev: value // Event value.
+  };
+
+  request.post(
+    'http://www.google-analytics.com/collect',
+    {
+      form: data
+    },
+    (err, response) => {
+      if (err) {
+        cb(err);
+        return;
+      }
+      if (response.statusCode !== 200) {
+        cb(new Error('Tracking failed'));
+        return;
+      }
+      cb();
+    }
+  );
+}
 module.exports = {
   receive:receive,
   cronPoke:cronPoke,
