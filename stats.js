@@ -1,6 +1,7 @@
 const HashMap = require('hashmap');
 const slapp = require('./slapp.js').get();
 const github = require('./github.js');
+const request = require('request');
 var kv = require('beepboop-persist')();
 
 const GA_TRACKING_ID = "UA-92703237-1";
