@@ -330,12 +330,16 @@ function trackEvent (value, cb) {
     (err, response) => {
       if (err) {
         cb(err);
+        console.log("Error sending analytic " + err);
         return;
       }
       if (response.statusCode !== 200) {
         cb(new Error('Tracking failed'));
+        console.log("Analytic tracking failed ");
         return;
       }
+      console.log("Analytic response");
+      _(response)
       cb();
     }
   );
