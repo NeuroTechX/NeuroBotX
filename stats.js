@@ -285,7 +285,7 @@ function receive(msg){
       var occ = lowerCaseText.split(key).length - 1;
       if(occ>=1){
         atLeastOneKeywordFound=true;
-        trackEvent(key);
+        trackEvent(key, function(){});
       }
       stringMap.set(key,stringMap.get(key)+occ);
     })
