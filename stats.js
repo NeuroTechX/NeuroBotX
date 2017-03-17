@@ -285,7 +285,7 @@ function receive(msg){
       var occ = lowerCaseText.split(key).length - 1;
       if(occ>=1){
         atLeastOneKeywordFound=true;
-        trackEvent(key, function(){});
+        trackEvent(key,parseInt(stringMap.get(key)+occ), function(){});
       }
       stringMap.set(key,stringMap.get(key)+occ);
     })
@@ -308,7 +308,7 @@ function stats_stop(msg) {
 	}
 }
 
-function trackEvent (value, cb) {
+function trackEvent (keyword,value, cb) {
   const data = {
     v: '1', // API Version.
     tid: GA_TRACKING_ID, // Tracking ID / Property ID.
@@ -318,7 +318,7 @@ function trackEvent (value, cb) {
     t: 'event', // Event hit type.
     ec: "Slack", // Event category.
     ea: "Stat", // Event action.
-    el: "Keyword", // Event label.
+    el: keyword, // Event label.
     ev: value // Event value.
   };
 
