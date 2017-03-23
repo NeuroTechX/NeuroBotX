@@ -16,13 +16,10 @@ slapp.command('/notify','(.*)', (msg, text, value)  => {
       _("text")
       _(text)
       var strtokens = text.split(" ");
-      var cmd = strtokens[0];
-      _("command")
-      _(cmd)
-      var fileURL = strtokens[1];
+      var fileURL = strtokens[0];
       _("fileURL")
       _(fileURL)
-      var val = text.replace(cmd+' '+fileURL+' ','');
+      var val = text.replace(fileURL+' ','');
       _("val")
       _(val)
       var entries = [];
