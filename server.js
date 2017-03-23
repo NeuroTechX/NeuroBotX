@@ -9,6 +9,7 @@ var links = require('./links.js');
 var stats = require('./stats.js');
 var github = require('./github.js');
 var messages = require('./messages.js');
+var notification = require("./notification.js")
 
 // Simple logging function
 function _(obj){

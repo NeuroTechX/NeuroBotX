@@ -19,6 +19,7 @@
   "dependencies": {
     "bluebird": "^3.4.6",
     "cron": "^1.2.1",
+    "csvtojson": "^1.1.4",
     "express": "^4.14.0",
     "github": "^7.0.1",
     "hashmap": "^2.0.6",
