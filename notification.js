@@ -3,7 +3,11 @@ const request = require('request');
 var kv = require('beepboop-persist')();
 const csv=require('csvtojson')
 
-
+// Simple logging function
+function _(obj){
+  var str = JSON.stringify(obj, null, 4); // (Optional) beautiful indented output.
+  console.log(str);
+}
 
 // Handler of the slash command
 slapp.command('/notify','(.*)', (msg, text, value)  => {
