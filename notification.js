@@ -45,7 +45,7 @@ slapp.command('/notify','(.*)', (msg, text, value)  => {
                     _(member);
                     slapp.client.im.open({ token: msg.meta.bot_token,  user: member.id }, (err, imData) => {
                       if(err){
-                        console.log("error while sending im");
+                        console.log("error while sending im " +err);
                       }else
                         msg.say({ channel: imData.channel.id, text:val})
                     })
