@@ -35,14 +35,19 @@ slapp.command('/notify','(.*)', (msg, text, value)  => {
         }
         else{
             // Get list all users
-            slapp.client.users.list({token:msg.meta.bot_token}, (err, data) => {
+            slapp.client.users.list({token:msg.meta.bot_token}, (err, usersData) => {
               if(err)
                 msg.respond("Error while listing users.");
               else{
-                data.members.forEach(function(member){
+                usersData.members.forEach(function(member){
                   if(!entries.includes(member.name)){
-                    slapp.client.im.open({ token: msg.meta.bot_token,  user: member.id }, (err, data) => {
-                      msg.say({ channel: data.channel.id, text:val})
+                    console.log("Member not found")
+                    _(member);
+                    slapp.client.im.open({ token: msg.meta.bot_token,  user: member.id }, (err, imData) => {
+                      if(err){
+                        console.log("error while sending im");
+                      }else
+                        msg.say({ channel: imData.channel.id, text:val})
                     })
                   }
                 })
