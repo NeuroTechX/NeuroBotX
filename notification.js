@@ -43,10 +43,10 @@ function notify_all(msg,val){
               console.log("error while sending IM " +err);
             }else
               msg.say({ channel: imData.channel.id, text:val})
-              msg.respond("Notification sent");
           })
         }
       })
+      msg.respond("Notification sent");
     }
   })
 }
@@ -77,15 +77,14 @@ function notify_allbut(msg,fileURL,val){
                       console.log("error while sending IM " +err);
                     }else{
                       msg.say({ channel: imData.channel.id, text:val})
-                      msg.respond("Notification sent");
                     }
                   })
                 }
               }
             })
+            msg.respond("Notification sent");
           }
         })
-      msg.respond("Notifications sent.");
     }
   })
 }

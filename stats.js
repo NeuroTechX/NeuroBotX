@@ -249,6 +249,9 @@ function stats_setGA(msg,value) {
       _("error setting stats");
       _(err);
       }
+    else {
+      msg.respond("GA Token set");
+    }
   });
 }
 /**
