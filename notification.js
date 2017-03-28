@@ -31,6 +31,11 @@ slapp.command('/notify','(.*)', (msg, text, value)  => {
     }
   })
 })
+/**
+ * This function sends messages to all users
+ * @param {object} msg the message sent by slapp that is meant to be archived
+ * @param {string} val the string of the message to be sent
+ */
 function notify_all(msg,val){
   slapp.client.users.list({token:msg.meta.bot_token}, (err, usersData) => {
     if(err)
@@ -50,6 +55,12 @@ function notify_all(msg,val){
     }
   })
 }
+/**
+ * This function sends messages to all users but specified by the fileURL
+ * @param {object} msg the message sent by slapp that is meant to be archived
+ * @param {string} fileURL the url of the csv
+ * @param {string} val the string of the message to be sent
+ */
 function notify_allbut(msg,fileURL,val){
   var entries = [];
   csv()
