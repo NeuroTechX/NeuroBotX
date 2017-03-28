@@ -5,7 +5,7 @@ var kv = require('beepboop-persist')();
 
 // Simple logging function
 function _(obj){
-  var str = JSON.stringify(obj, null, 4); // (Optional) beautiful indented output.
+  var str = JSON.stringify(obj, null, 4); 
   console.log(str);
 }
 

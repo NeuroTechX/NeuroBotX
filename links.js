@@ -1,13 +1,13 @@
 const slapp = require('./slapp.js').get();
 const fs = require('fs')
 const request = require('request');
+
 var github = require('./github.js');
 
 // Hyper links detection regex
 var LINKS_REGEX = /(\b(https?|ftp|file|http):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-// Max buffer length before pushing to github
-// const LINKS_BUFFER_MAX_LENGTH = 10;
 
+// Flag enabling/disabling links tracking
 var isTrackingLinks = false;
 var links = [];
 var linksDetector = new RegExp(LINKS_REGEX);
@@ -27,6 +27,7 @@ function receive(msg){
       links_push(msg.body.event.text);
     }
 }
+// Handler of the links slash command
 slapp.command('/links','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
     if( data.user.is_admin){
@@ -75,6 +76,7 @@ function links_print(msg){
 		msg.respond("Links tracking is not in progress.");
 	}
 }
+// Enables the links tracking flag
 function start(){
   isTrackingLinks=true;
 }

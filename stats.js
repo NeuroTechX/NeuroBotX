@@ -4,13 +4,12 @@ const github = require('./github.js');
 const request = require('request');
 var kv = require('beepboop-persist')();
 
-const GA_TRACKING_ID = "UA-92703237-1";
-
+var ga_token = '';
 var stringMap = new HashMap();
 var subscribedUsers = [];
 var isTrackingStats = false;
 function _(obj){
-  var str = JSON.stringify(obj, null, 4); // (Optional) beautiful indented output.
+  var str = JSON.stringify(obj, null, 4);
   console.log(str);
 }
 var dictionary = [
@@ -51,6 +50,13 @@ function saveStats(){
   });
 }
 function loadStats(){
+  kv.get("ga",function(err,result){
+    if(err)
+      _("error while loading ga token from the kv");
+    else if(!err && result){
+      ga_token = result;
+    }
+  })
   stringMap.clear();
   kv.get("stats",function(err,result){
     if(err)
@@ -116,7 +122,8 @@ slapp.command('/stats','(.*)', (msg, text, value)  => {
                 "\`start\` starts statistics tracking.(Github token must be initialized first using /github)\n" +
                 "\`stop\` stops statistics tracking.\n" +
                 "\`subscribe\` subscribe to the weekly statistics message.\n" +
-                "\`unsubscribe\` unsubscribe from the weekly statistics message.\n"
+                "\`unsubscribe\` unsubscribe from the weekly statistics message.\n" +
+                "\`setGA\` set the google analytics id.\n"
               );
       else if(cmd == 'print')
         stats_print(msg);
@@ -136,6 +143,8 @@ slapp.command('/stats','(.*)', (msg, text, value)  => {
         stats_subscribe(msg);
       else if(cmd == 'unsubscribe')
         stats_unsubscribe(msg)
+      else if(cmd == 'setGA')
+        stats_setGA(msg,val);
       else
         msg.respond("Please use /stats to print the available options.");
     }
@@ -229,6 +238,20 @@ function stats_add(msg,value) {
     }
 }
 /**
+ * This function set the google analytics id
+ * @param {object} msg the command message sent by slapp
+ * @param {string} value the google analytics id
+ */
+function stats_setGA(msg,value) {
+  ga_token = value;
+  kv.set("ga",value,function(err){
+    if(err){
+      _("error setting stats");
+      _(err);
+      }
+  });
+}
+/**
  * This function deletes a keyword to the tracked keywords list
  * @param {object} msg the command message sent by slapp to delete the keyword
  * @param {string} value the keyword to delete
@@ -309,40 +332,42 @@ function stats_stop(msg) {
 }
 
 function trackEvent (keyword,value, cb) {
-  const data = {
-    v: '1', // API Version.
-    tid: GA_TRACKING_ID, // Tracking ID / Property ID.
-    // Anonymous Client Identifier. Ideally, this should be a UUID that
-    // is associated with particular user, device, or browser instance.
-    cid: '607',
-    t: 'event', // Event hit type.
-    ec: "Slack", // Event category.
-    ea: "Stat", // Event action.
-    el: keyword, // Event label.
-    ev: value // Event value.
-  };
+  if(ga_token){
+    const data = {
+      v: '1', // API Version.
+      tid: ga_token, // Tracking ID / Property ID.
+      // Anonymous Client Identifier. Ideally, this should be a UUID that
+      // is associated with particular user, device, or browser instance.
+      cid: '607',
+      t: 'event', // Event hit type.
+      ec: "Slack", // Event category.
+      ea: "Stat", // Event action.
+      el: keyword, // Event label.
+      ev: value // Event value.
+    };
 
-  request.post(
-    'http://www.google-analytics.com/collect',
-    {
-      form: data
-    },
-    (err, response) => {
-      if (err) {
-        cb(err);
-        console.log("Error sending analytic " + err);
-        return;
+    request.post(
+      'http://www.google-analytics.com/collect',
+      {
+        form: data
+      },
+      (err, response) => {
+        if (err) {
+          cb(err);
+          console.log("Error sending analytic " + err);
+          return;
+        }
+        if (response.statusCode !== 200) {
+          cb(new Error('Tracking failed'));
+          console.log("Analytic tracking failed ");
+          return;
+        }
+        console.log("Analytic response");
+        _(response)
+        cb();
       }
-      if (response.statusCode !== 200) {
-        cb(new Error('Tracking failed'));
-        console.log("Analytic tracking failed ");
-        return;
-      }
-      console.log("Analytic response");
-      _(response)
-      cb();
-    }
-  );
+    );
+  }
 }
 module.exports = {
   receive:receive,

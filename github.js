@@ -5,10 +5,17 @@ const fs = require('fs');
 
 var kv = require('beepboop-persist')();
 var github_token = '';
+
+/**
+ * This function logs the received obj to the console
+ * @param {object} obj object to be logged
+ */
 function _(obj){
   var str = JSON.stringify(obj, null, 4); // (Optional) beautiful indented output.
   console.log(str);
 }
+
+// Github access options
 var github = new GitHubApi({
     // optional
     debug: true,
@@ -22,7 +29,10 @@ var github = new GitHubApi({
     followRedirects: false, // default: true; there's currently an issue with non-get redirects, so allow ability to disable follow-redirects
     timeout: 5000
 });
-
+/**
+ * Initialize the github module
+ * @param {object} cb callback function to be called after init
+ */
 function init(cb){
   kv.list("github_token",function(err,keys){
     if(err)
@@ -41,13 +51,24 @@ function init(cb){
       });
   });
 }
-
+/**
+ * returns the github token
+ * @returns {string} the github token
+ */
 function getToken(){
   return github_token;
 }
+/**
+ * returns the github module
+ * @returns {object} the github module
+ */
 function get(){
   return github;
 }
+/**
+ * returns the github module
+ * @param {string} token the new value of the token
+ */
 function setToken(token){
   github_token = token;
   github.authenticate({
@@ -55,6 +76,10 @@ function setToken(token){
     token: token
   });
 }
+/**
+ * returns the github module
+ * @param {string} token the new value of the token
+ */
 slapp.command('/github','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
     if( data.user.is_admin){
