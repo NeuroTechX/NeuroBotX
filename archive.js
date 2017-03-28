@@ -5,11 +5,16 @@ const fs = require('fs');
 var kv = require('beepboop-persist')();
 
 var github = require('./github.js')
+
+/**
+ * This function logs the received obj to the console
+ * @param {object} obj object to be logged
+ */
 function _(obj){
   var str = JSON.stringify(obj, null, 4);
   console.log(str);
 }
-var buffer =[];
+
 // Archiving feature state
 var isArchiving = false;
 
@@ -25,7 +30,7 @@ function handle_restart(){
   })
 }
 /**
- * This function receives a message and store it in a hashmap that will be pushed to the github archive
+ * This function receives a message and send to the send function with the right format
  * @param {object} msg the message sent by slapp that is meant to be archived
  */
 function receive(msg){
@@ -42,7 +47,7 @@ function receive(msg){
     });
   }
 }
-// Sets the handler for the slash command
+// Sets the handler for the archivetogit slash command
 slapp.command('/archivetogit','(.*)', (msg, text, value)  => {
   slapp.client.users.info({token:msg.meta.bot_token,user:msg.body.user_id}, (err, data) => {
     if( data.user.is_admin){
@@ -63,12 +68,14 @@ slapp.command('/archivetogit','(.*)', (msg, text, value)  => {
     }
   })
 })
-
+/**
+ * This function enables the archiving flag
+ */
 function start(){
   isArchiving=true;
 }
 /**
- * This function starts the message archiving if a github token is specified
+ * This function starts the message archiving if a github token is specified and the archiving flag is up
  * @param {object} msg the message received from slapp following the user command
  */
 function archive_start(msg){
@@ -98,11 +105,10 @@ function archive_stop(msg){
 	}
 }
 /**
- * This function pushes the message from the buffer to github
+ * This function pushes the message to github
+* @param {object} msg the message received from slapp following the user command
  */
 function archive_push(obj){
-  _('ARCHIVE PUSH buffer:');
-  _(buffer);
   var channelPageName = obj.channel + '.md';
   github.get().repos.getContent({
    owner:'NeuroTechX',
@@ -122,48 +128,9 @@ function archive_push(obj){
   });
 }
 /**
- * This function edits the github page specified by pageName adding values to it
- * @param {string} obj the data to push
+ * This function edites an existing github page to include the new archive
+* @param {object} obj the object to be added to the page
  */
-// function editPage(obj){
-//   var filePath = "https://raw.githubusercontent.com/NeuroTechX/ntx_slack_archive/master/"+obj.channel+'.md';
-//   var propertiesObject = {access_token:github.getToken()};
-// 	request.get({url:filePath, qs:propertiesObject}, function (fileerror, fileresponse, fileBody) {
-//   	if (!fileerror && fileresponse.statusCode == 200) {
-//
-//       var quotedText = obj.text.replace(/([\n\r])/g, '\n\n> $1');
-//       fileBody+= ""+formatDate(obj.ts)+"\n\n **"+ obj.user +"**" + " :\n\n >" + quotedText + "\n\n";
-//
-// 			//fs.writeFile("slack-links.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
-//       var content = Buffer.from(fileBody, 'ascii');
-//       var b64content = content.toString('base64');
-// 			var blobPath = "https://api.github.com/repos/NeuroTechX/ntx_slack_archive/contents/"+obj.channel+'.md';
-//       var options = {
-//         url: blobPath,
-//         headers: {
-//           'User-Agent': 'Edubot-GitHub-App'
-//         },
-//         qs:propertiesObject
-//       };
-// 			request.get(options, function (bloberror, blobresponse, blobBody) {
-// 	    	if (!bloberror && blobresponse.statusCode == 200) {
-//           var shaStr = JSON.parse(blobBody).sha;
-//           //("Sha str")
-// 					github.get().repos.updateFile({
-// 						owner:"NeuroTechX",
-// 						repo:"ntx_slack_archive",
-// 						path:obj.channel+'.md',
-// 						message:"Edubot Push",
-// 						content:b64content,
-// 						sha: shaStr
-// 					}, function(err, res) {
-//             buffer = [];
-//           });
-//         }
-// 			});
-//   	}
-// 	});
-// }
 function editPage(obj){
   github.get().repos.getContent({
       owner:"NeuroTechX",
@@ -239,6 +206,11 @@ function createPage(obj){
       }, function(err, res) {
       });
 }
+/**
+ * This function returns a promise wrapping the user info get function
+ * @param {string} uid id of the user
+ * @returns {Promise}
+ */
 function getUserInfoPromise(uid){
   return new Promise(function(resolve, reject) {
     kv.get("bot_token",function(err,bToken){

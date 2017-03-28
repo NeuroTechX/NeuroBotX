@@ -1,5 +1,5 @@
 var HELP_TEXT = `
-Hi there! I’m NeuroBotX, your NeuroTechX Slack bot. I currently only have 1 response when you send me a message, so here is everything you need to know about NeuroTechX and this Slack.
+*Hi there!* I’m NeuroBotX, your NeuroTechX Slack bot. I currently only have 1 response when you send me a message, so here is everything you need to know about NeuroTechX and this Slack.
 
 
 If you are looking for help or have a question about NeuroTechX, the quickest way to get an answer is to message one of the directors. @yannick and @sydneyneurotechx are the more active Directors on slack.

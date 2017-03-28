@@ -1,10 +1,11 @@
 const slapp = require('./slapp.js').get();
 const verbose = require('./verbose.js');
+var github = require('./github.js');
 var kv = require('beepboop-persist')();
 
 // Simple logging function
 function _(obj){
-  var str = JSON.stringify(obj, null, 4); // (Optional) beautiful indented output.
+  var str = JSON.stringify(obj, null, 4); 
   console.log(str);
 }
 
@@ -15,27 +16,37 @@ var current_welcome_text = verbose.WELCOME_TEXT;
  * This function initializes the bot messages
  */
 function init(){
-  kv.get("msgHelp",function(err,result){
-    if(err){
-      _("error while loading help message from the kv");
-      current_help_text = verbose.HELP_TEXT;
-    }
-    else if(result)
-      current_help_text = result;
-    else{
-      current_help_text = verbose.HELP_TEXT;
-    }
+  github.get().repos.getContent({
+      owner:"NeuroTechX",
+      repo:"ntx_slack_archive",
+      path:'help.md',
+    },
+    function(err,res){
+    	if (!err) {
+        var b64fileBody = res.content;
+        var bufBody = new Buffer(b64fileBody, 'base64')
+        var fileBody = bufBody.toString();
+        current_help_text = fileBody;
+      }
+      else{
+        current_help_text = verbose.HELP_TEXT;
+      }
   });
-  kv.get("msgWelcome",function(err,result){
-    if(err){
-      _("error while loading welcome message from the kv");
-      current_welcome_text = verbose.WELCOME_TEXT;
-    }
-    else if(result)
-      current_welcome_text = result;
-    else{
-      current_welcome_text = verbose.WELCOME_TEXT;
-    }
+  github.get().repos.getContent({
+      owner:"NeuroTechX",
+      repo:"ntx_slack_archive",
+      path:'welcome.md',
+    },
+    function(err,res){
+      if (!err) {
+        var b64fileBody = res.content;
+        var bufBody = new Buffer(b64fileBody, 'base64')
+        var fileBody = bufBody.toString();
+        current_welcome_text = fileBody;
+      }
+      else {
+        current_welcome_text=verbose.WELCOME_TEXT;
+      }
   });
 }
 
@@ -85,23 +96,17 @@ slapp.command('/messages','(.*)', (msg, text, value)  => {
         msg.respond("Options for /messages: \n" +
                 "\`printHelp\` prints the current help message.\n" +
                 "\`printWelcome\` prints the current welcome message.\n" +
-                "\`setHelp [ARG]\`  sets [ARG] as the new help message.\n" +
-                "\`setWelcome [ARG]\` sets [ARG] as the new welcome message.\n" +
-                "\`defaultHelp \`  sets the help message to the default value.\n" +
-                "\`defaultWelcome \` sets the welcome message to the default value.\n"
+                "\`reloadHelpFromGithub \`  reloads the help messages from the ntx_slack_archive github repo.\n" +
+                "\`reloadWelcomeFromGithub \` reloads the welcome messages from the ntx_slack_archive github repo.\n"
               );
       else if(cmd == 'printHelp')
         printHelp(msg);
       else if(cmd == 'printWelcome')
         printWelcome(msg);
-      else if(cmd == 'setHelp')
-        setHelp(msg,val);
-      else if(cmd == 'setWelcome')
-        setWelcome(msg,val);
-      else if(cmd == 'defaultHelp')
-        defaultHelp(msg);
-      else if(cmd == 'defaultWelcome')
-        defaultWelcome(msg);
+      else if(cmd == 'reloadHelpFromGithub')
+        reloadHelpFromGithub(msg);
+      else if(cmd == 'reloadWelcomeFromGithub')
+        reloadWelcomeFromGithub(msg);
       else
         msg.respond("Please use /messages to print the available options.");
     }
@@ -124,63 +129,55 @@ function printHelp(msg){
 function printWelcome(msg){
   msg.respond(current_welcome_text);
 }
+
 /**
  * Sets the current help message to the default one
  * @param {object} msg the slash command message sent by slapp
- * @param {object} val the value sent with the command
  */
-function setHelp(msg,val){
-  current_help_text = val;
-  msg.respond("New help message set");
-  kv.set("msgHelp",val,function(err){
-    if(err){
-      _("error setting msgHelp in the kv");
-      _(err);
+function reloadHelpFromGithub(msg){
+
+  github.get().repos.getContent({
+      owner:"NeuroTechX",
+      repo:"ntx_slack_archive",
+      path:'help.md',
+    },
+    function(err,res){
+    	if (!err) {
+        var b64fileBody = res.content;
+        var bufBody = new Buffer(b64fileBody, 'base64')
+        var fileBody = bufBody.toString();
+        current_help_text = fileBody;
+        msg.respond("Help set to Default from the github file");
+      }
+      else{
+        current_help_text = verbose.HELP_TEXT;
+        msg.respond("Coudn't read from github. Help set to default from the hard-coded string");
       }
   });
 }
 /**
  * Sets the current welcome message to the default one
  * @param {object} msg the slash command message sent by slapp
- * @param {object} val the value sent with the command
  */
-function setWelcome(msg,val){
-  msg.respond("New welcome message set");
-  current_welcome_text = val;
-  kv.set("msgWelcome",val,function(err){
-    if(err){
-      _("error setting msgWelcome in the kv");
-      _(err);
+function reloadWelcomeFromGithub(msg){
+  github.get().repos.getContent({
+      owner:"NeuroTechX",
+      repo:"ntx_slack_archive",
+      path:'welcome.md',
+    },
+    function(err,res){
+      if (!err) {
+        var b64fileBody = res.content;
+        var bufBody = new Buffer(b64fileBody, 'base64')
+        var fileBody = bufBody.toString();
+        current_welcome_text = fileBody;
+        msg.respond("Welcome set to Default from the github file");
+      }
+      else {
+        current_welcome_text=verbose.WELCOME_TEXT;
+        msg.respond("Coudn't read from github. Welcome set to default from the hard-coded string");
       }
   });
-}
-/**
- * Sets the current help message to the default one
- * @param {object} msg the slash command message sent by slapp
- */
-function defaultHelp(msg){
-  msg.respond("Help set to Default");
-  current_help_text = verbose.HELP_TEXT;
-  kv.set("msgHelp",verbose.HELP_TEXT,function(err){
-    if(err){
-      _("error setting msgWelcome in the kv");
-      _(err);
-      }
-  })
-}
-/**
- * Sets the current welcome message to the default one
- * @param {object} msg the slash command message sent by slapp
- */
-function defaultWelcome(msg){
-  msg.respond("Welcome set to Default");
-  current_welcome_text = verbose.WELCOME_TEXT;
-  kv.set("msgWelcome",verbose.WELCOME_TEXT,function(err){
-    if(err){
-      _("error setting msgWelcome in the kv");
-      _(err);
-      }
-  })
 }
 module.exports = {
   init:init
