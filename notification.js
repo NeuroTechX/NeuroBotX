@@ -17,7 +17,8 @@ slapp.command('/notify','(.*)', (msg, text, value)  => {
       var strtokens = text.split(" ");
       var cmd = strtokens[0];
       if(cmd=='all'){
-        notify_all();
+        var val = text.replace(strtokens[0]+' ','');
+        notify_all(msg,val);
       }
       if(cmd=='allbut'){
         var fileURL = strtokens[1];
@@ -30,8 +31,24 @@ slapp.command('/notify','(.*)', (msg, text, value)  => {
     }
   })
 })
-function notify_all(){
-
+function notify_all(msg,val){
+  slapp.client.users.list({token:msg.meta.bot_token}, (err, usersData) => {
+    if(err)
+      msg.respond("Error while listing users.");
+    else{
+      usersData.members.forEach(function(member){
+        if(!member.deleted && !member.is_bot){
+          slapp.client.im.open({ token: msg.meta.bot_token,  user: member.id }, (err, imData) => {
+            if(err){
+              console.log("error while sending IM " +err);
+            }else
+              msg.say({ channel: imData.channel.id, text:val})
+              msg.respond("Notification sent");
+          })
+        }
+      })
+    }
+  })
 }
 function notify_allbut(msg,fileURL,val){
   var entries = [];
@@ -58,8 +75,10 @@ function notify_allbut(msg,fileURL,val){
                   slapp.client.im.open({ token: msg.meta.bot_token,  user: member.id }, (err, imData) => {
                     if(err){
                       console.log("error while sending IM " +err);
-                    }else
+                    }else{
                       msg.say({ channel: imData.channel.id, text:val})
+                      msg.respond("Notification sent");
+                    }
                   })
                 }
               }
