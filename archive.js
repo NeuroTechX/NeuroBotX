@@ -19,17 +19,6 @@ function _(obj){
 var isArchiving = false;
 
 /**
- * This function that handles the module behaviour when the server is about to restart
- */
-function handle_restart(){
-  keys = msgMap.keys();
-  keys.forEach(function(key){
-    var array = msgMap.get(key);
-    if(array.length)
-      archive_push(key);
-  })
-}
-/**
  * This function receives a message and send to the send function with the right format
  * @param {object} msg the message sent by slapp that is meant to be archived
  */
@@ -229,6 +218,5 @@ function getUserInfoPromise(uid){
 }
 module.exports = {
   receive:receive,
-  handle_restart:handle_restart,
   start:start
 }

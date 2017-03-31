@@ -101,61 +101,9 @@ slapp.command('/github','(.*)', (msg, text, value)  => {
     }
   });
 });
-/**
- * This function saves the bot state and restarts the beepboophq server.
- */
-function restart(){
-  _("github preparing to restart")
-  var filePath = "https://raw.githubusercontent.com/NeuroTechX/NeuroBotX/master/metamorphosis.md";
-	request.get(filePath, function (fileerror, fileresponse, fileBody) {
-  	if (!fileerror && fileresponse.statusCode == 200) {
-      _("file body received");
-      _(fileBody);
-			fileBody+="0";
-      fs.writeFile("metamorphosis.md", fileBody, {encoding: 'base64'}, function(err){console.log("error encoding the file to b64")});
-      var content = Buffer.from(fileBody, 'ascii');
-      var b64content = content.toString('base64');
-			var blobPath = "https://api.github.com/repos/NeuroTechX/NeuroBotX/contents/metamorphosis.md";
-      var options = {
-        url: blobPath,
-        headers: {
-          'User-Agent': 'Edubot-GitHub-App'
-        }
-      };
-			request.get(options, function (bloberror, blobresponse, blobBody) {
-        _("blob received");
-        _(blobBody);
-	    	if (!bloberror && blobresponse.statusCode == 200) {
-          var shaStr = JSON.parse(blobBody).sha;
-          ("Sha str")
-					get().repos.updateFile({
-						owner:"NeuroTechX",
-						repo:"NeuroBotX",
-						path:"metamorphosis.md",
-						message:"Meta Push",
-						content:b64content,
-						sha: shaStr
-					}, function(err, res) {
-            if(err){
-              console.log("error while updating the github file to trigger restart");
-              _(err);
-              }
-            else{
-              console.log("Metamorphosis!");
-              if(res)
-                _(res);
-              }
-            });
-
-				}
-			});
-  	}
-	});
-}
 
 module.exports = {
   init:init,
   get:get,
-  getToken:getToken,
-  restart:restart
+  getToken:getToken
 }
