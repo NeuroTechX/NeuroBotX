@@ -32,9 +32,7 @@ var dictionary = [
 for(var i=0;i<dictionary.length;i++){
   stringMap.set(dictionary[i].toLowerCase(),0)
 }
-function handle_restart(){
-  saveStats();
-}
+
 function saveStats(){
   var obj = {};
   stringMap.forEach(function(value, key) {
@@ -377,6 +375,5 @@ module.exports = {
   cronPoke:cronPoke,
   saveStats:saveStats,
   loadStats:loadStats,
-  handle_restart:handle_restart,
   start:start
 }
