@@ -62,5 +62,18 @@ To find a *list of cities* where we are located in, please visit http://neurotec
 If you'd like to get involved, now is the time! Have a look at our 2017 Committees at : http://neurotechx.com/opportunities/index.html.
 Thanks to BeepBoopHQ for sponsoring NeuroTechX with free bot support. To learn more about BeepBoopHQ, please visit their website: *https://beepboophq.com/*
 `
+
+var NEWSLETTER_TEXT = `
+Hey! I hope you are having a lovely day, because I’m having the time of my life! What a time for ChatBots to be alive.
+Listen, as much as I’d like to chit chat with you, I’m actually writing to you because I’ve noticed that you are not on the *NTX - Digest* list and therefore are not receiving the awesome news and opportunities NTX is sharing with its community. 
+
+The good news is that I’ve got your back and you can fix that with only 1 click (+2-3 fields to fill):
+http://bit.ly/ntx-digest  
+
+But hey, if you want to miss the next big thing in NeuroTech, it’s ok.
+_(If you are on the list but used a different name and/or email, please let me know so I don’t bug you anymore)_
+`
+
 exports.HELP_TEXT = HELP_TEXT;
 exports.WELCOME_TEXT = WELCOME_TEXT;
+exports.NEWSLETTER_TEXT = NEWSLETTER_TEXT;

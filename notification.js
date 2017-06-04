@@ -1,7 +1,10 @@
 const slapp = require('./slapp.js').get();
 const request = require('request');
+const verbose = require('./verbose.js');
 var kv = require('beepboop-persist')();
 const csv=require('csvtojson')
+
+var current_newsletter_text = verbose.NEWSLETTER_TEXT;
 
 // Simple logging function
 function _(obj){
@@ -87,7 +90,7 @@ function notify_allbut(msg,fileURL,val){
                     if(err){
                       console.log("error while sending IM " +err);
                     }else{
-                      msg.say({ channel: imData.channel.id, text:val})
+                      msg.say({ channel: imData.channel.id, text:current_newsletter_text})
                     }
                   })
                 }
